@@ -226,12 +226,13 @@
         </div>
     </nav>
 
-    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
+    <!-- 🧠 FIREBASE DATA STREAM ARCHITECTURE PACKETS (UPGRADED HOME HUB LOGIC) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // 🎯 NEW FIREBASE INITIALIZATION CONFIG (focustube-72084)
         const firebaseConfig = {
             apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
             authDomain: "focustube-72084.firebaseapp.com",
@@ -245,11 +246,14 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // 🔑 SECURE MASTER YOUTUBE CORE API ACCELERATOR KEYS
         const YT_GATEWAY_KEY = "AIzaSyBdyln75P_abb8FBZb7J_1JNlDZ39k5oIQ"; 
+
         let currentUser = null;
         let currentActiveVideoId = "";
-        let whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"]; 
+        let whitelistedChannelsArray = []; // अब यह सीधे Firestore से लाइव लोड होगा!
 
+        // 👁️ LIVE EYE GUARD LAYOUT SWITCHER
         function toggleStudentDashboardTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
@@ -257,44 +261,75 @@
             btn.innerText = body.classList.contains('student-dark-mode') ? "☀️ Eye Guard Off" : "👁️ Eye Guard On";
         }
 
+        // 🔄 ASYNC PAGE ROOM SWITCH ENGINE
         function switchActiveRoomNode(roomId, element) {
             document.querySelectorAll('.app-view-room').forEach(room => room.classList.remove('active-room'));
             document.getElementById(roomId).classList.add('active-room');
             document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
             document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
+
+            // अगर यूजर दोबारा Home Hub पर क्लिक करता है, तो फीड रिफ्रेश करें
+            if(roomId === 'homeRoom') {
+                syncParentWhitelistWithHomeHub();
+            }
         }
 
-        function executeFirewalledSearchNode() {
-            const searchQueryText = document.getElementById('globalSearchInput').value.trim();
-            if(!searchQueryText) return;
+        // ================= 🏠 REALTIME HOME HUB CHANNEL SYNCHRONIZER =================
+        function syncParentWhitelistWithHomeHub() {
+            if (!currentUser) return;
 
-            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Searching securely inside approved perimeters...</div>`;
-            const requestApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(searchQueryText)}&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
+            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Fetching parent whitelisted feeds matrix...</div>`;
+            document.getElementById('shortsCarouselShell').innerHTML = `<div class="skeleton-loading-pulse">Loading secure shorts stream...</div>`;
 
-            fetch(requestApiUrl)
-                .then(res => res.json())
-                .then(data => renderVideoGridMatrix(data.items))
-                .catch(err => console.error(err));
+            // पेरेंट्स द्वारा सेट किए गए चैनल्स को 'pinned_channels' कलेक्शन से सीधे लाइव ट्रैक करना
+            db.collection("pinned_channels")
+              .where("parentUid", "==", currentUser.uid)
+              .onSnapshot((snapshot) => {
+                  whitelistedChannelsArray = [];
+                  snapshot.forEach((doc) => {
+                      whitelistedChannelsArray.push(doc.data().channelId);
+                  });
+
+                  // अगर डेटाबेस खाली है और माता-पिता ने कोई चैनल ऐड नहीं किया है तो डिफ़ॉल्ट चैनल्स (Khan Sir/Dear Sir) लोड करें
+                  if(whitelistedChannelsArray.length === 0) {
+                      whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"];
+                  }
+
+                  // जैसे ही पिन किए गए चैनल्स मिल जाएं, तुरंत यूट्यूब फीड इंजन चालू करें
+                  fetchWhitelistedFeedsEngine();
+              }, err => {
+                  console.log("Database Sync Failure:", err);
+                  // एरर आने पर सेफ साइड के लिए डिफ़ॉल्ट लोड कर दें
+                  whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"];
+                  fetchWhitelistedFeedsEngine();
+              });
         }
 
+        // ================= 📡 LIVE CONTENT ASYNC FEED DELIVERY =================
         function fetchWhitelistedFeedsEngine() {
             if(whitelistedChannelsArray.length === 0) return;
+
+            // होम हब पर सबसे पहले वाले पिन किए गए चैनल के लेटेस्ट 12 वीडियो लोड करना
             const feedUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&order=date&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
             
             fetch(feedUrl)
                 .then(res => res.json())
                 .then(data => {
                     renderVideoGridMatrix(data.items);
-                    renderShortsCarouselMatrix(data.items);
+                    renderShortsCarouselMatrix(data.items); // उन्हीं चैनल्स के शॉर्ट्स फ़िल्टर
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    console.error("Feeds Integration Interrupted:", err);
+                    document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">❌ Failed to sync YouTube APIs. Please check Internet.</div>`;
+                });
         }
 
+        // GRID GENERATOR FOR BIG CLASSROOM VIDEOS
         function renderVideoGridMatrix(items) {
             const shell = document.getElementById('videoGridShell');
             if(!items || items.length === 0) {
-                shell.innerHTML = `<div class="skeleton-loading-pulse">⚠️ No classroom videos found.</div>`;
+                shell.innerHTML = `<div class="skeleton-loading-pulse">⚠️ No classroom videos found in this perimeter.</div>`;
                 return;
             }
             shell.innerHTML = "";
@@ -314,8 +349,13 @@
             });
         }
 
+        // CAROUSEL GENERATOR FOR SHORTS
         function renderShortsCarouselMatrix(items) {
             const shell = document.getElementById('shortsCarouselShell');
+            if(!items || items.length === 0) {
+                shell.innerHTML = `<div class="skeleton-loading-pulse">No short-form loops found.</div>`;
+                return;
+            }
             shell.innerHTML = "";
             items.slice(0, 6).forEach(short => {
                 const vidId = short.id.videoId || short.id;
@@ -328,13 +368,28 @@
             });
         }
 
-        /* ================= 🎬 INTERACTIVE PLAYER EMBED ENGINE ACTIONS ================= */
+        // ================= 🔍 FIREWALLED INTERCEPT SEARCH LOGIC =================
+        function executeFirewalledSearchNode() {
+            const searchQueryText = document.getElementById('globalSearchInput').value.trim();
+            if(!searchQueryText) return;
+
+            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Searching securely inside approved perimeters...</div>`;
+            
+            // फ़ायरवॉल सर्च: यह बाहरी दुनिया के बजाय केवल माता-पिता द्वारा पहले पिन किए गए चैनल के अंदर से ही रिज़ल्ट लाएगा!
+            const requestApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(searchQueryText)}&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
+
+            fetch(requestApiUrl)
+                .then(res => res.json())
+                .then(data => renderVideoGridMatrix(data.items))
+                .catch(err => console.error(err));
+        }
+
+        // ================= 🎬 INTERACTIVE PLAYER EMBED ENGINE ACTIONS =================
         function launchSecurePlayerEngine(videoId, type) {
             currentActiveVideoId = videoId;
             const modal = document.getElementById('globalTheaterModal');
             const iframe = document.getElementById('secureVideoIframe');
             
-            // Strict Parameter Configuration: rel=0 (नो बाहरी सजेशन), modestbranding=1 (क्लीन प्लेयर UI)
             iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3`;
             
             if(type === 'shorts') {
@@ -344,12 +399,12 @@
             }
 
             modal.classList.add('active-player');
-            listenToIsolatedCommentsRealtime(); // लाइव कॉमेंट्स लोड करना शुरू करें
+            listenToIsolatedCommentsRealtime();
         }
 
         function closeSecureTheaterEngine() {
             document.getElementById('globalTheaterModal').classList.remove('active-player');
-            document.getElementById('secureVideoIframe').src = ""; // मेमोरी फ्लश करने के लिए प्लेयर खाली करें
+            document.getElementById('secureVideoIframe').src = "";
         }
 
         /* ================= 💬 FIREBASE ISOLATED COMMENT MATRIX NODES ================= */
@@ -357,11 +412,10 @@
             const commentText = document.getElementById('doubtCommentInput').value.trim();
             if(!commentText || !currentUser) return;
 
-            // कमेंट पैकेट आर्किटेक्चर: सीधे छात्र की ईमेल आईडी से लॉक होकर फायरबेस में सेव होगा
             const commentPacket = {
                 videoId: currentActiveVideoId,
                 studentUid: currentUser.uid,
-                studentEmail: currentUser.email.split('@')[0], // यूआई फ्रेंडली नेम के लिए
+                studentEmail: currentUser.email.split('@')[0],
                 text: commentText,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -370,16 +424,15 @@
                 .then(() => {
                     document.getElementById('doubtCommentInput').value = "";
                 })
-                .catch(err => alert("Comment Pipeline Interrupted: " + err.message));
+                .catch(err => alert("Comment Blocked: " + err.message));
         }
 
-        // रियल-टाइम कमेंट लूप: फ़िल्टर लगाकर सिर्फ इस लॉग-इन छात्र के कमेंट्स खींचेगा!
         function listenToIsolatedCommentsRealtime() {
             if(!currentUser || !currentActiveVideoId) return;
 
             db.collection("focus_comments")
                 .where("videoId", "==", currentActiveVideoId)
-                .where("studentUid", "==", currentUser.uid) //  ISOLATION RULES TRIGGER HERE (नो बाहरी कमेंट्स)
+                .where("studentUid", "==", currentUser.uid) 
                 .orderBy("timestamp", "desc")
                 .onSnapshot((snapshot) => {
                     const container = document.getElementById('singleUserCommentsContainer');
@@ -403,18 +456,17 @@
                             </div>
                         `;
                     });
-                }, err => console.log("Firestore Isolation Error:", err));
+                }, err => console.log(err));
         }
 
-        // ROUTE RE-VALIDATOR GUARD
+        // 🛡️ SECURITY ROUTE LIFE-CYCLE ENGINE GUARD
         auth.onAuthStateChanged((user) => {
             if (!user) {
                 window.location.href = "login.html";
             } else {
                 currentUser = user;
-                fetchWhitelistedFeedsEngine();
+                // जैसे ही छात्र का ऑथेंटिकेशन टोकन क्लियर होगा, सीधे रीयल-टाइम डेटाबेस सिंक एक्टिव हो जाएगा!
+                syncParentWhitelistWithHomeHub();
             }
         });
     </script>
-</body>
-</html>
