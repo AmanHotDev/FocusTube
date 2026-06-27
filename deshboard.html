@@ -19,7 +19,6 @@
             --hover-bg: #f2f2f2;
         }
 
-        /* 🌙 ULTRA-PROTECTED EYE GUARD DARK MODE */
         body.student-dark-mode {
             --bg-light: #0f0f0f;
             --text-dark: #ffffff;
@@ -34,16 +33,14 @@
 
         /* 📡 TOP MASTER NAVIGATION BAR */
         .header-dock { background: var(--pure-white); border-bottom: 1px solid var(--border-color); padding: 10px 4%; display: flex; justify-content: space-between; align-items: center; height: 70px; position: relative; z-index: 10; }
-        
         .brand-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; text-decoration: none; color: var(--text-dark); }
         .brand-logo img { width: 30px; height: 34px; object-fit: contain; }
         .brand-logo span { color: var(--yt-red); }
 
-        /* 🔍 DYNAMIC ENCAPSULATED FILTER SEARCH BAR */
+        /* 🔍 DYNAMIC FILTER SEARCH BAR */
         .search-container { flex: 0 1 500px; display: flex; align-items: center; position: relative; margin: 0 15px; }
         .search-bar-input { width: 100%; padding: 12px 20px; border-radius: 25px 0 0 25px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-dark); outline: none; font-size: 0.95rem; }
         .search-bar-input:focus { border-color: var(--yt-red); background: var(--pure-white); }
-        
         .btn-search-trigger { background: var(--bg-light); border: 1px solid var(--border-color); border-left: none; padding: 0 22px; height: 44px; border-radius: 0 25px 25px 0; cursor: pointer; font-size: 1.1rem; color: var(--text-dark); transition: 0.2s; }
         .btn-search-trigger:hover { background: var(--hover-bg); }
 
@@ -53,28 +50,50 @@
         /* 🎛️ MAIN WORKSPACE GRID LAYER */
         .workspace-wrapper { flex: 1; display: flex; position: relative; height: calc(100vh - 70px); overflow: hidden; }
 
-        /* 💻 LAPTOP NAVIGATION SIDEBAR */
+        /* Sidebars & Content Layout */
         .sidebar-dock { width: 240px; background: var(--pure-white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; }
-        
         .sidebar-item { display: flex; align-items: center; gap: 20px; padding: 14px 24px; color: var(--text-dark); text-decoration: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; }
         .sidebar-item:hover, .sidebar-item.active { background: var(--hover-bg); }
         .sidebar-item.active { border-left-color: var(--yt-red); color: var(--yt-red); }
 
-        /* 📺 DYNAMIC CONTENT DISPLAY NODES */
         .main-content-stream { flex: 1; padding: 25px; overflow-y: auto; display: block; position: relative; }
-        
-        /* App Rooms Hidden States */
         .app-view-room { display: none; width: 100%; height: 100%; }
         .app-view-room.active-room { display: block; }
 
-        /* 📱 PERFECT MOBILE BOTOM NAVIGATION BAR BARRIER */
-        .mobile-bottom-dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--pure-white); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; align-items: center; z-index: 100; }
+        /* ================= 📺 NEW IN PART 2: VIDEOS & SHORTS UI ARCHITECTURE ================= */
+        .section-headline { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .section-headline span { background: var(--yt-red); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; }
         
+        /* MULTI-COLUMN VIDEO MATRIX */
+        .video-grid-matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .video-card-node { background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02); cursor: pointer; transition: 0.2s; }
+        .video-card-node:hover { transform: translateY(-3px); border-color: var(--yt-red); }
+        .thumb-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .video-card-details { padding: 15px; display: flex; gap: 12px; }
+        .channel-avatar-ball { width: 36px; height: 36px; border-radius: 50%; background: var(--border-color); object-fit: cover; flex-shrink: 0; }
+        .video-meta-strings { flex: 1; overflow: hidden; }
+        .video-card-title { font-size: 0.92rem; font-weight: 700; line-height: 1.4; color: var(--text-dark); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 5px; }
+        .video-card-channel { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+
+        /* 📱 VERTICAL SHORTS CAROUSEL HUB */
+        .shorts-flex-carousel { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 30px; scrollbar-width: thin; }
+        .shorts-card-node { min-width: 160px; width: 160px; aspect-ratio: 9/16; background: #000; border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; transition: 0.2s; border: 1px solid var(--border-color); }
+        .shorts-card-node:hover { transform: scale(1.02); border-color: var(--yt-red); }
+        .shorts-card-node img { width: 100%; height: 100%; object-fit: cover; }
+        .shorts-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%); display: flex; align-items: flex-end; padding: 12px; }
+        .shorts-card-title { color: white; font-size: 0.78rem; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+
+        /* LOADING HUB INDICATOR */
+        .skeleton-loading-pulse { text-align: center; padding: 50px; color: var(--text-muted); font-weight: 700; font-size: 1rem; }
+
+        /* MOBILE BOTTOM DOCK NAVIGATION Bar */
+        .mobile-bottom-dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--pure-white); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; align-items: center; z-index: 100; }
         .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.72rem; font-weight: 700; cursor: pointer; flex: 1; height: 100%; gap: 4px; }
         .mobile-nav-btn.active { color: var(--yt-red); }
         .mobile-nav-icon { font-size: 1.25rem; }
 
-        /* 🚨 RESPONSIVE ENGINEERING OVERRIDES */
         @media (max-width: 768px) {
             .sidebar-dock { display: none; }
             .mobile-bottom-dock { display: flex; }
@@ -82,21 +101,23 @@
             .search-container { flex: 1; margin: 0 10px; }
             .search-bar-input { padding: 10px 15px; font-size: 0.88rem; }
             .btn-search-trigger { padding: 0 15px; height: 38px; }
-            .btn-eye-guard { display: none; } /* Hide text toggle on mobile header to save space */
-            .main-content-stream { padding: 15px 15px 85px 15px; } /* Prevent bottom nav clipping */
+            .btn-eye-guard { display: none; }
+            .main-content-stream { padding: 15px 15px 85px 15px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- 📡 TOP HEADER GATEWAY SECTION -->
     <header class="header-dock">
         <a href="index.html" class="brand-box brand-logo">
             <img src="logo.png" alt="FocusTube Control Engine">
             Focus<span>Tube</span>
         </a>
 
+        <!-- 🔍 FILTER SEARCH CONTAINER WITH ENTER-KEY SUPPORT -->
         <div class="search-container">
-            <input type="text" class="search-input search-bar-input" id="globalSearchInput" placeholder="Search educational parameters...">
+            <input type="text" class="search-input search-bar-input" id="globalSearchInput" placeholder="Search educational parameters..." onkeyup="if(event.key === 'Enter') executeFirewalledSearchNode()">
             <button class="btn-search-trigger" onclick="executeFirewalledSearchNode()">🔍</button>
         </div>
 
@@ -105,8 +126,8 @@
         </div>
     </header>
 
+    <!-- 🎛️ MAIN WORKSPACE CONTROLLER CORE -->
     <div class="workspace-wrapper">
-        
         <aside class="sidebar-dock">
             <div class="sidebar-item active" onclick="switchActiveRoomNode('homeRoom', this)">
                 <span style="font-size: 1.2rem;">🏠</span> Home Hub
@@ -124,21 +145,32 @@
 
         <main class="main-content-stream" id="contentStreamContainer">
             
+            <!-- ================= 📺 SECTION 1: HOME HUB VIEW ROOM ================= -->
             <div class="app-view-room active-room" id="homeRoom">
+                
+                <!-- DYNAMIC MICRO-LEARNING SHORTS ZONE -->
+                <h2 class="section-headline">⚡ Micro-Learning Shorts <span>Approved</span></h2>
+                <div class="shorts-flex-carousel" id="shortsCarouselShell">
+                    <div class="skeleton-loading-pulse">Connecting to whitelisted shorts pipeline...</div>
                 </div>
 
-            <div class="app-view-room" id="whitelistRoom">
+                <!-- DYNAMIC FULL-LENGTH CLASSROOM VIDEOS ZONE -->
+                <h2 class="section-headline">📖 Production Classroom Streams <span>Secure</span></h2>
+                <div class="video-grid-matrix" id="videoGridShell">
+                    <div class="skeleton-loading-pulse">Synchronizing secure data packets...</div>
                 </div>
 
-            <div class="app-view-room" id="notifyRoom">
-                </div>
+            </div>
 
-            <div class="app-view-room" id="adminGateRoom">
-                </div>
+            <!-- SECTION PLACEHOLDERS FOR FUTURE PARTS -->
+            <div class="app-view-room" id="whitelistRoom"><h2>Whitelisted Channels</h2></div>
+            <div class="app-view-room" id="notifyRoom"><h2>Latest Video Alerts</h2></div>
+            <div class="app-view-room" id="adminGateRoom"><h2>Parent Control Panel</h2></div>
 
         </main>
     </div>
 
+    <!-- 📱 MOBILE NAVIGATION CORRIDOR -->
     <nav class="mobile-bottom-dock">
         <div class="mobile-nav-btn active" onclick="switchActiveRoomNode('homeRoom', this)">
             <span class="mobile-nav-icon">🏠</span><div>Home</div>
@@ -154,12 +186,13 @@
         </div>
     </nav>
 
+    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // 🎯 NEW RE-INITIALIZED FIREBASE APP CONFIG (focustube-72084)
+        // 🎯 NEW FIREBASE INITIALIZATION CONFIG (focustube-72084)
         const firebaseConfig = {
             apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
             authDomain: "focustube-72084.firebaseapp.com",
@@ -173,46 +206,123 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let currentUser = null;
-        let whitelistedChannelsArray = []; // माता-पिता द्वारा अप्रूव्ड चैनल्स का डेटा होल्ड करने के लिए array
+        // 🔑 SECURE MASTER YOUTUBE CORE API ACCELERATOR KEYS
+        const YT_GATEWAY_KEY = "AIzaSyBdyln75P_abb8FBZb7J_1JNlDZ39k5oIQ"; 
 
-        // 👁️ DYNAMIC EYE GUARD THEME MANAGER ENGINE
+        let currentUser = null;
+        
+        // टेस्टिंग के लिए कुछ टॉप एजुकेशनल चैनल आईडी डिफ़ॉल्ट रूप से डाल रहे हैं (जैसे डियर सर, खान सर)
+        let whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"]; 
+
         function toggleStudentDashboardTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
             body.classList.toggle('student-dark-mode');
-            if(body.classList.contains('student-dark-mode')) {
-                btn.innerText = "☀️ Eye Guard Off";
-            } else {
-                btn.innerText = "👁️ Eye Guard On";
-            }
+            btn.innerText = body.classList.contains('student-dark-mode') ? "☀️ Eye Guard Off" : "👁️ Eye Guard On";
         }
 
-        // 🔄 ASYNC PAGE ROOM SWITCH ENGINE (LAPTOP + MOBILE HARMONY)
         function switchActiveRoomNode(roomId, element) {
-            // सारे रूम्स को हाइड करें
             document.querySelectorAll('.app-view-room').forEach(room => room.classList.remove('active-room'));
-            // एक्टिव टारगेट रूम को शो करें
             document.getElementById(roomId).classList.add('active-room');
-
-            // लैपटॉप साइडबार की एक्टिव स्टेट रीसेट करें
             document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
-            // मोबाइल बॉटम बार की एक्टिव स्टेट रीसेट करें
             document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
-
-            // जिस बटन को दबाया गया है उसे एक्टिव हाईलाइट करें
             element.classList.add('active');
         }
 
-        // 🛡️ SECURITY ROUTE LIFE-CYCLE ENGINE GUARD
+        // ================= 🔍 NEW IN PART 2: FIREWALLED INTERCEPT SEARCH LOGIC =================
+        function executeFirewalledSearchNode() {
+            const searchQueryText = document.getElementById('globalSearchInput').value.trim();
+            if(!searchQueryText) return;
+
+            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Searching securely inside approved perimeters...</div>`;
+            
+            // यूट्यूब डेटा एपीआई का फ़ायरवॉल पैरामीटर - यह केवल पिन किए गए चैनल एरे के अंदर ही ढूँढेगा!
+            const targetChannelFilterId = whitelistedChannelsArray.join(',');
+            const requestApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(searchQueryText)}&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
+
+            fetch(requestApiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    renderVideoGridMatrix(data.items);
+                })
+                .catch(err => {
+                    console.error("Search Gateway Blocked:", err);
+                });
+        }
+
+        // ================= 📡 NEW IN PART 2: LIVE CONTENT ASYNC FEED DELIVERY =================
+        function fetchWhitelistedFeedsEngine() {
+            if(whitelistedChannelsArray.length === 0) {
+                document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">❌ No channels pinned yet by parents.</div>`;
+                document.getElementById('shortsCarouselShell').innerHTML = ``;
+                return;
+            }
+
+            // चुनिंदा चैनलों से ताज़ा वीडियो फ़ेच करने का एंडपॉइंट
+            const feedUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&element=video&maxResults=12&order=date&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
+            
+            fetch(feedUrl)
+                .then(res => res.json())
+                .then(data => {
+                    renderVideoGridMatrix(data.items);
+                    // शॉर्ट्स को रेंडर करने के लिए नकली डेटा या सिंक ग्रिड का इस्तेमाल
+                    renderShortsCarouselMatrix(data.items);
+                })
+                .catch(err => console.log("Feeds Integration Interrupted:", err));
+        }
+
+        // GRID GENERATOR FOR BIG CLASSROOM VIDEOS
+        function renderVideoGridMatrix(items) {
+            const shell = document.getElementById('videoGridShell');
+            if(!items || items.length === 0) {
+                shell.innerHTML = `<div class="skeleton-loading-pulse">⚠️ No classroom videos found in this perimeter.</div>`;
+                return;
+            }
+            shell.innerHTML = "";
+            items.forEach(video => {
+                const vidId = video.id.videoId || video.id;
+                const snippet = video.snippet;
+                shell.innerHTML += `
+                    <div class="video-card-node" onclick="alert('Player Engine is loading in Part 3! Video ID: ${vidId}')">
+                        <div class="thumb-wrapper">
+                            <img src="${snippet.thumbnails.medium.url}" alt="Thumbnail">
+                        </div>
+                        <div class="video-card-details">
+                            <div class="video-meta-strings">
+                                <h4 class="video-card-title">${snippet.title}</h4>
+                                <p class="video-card-channel">👤 ${snippet.channelTitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // CAROUSEL GENERATOR FOR SHORTS
+        function renderShortsCarouselMatrix(items) {
+            const shell = document.getElementById('shortsCarouselShell');
+            shell.innerHTML = "";
+            items.slice(0, 6).forEach(short => {
+                const vidId = short.id.videoId || short.id;
+                shell.innerHTML += `
+                    <div class="shorts-card-node" onclick="alert('Shorts Player is loading in Part 3! Video ID: ${vidId}')">
+                        <img src="${short.snippet.thumbnails.medium.url}" alt="Shorts">
+                        <div class="shorts-card-overlay">
+                            <h4 class="shorts-card-title">${short.snippet.title}</h4>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 🛡️ AUTH CHECK SECURITY MATRIX
         auth.onAuthStateChanged((user) => {
             if (!user) {
-                // अगर यूजर ऑथेंटिकेटेड नहीं है, तो जबरदस्ती लॉगिन.html पर धकेलेगा
                 window.location.href = "login.html";
             } else {
                 currentUser = user;
-                console.log("Welcome Operator ID:", currentUser.email);
-                // यहाँ से पार्ट 2 में डेटाबेस सिंक लोड इंजन ट्रिगर होगा
+                // जैसे ही यूजर लॉगिन वेरीफाई होगा, सीधे यूट्यूब से डेटा लाइव लोड होगा!
+                fetchWhitelistedFeedsEngine();
             }
         });
     </script>
