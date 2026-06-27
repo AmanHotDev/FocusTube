@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FocusTube | Secure Learning Dashboard 📺</title>
+    <title>FocusTube | Student Dashboard 📺</title>
     <style>
-        /* ================= 🎨 ULTRA HIGH-FIDELITY YOUTUBE RED & WHITE THEME ================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", -apple-system, Roboto, sans-serif; }
+        /* ================= 🎨 BRAND ARCHITECTURE (YOUTUBE RED & WHITE) ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
         
         :root {
             --yt-red: #ff0000;
@@ -17,14 +17,12 @@
             --text-muted: #606060;
             --border-color: #e5e5e5;
             --hover-bg: #f2f2f2;
-            --sidebar-width: 240px;
         }
 
-        /* 🌙 PERFECT CHILD NODE STUDENT DARK MODE (INDEX SYNC) */
         body.student-dark-mode {
             --bg-light: #0f0f0f;
             --text-dark: #ffffff;
-            --text-muted: #aaa;
+            --text-muted: #aaaaaa;
             --border-color: #272727;
             --hover-bg: #383838;
             --pure-white: #212121;
@@ -33,223 +31,186 @@
 
         body { background-color: var(--bg-light); color: var(--text-dark); transition: background 0.3s, color 0.3s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* 📡 TOP MASTER NAVIGATION BAR (YOUTUBE MASTER LAYOUT) */
-        .header-dock { background: var(--pure-white); border-bottom: 1px solid var(--border-color); padding: 0 24px; display: flex; justify-content: space-between; align-items: center; height: 56px; position: relative; z-index: 100; }
-        
-        .brand-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--text-dark); letter-spacing: -0.5px; }
-        .brand-logo img { width: 30px; height: 30px; object-fit: contain; }
-        .brand-logo span { color: var(--yt-red); font-weight: 800; }
+        /* 📡 TOP MASTER NAVIGATION BAR */
+        .header-dock { background: var(--pure-white); border-bottom: 1px solid var(--border-color); padding: 10px 4%; display: flex; justify-content: space-between; align-items: center; height: 70px; position: relative; z-index: 10; }
+        .brand-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; text-decoration: none; color: var(--text-dark); }
+        .brand-logo img { width: 30px; height: 34px; object-fit: contain; }
+        .brand-logo span { color: var(--yt-red); }
 
-        /* 🔍 REAL YOUTUBE ROUNDED SEARCH BAR STYLE */
-        .search-container { flex: 0 1 600px; display: flex; align-items: center; margin: 0 15px; }
-        .search-wrapper-box { display: flex; width: 100%; align-items: center; background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 40px; overflow: hidden; height: 40px; padding-left: 4px; }
-        .search-wrapper-box:focus-within { border-color: #065fd4; background: var(--pure-white); box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); }
-        
-        .search-bar-input { width: 100%; border: none; background: transparent; color: var(--text-dark); outline: none; font-size: 1rem; padding: 0 15px; height: 100%; }
-        .btn-search-trigger { background: var(--hover-bg); border: none; border-left: 1px solid var(--border-color); width: 64px; height: 100%; cursor: pointer; font-size: 1.05rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; transition: 0.1s; }
-        .btn-search-trigger:hover { background: rgba(0,0,0,0.1); }
-        body.student-dark-mode .btn-search-trigger:hover { background: rgba(255,255,255,0.1); }
+        /* 🔍 DYNAMIC FILTER SEARCH BAR */
+        .search-container { flex: 0 1 500px; display: flex; align-items: center; position: relative; margin: 0 15px; }
+        .search-bar-input { width: 100%; padding: 12px 20px; border-radius: 25px 0 0 25px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-dark); outline: none; font-size: 0.95rem; }
+        .search-bar-input:focus { border-color: var(--yt-red); background: var(--pure-white); }
+        .btn-search-trigger { background: var(--bg-light); border: 1px solid var(--border-color); border-left: none; padding: 0 22px; height: 44px; border-radius: 0 25px 25px 0; cursor: pointer; font-size: 1.1rem; color: var(--text-dark); transition: 0.2s; }
+        .btn-search-trigger:hover { background: var(--hover-bg); }
 
-        .header-actions { display: flex; align-items: center; gap: 12px; }
-        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px; color: var(--text-dark); cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: 0.2s; }
-        .btn-eye-guard:hover { border-color: var(--yt-red); color: var(--yt-red); }
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 20px; color: var(--text-dark); cursor: pointer; font-weight: 700; font-size: 0.8rem; }
 
-        /* 🎛️ MAIN CONTENT WORKSPACE ENGINE GRID */
-        .workspace-wrapper { flex: 1; display: flex; height: calc(100vh - 56px); overflow: hidden; position: relative; }
+        /* 🎛️ MAIN WORKSPACE GRID LAYER */
+        .workspace-wrapper { flex: 1; display: flex; position: relative; height: calc(100vh - 70px); overflow: hidden; }
 
-        /* 💻 SLICK LAPTOP SIDEBAR NAVIGATION */
-        .sidebar-dock { width: var(--sidebar-width); background: var(--pure-white); display: flex; flex-direction: column; padding: 12px 0; flex-shrink: 0; overflow-y: auto; }
-        
-        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 10px 24px; color: var(--text-dark); text-decoration: none; font-weight: 500; font-size: 0.92rem; cursor: pointer; transition: background 0.1s; border-radius: 10px; margin: 0 12px 4px 12px; }
-        .sidebar-item:hover { background: var(--hover-bg); }
-        .sidebar-item.active { background: var(--hover-bg); font-weight: 700; color: var(--text-dark); }
-        .sidebar-icon { font-size: 1.3rem; width: 24px; display: inline-block; text-align: center; }
-        .sidebar-item.active .sidebar-icon { color: var(--yt-red); }
+        /* Sidebars & Content Layout */
+        .sidebar-dock { width: 240px; background: var(--pure-white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; }
+        .sidebar-item { display: flex; align-items: center; gap: 20px; padding: 14px 24px; color: var(--text-dark); text-decoration: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; }
+        .sidebar-item:hover, .sidebar-item.active { background: var(--hover-bg); }
+        .sidebar-item.active { border-left-color: var(--yt-red); color: var(--yt-red); }
 
-        /* 📺 PREMIUM DYNAMIC VIDEO STREAMS VIEWPORTS */
-        .main-content-stream { flex: 1; padding: 24px; overflow-y: auto; background: var(--bg-light); position: relative; }
-        .app-view-room { display: none; width: 100%; }
+        .main-content-stream { flex: 1; padding: 25px; overflow-y: auto; display: block; position: relative; }
+        .app-view-room { display: none; width: 100%; height: 100%; }
         .app-view-room.active-room { display: block; }
 
-        /* 📺 REAL YOUTUBE GRID SYSTEM COMPATIBILITY */
-        .section-headline { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; color: var(--text-dark); }
-        .section-headline span { background: var(--yt-red); color: white; padding: 1px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 800; }
+        /* VIDEOS & SHORTS UI ARCHITECTURE */
+        .section-headline { font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; }
+        .section-headline span { background: var(--yt-red); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; }
         
-        .video-grid-matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-bottom: 40px; }
-        
-        /* VIDEO CARD ELEMENTS */
-        .video-card-node { background: transparent; border: none; overflow: hidden; cursor: pointer; display: flex; flex-direction: column; gap: 12px; transition: transform 0.15s ease; }
-        .video-card-node:hover { transform: scale(1.02); }
-        .thumb-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .video-grid-matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .video-card-node { background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02); cursor: pointer; transition: 0.2s; }
+        .video-card-node:hover { transform: translateY(-3px); border-color: var(--yt-red); }
+        .thumb-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; }
         .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        .video-card-details { display: flex; gap: 12px; padding: 0 4px; }
-        .channel-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--border-color); object-fit: cover; flex-shrink: 0; border: 1px solid var(--border-color); }
+        .video-card-details { padding: 15px; display: flex; gap: 12px; }
         .video-meta-strings { flex: 1; overflow: hidden; }
-        .video-card-title { font-size: 0.94rem; font-weight: 700; line-height: 1.4; color: var(--text-dark); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
-        .video-card-channel { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+        .video-card-title { font-size: 0.92rem; font-weight: 700; line-height: 1.4; color: var(--text-dark); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 5px; }
+        .video-card-channel { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
 
-        /* 📱 EXQUISITE VERTICAL SHORTS HUB */
-        .shorts-flex-carousel { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 30px; scrollbar-width: none; }
-        .shorts-flex-carousel::-webkit-scrollbar { display: none; }
-        
-        .shorts-card-node { min-width: 150px; width: 150px; aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.15s ease; }
-        .shorts-card-node:hover { transform: scale(1.03); }
+        .shorts-flex-carousel { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 30px; scrollbar-width: thin; }
+        .shorts-card-node { min-width: 160px; width: 160px; aspect-ratio: 9/16; background: #000; border-radius: 16px; overflow: hidden; position: relative; cursor: pointer; transition: 0.2s; border: 1px solid var(--border-color); }
+        .shorts-card-node:hover { transform: scale(1.02); border-color: var(--yt-red); }
         .shorts-card-node img { width: 100%; height: 100%; object-fit: cover; }
-        .shorts-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 45%); display: flex; align-items: flex-end; padding: 10px; }
-        .shorts-card-title { color: white; font-size: 0.8rem; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .shorts-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%); display: flex; align-items: flex-end; padding: 12px; }
+        .shorts-card-title { color: white; font-size: 0.78rem; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
 
-        .skeleton-loading-pulse { text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; }
+        .skeleton-loading-pulse { text-align: center; padding: 50px; color: var(--text-muted); font-weight: 700; font-size: 1rem; }
 
-        /* ================= 🎬 HIGH-QUALITY THEATER CUSTOM VIDEO PLAYER ================= */
-        .theater-player-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(8px); }
+        /* ================= 🎬 NEW IN PART 3: ZERO-DISTRACTION THEATER PLAYER & COMMENTS ================= */
+        .theater-player-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(8px); }
         .theater-player-modal.active-player { display: flex; }
         
-        .player-window-box { background: var(--bg-light); border-radius: 16px; width: 100%; max-width: 900px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
-        .btn-close-theater { position: absolute; top: 12px; right: 16px; background: rgba(255,0,0,0.85); border: none; color: white; font-size: 1rem; font-weight: bold; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; z-index: 2010; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .player-window-box { background: var(--bg-light); border-radius: 20px; width: 100%; max-width: 950px; height: 90vh; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-color); position: relative; }
+        .btn-close-theater { position: absolute; top: 15px; right: 20px; background: rgba(255,0,0,0.8); border: none; color: white; font-size: 1.1rem; font-weight: 800; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; z-index: 1010; transition: 0.2s; }
         .btn-close-theater:hover { background: var(--yt-red); transform: scale(1.05); }
 
         .iframe-stream-embed { width: 100%; aspect-ratio: 16/9; background: #000; border: none; }
-        .iframe-stream-embed.shorts-mode { aspect-ratio: 9/16; max-height: 55%; width: auto; margin: 0 auto; }
+        .iframe-stream-embed.shorts-mode { aspect-ratio: 9/16; max-height: 60%; width: auto; margin: 0 auto; }
 
-        /* SINGLE-USER ISOLATED COMMMENT MODULE */
-        .isolated-comments-dock { flex: 1; display: flex; flex-direction: column; padding: 16px; background: var(--pure-white); overflow-y: auto; }
-        .comment-dock-header { font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        /* ISOLATED INTERACTIVE COMMENT DOCK */
+        .isolated-comments-dock { flex: 1; display: flex; flex-direction: column; padding: 20px; background: var(--pure-white); overflow-y: auto; }
+        .comment-dock-header { font-size: 1rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         
-        .comment-input-row { display: flex; gap: 10px; margin-bottom: 12px; }
-        .student-comment-input { flex: 1; padding: 10px 16px; border-radius: 20px; border: 1px solid var(--border-color); outline: none; font-size: 0.9rem; background: var(--bg-light); color: var(--text-dark); }
-        .student-comment-input:focus { border-color: #065fd4; }
-        .btn-submit-comment { background: #065fd4; color: white; border: none; padding: 0 16px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
-        .btn-submit-comment:hover { background: #0556b3; }
+        .comment-input-row { display: flex; gap: 12px; margin-bottom: 15px; }
+        .student-comment-input { flex: 1; padding: 12px 16px; border-radius: 30px; border: 1px solid var(--border-color); outline: none; font-size: 0.9rem; background: var(--bg-light); color: var(--text-dark); }
+        .student-comment-input:focus { border-color: var(--yt-red); }
+        .btn-submit-comment { background: var(--yt-red); color: white; border: none; padding: 0 20px; border-radius: 30px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-submit-comment:hover { background: var(--yt-dark-red); }
 
-        .single-user-comments-feed { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .comment-bubble-node { display: flex; gap: 12px; background: var(--bg-light); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .student-avatar-ball { width: 28px; height: 28px; border-radius: 50%; background: var(--yt-red); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; }
-        .comment-strings h5 { font-size: 0.8rem; font-weight: 700; margin-bottom: 2px; }
-        .comment-strings p { font-size: 0.85rem; line-height: 1.4; color: var(--text-dark); }
+        .single-user-comments-feed { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .comment-bubble-node { display: flex; gap: 12px; background: var(--bg-light); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border-color); animation: slideComment 0.3s ease-out; }
+        @keyframes slideComment { 0% { transform: translateY(10px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        .student-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--yt-red); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; }
+        .comment-strings h5 { font-size: 0.85rem; font-weight: 800; margin-bottom: 2px; }
+        .comment-strings p { font-size: 0.88rem; line-height: 1.4; color: var(--text-dark); }
 
-        /* 📱 MOBILE PERFECT BOTTOM NAVIGATION DOCKBAR */
-        .mobile-bottom-dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 50px; background: var(--pure-white); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; align-items: center; z-index: 1000; }
-        
-        .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dark); text-decoration: none; font-size: 0.65rem; font-weight: 500; cursor: pointer; flex: 1; height: 100%; gap: 2px; }
-        .mobile-nav-btn.active { color: var(--yt-red); font-weight: 700; }
-        .mobile-nav-icon { font-size: 1.2rem; }
+        /* MOBILE BOTTOM DOCK NAVIGATION */
+        .mobile-bottom-dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--pure-white); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; align-items: center; z-index: 100; }
+        .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.72rem; font-weight: 700; cursor: pointer; flex: 1; height: 100%; gap: 4px; }
+        .mobile-nav-btn.active { color: var(--yt-red); }
+        .mobile-nav-icon { font-size: 1.25rem; }
 
-        /* 🚨 SCREEN VIEWPORT ENGINEERS TERMINAL OVERRIDES */
         @media (max-width: 768px) {
             .sidebar-dock { display: none; }
             .mobile-bottom-dock { display: flex; }
-            .header-dock { padding: 0 16px; }
-            .search-container { flex: 1; margin: 0 8px; }
-            .search-wrapper-box { height: 36px; }
-            .search-bar-input { font-size: 0.9rem; padding: 0 10px; }
-            .btn-search-trigger { width: 48px; font-size: 0.95rem; }
+            .header-dock { padding: 10px 15px; }
+            .search-container { flex: 1; margin: 0 10px; }
+            .search-bar-input { padding: 10px 15px; font-size: 0.88rem; }
+            .btn-search-trigger { padding: 0 15px; height: 38px; }
             .btn-eye-guard { display: none; }
-            .main-content-stream { padding: 16px 16px 66px 16px; }
+            .main-content-stream { padding: 15px 15px 85px 15px; }
+            .player-window-box { height: 95vh; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 📡 TOP HEADER GATEWAY BAR SYSTEM -->
+    <!-- 📡 TOP HEADER GATEWAY SECTION -->
     <header class="header-dock">
-        <a href="index.html" class="brand-logo">
+        <a href="index.html" class="brand-box brand-logo">
             <img src="logo.png" alt="FocusTube Control Engine">
             Focus<span>Tube</span>
         </a>
-
-        <!-- 🔍 SEARCH CONTAINER (REAL ENCAPSULATION) -->
         <div class="search-container">
-            <div class="search-wrapper-box">
-                <input type="text" class="search-bar-input" id="globalSearchInput" placeholder="Search secure classes..." onkeyup="if(event.key === 'Enter') executeFirewalledSearchNode()">
-                <button class="btn-search-trigger" onclick="executeFirewalledSearchNode()">🔍</button>
-            </div>
+            <input type="text" class="search-input search-bar-input" id="globalSearchInput" placeholder="Search educational parameters..." onkeyup="if(event.key === 'Enter') executeFirewalledSearchNode()">
+            <button class="btn-search-trigger" onclick="executeFirewalledSearchNode()">🔍</button>
         </div>
-
         <div class="header-actions">
-            <button class="btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
+            <button class="btn-theme-toggle btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
         </div>
     </header>
 
-    <!-- 🎛️ MAIN WORKSPACE CONTAINER -->
+    <!-- 🎛️ MAIN WORKSPACE CONTROLLER CORE -->
     <div class="workspace-wrapper">
-        
-        <!-- 💻 YOUTUBE STYLE SIDEBAR LAYOUT -->
         <aside class="sidebar-dock">
             <div class="sidebar-item active" onclick="switchActiveRoomNode('homeRoom', this)">
-                <span class="sidebar-icon">🏠</span> Home Hub
+                <span style="font-size: 1.2rem;">🏠</span> Home Hub
             </div>
             <div class="sidebar-item" onclick="switchActiveRoomNode('whitelistRoom', this)">
-                <span class="sidebar-icon">🛡️</span> Whitelist
+                <span style="font-size: 1.2rem;">🛡️</span> Whitelist
             </div>
             <div class="sidebar-item" onclick="switchActiveRoomNode('notifyRoom', this)">
-                <span class="sidebar-icon">🔔</span> Alerts
+                <span style="font-size: 1.2rem;">🔔</span> Alerts
             </div>
             <div class="sidebar-item" onclick="switchActiveRoomNode('adminGateRoom', this)">
-                <span class="sidebar-icon">⚙️</span> Parent Zone
+                <span style="font-size: 1.2rem;">⚙️</span> Parent Zone
             </div>
         </aside>
 
-        <!-- 📺 DYNAMIC CORE FEED ROOM STREAMS -->
         <main class="main-content-stream" id="contentStreamContainer">
             
-            <!-- ROOM 1: HOME FEED CORE -->
+            <!-- SECTION 1: HOME HUB VIEW ROOM -->
             <div class="app-view-room active-room" id="homeRoom">
-                <h2 class="section-headline">⚡ Curated Micro-Learning Shorts <span>Secure</span></h2>
+                <h2 class="section-headline">⚡ Micro-Learning Shorts <span>Approved</span></h2>
                 <div class="shorts-flex-carousel" id="shortsCarouselShell">
-                    <div class="skeleton-loading-pulse">Buffering whitelisted shorts loop...</div>
+                    <div class="skeleton-loading-pulse">Connecting to whitelisted shorts pipeline...</div>
                 </div>
 
-                <h2 class="section-headline">📖 Production Classroom Streams <span>Whitelisted</span></h2>
+                <h2 class="section-headline">📖 Production Classroom Streams <span>Secure</span></h2>
                 <div class="video-grid-matrix" id="videoGridShell">
-                    <div class="skeleton-loading-pulse">Synchronizing secure video parameters...</div>
+                    <div class="skeleton-loading-pulse">Synchronizing secure data packets...</div>
                 </div>
             </div>
 
-            <!-- ROOM 2: WHITELIST MATRIX SHOW ROOM -->
-            <div class="app-view-room" id="whitelistRoom">
-                <h2 class="section-headline">🛡️ Approved Instructors <span>Network</span></h2>
-                <div class="video-grid-matrix" id="parentWhitelistGridShell">
-                    <div class="skeleton-loading-pulse">Loading cleared profiles...</div>
-                </div>
-            </div>
-
-            <!-- ROOM 3: ALERTS NOTIFICATION SPACE -->
-            <div class="app-view-room" id="notifyRoom">
-                <h2 class="section-headline">🔔 Latest Broadcasts <span>Alerts</span></h2>
-                <div class="video-grid-matrix" id="notificationAlertGridShell">
-                    <div class="skeleton-loading-pulse">Monitoring latest uploads loop...</div>
-                </div>
-            </div>
-
-            <!-- ROOM 4: PARENT LOGGED HUB PORTAL -->
-            <div class="app-view-room" id="adminGateRoom">
-                <!-- Parent Zone configuration space placeholder -->
-                <h2 class="section-headline">⚙️ Administrative Node <span>Locked</span></h2>
-            </div>
+            <!-- PLACEHOLDERS FOR PART 4 -->
+            <div class="app-view-room" id="whitelistRoom"><h2>Whitelisted Channels Ledger Matrix</h2></div>
+            <div class="app-view-room" id="notifyRoom"><h2>Latest Video Alerts</h2></div>
+            <div class="app-view-room" id="adminGateRoom"><h2>Parent Control Dashboard</h2></div>
 
         </main>
     </div>
 
-    <!-- ================= 🎬 HIGH-QUALITY THEATER VIDEO PLAYER MODAL CORE ================= -->
+    <!-- ================= 🎬 ZERO-DISTRACTION THEATER PLAYER MODAL CORE ================= -->
     <div class="theater-player-modal" id="globalTheaterModal">
         <button class="btn-close-theater" onclick="closeSecureTheaterEngine()">❌</button>
-        <div class="player-window-box">
-            <iframe class="iframe-stream-embed" id="secureVideoIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="player-window-box" id="playerWindowBox">
             
-            <!-- ISOLATED COMMENTS GRID -->
+            <!-- Dynamic Iframe Screen Component -->
+            <iframe class="iframe-stream-embed" id="secureVideoIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            
+            <!-- Single-User Isolation Isolation Comments System -->
             <div class="isolated-comments-dock">
-                <div class="comment-dock-header">💬 Live Isolated Feedback (Private Mode)</div>
+                <div class="comment-dock-header">💬 Dynamic Doubt Box (Isolated View)</div>
                 <div class="comment-input-row">
-                    <input type="text" class="student-comment-input" id="doubtCommentInput" placeholder="Ask an educational question...">
+                    <input type="text" class="student-comment-input" id="doubtCommentInput" placeholder="Type your educational doubt or query here...">
                     <button class="btn-submit-comment" onclick="commitStudentCommentNode()">Submit</button>
                 </div>
+                <!-- केवल इस छात्र के कमेंट्स यहाँ दिखेंगे -->
                 <div class="single-user-comments-feed" id="singleUserCommentsContainer"></div>
             </div>
+
         </div>
     </div>
 
-    <!-- 📱 SMART MOBILE BOTTOM NAVIGATION BAR -->
+    <!-- 📱 MOBILE NAVIGATION CORRIDOR -->
     <nav class="mobile-bottom-dock">
         <div class="mobile-nav-btn active" onclick="switchActiveRoomNode('homeRoom', this)">
             <span class="mobile-nav-icon">🏠</span><div>Home</div>
@@ -265,12 +226,13 @@
         </div>
     </nav>
 
-    <!-- 🧠 SYSTEM APPLICATION SYNCHRONIZER INTEGRATION PACKETS -->
+    <!-- 🧠 FIREBASE DATA STREAM ARCHITECTURE PACKETS (UPGRADED HOME HUB LOGIC) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
+        // 🎯 NEW FIREBASE INITIALIZATION CONFIG (focustube-72084)
         const firebaseConfig = {
             apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
             authDomain: "focustube-72084.firebaseapp.com",
@@ -284,11 +246,14 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // 🔑 SECURE MASTER YOUTUBE CORE API ACCELERATOR KEYS
         const YT_GATEWAY_KEY = "AIzaSyBdyln75P_abb8FBZb7J_1JNlDZ39k5oIQ"; 
+
         let currentUser = null;
         let currentActiveVideoId = "";
-        let whitelistedChannelsArray = []; 
+        let whitelistedChannelsArray = []; // अब यह सीधे Firestore से लाइव लोड होगा!
 
+        // 👁️ LIVE EYE GUARD LAYOUT SWITCHER
         function toggleStudentDashboardTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
@@ -296,6 +261,7 @@
             btn.innerText = body.classList.contains('student-dark-mode') ? "☀️ Eye Guard Off" : "👁️ Eye Guard On";
         }
 
+        // 🔄 ASYNC PAGE ROOM SWITCH ENGINE
         function switchActiveRoomNode(roomId, element) {
             document.querySelectorAll('.app-view-room').forEach(room => room.classList.remove('active-room'));
             document.getElementById(roomId).classList.add('active-room');
@@ -303,42 +269,67 @@
             document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
 
-            if(roomId === 'homeRoom') { syncParentWhitelistWithHomeHub(); }
-            if(roomId === 'whitelistRoom') { loadWhitelistedChannelsProfiles(); }
+            // अगर यूजर दोबारा Home Hub पर क्लिक करता है, तो फीड रिफ्रेश करें
+            if(roomId === 'homeRoom') {
+                syncParentWhitelistWithHomeHub();
+            }
         }
 
+        // ================= 🏠 REALTIME HOME HUB CHANNEL SYNCHRONIZER =================
         function syncParentWhitelistWithHomeHub() {
             if (!currentUser) return;
-            db.collection("pinned_channels").where("parentUid", "==", currentUser.uid)
+
+            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Fetching parent whitelisted feeds matrix...</div>`;
+            document.getElementById('shortsCarouselShell').innerHTML = `<div class="skeleton-loading-pulse">Loading secure shorts stream...</div>`;
+
+            // पेरेंट्स द्वारा सेट किए गए चैनल्स को 'pinned_channels' कलेक्शन से सीधे लाइव ट्रैक करना
+            db.collection("pinned_channels")
+              .where("parentUid", "==", currentUser.uid)
               .onSnapshot((snapshot) => {
                   whitelistedChannelsArray = [];
-                  snapshot.forEach((doc) => whitelistedChannelsArray.push(doc.data().channelId));
+                  snapshot.forEach((doc) => {
+                      whitelistedChannelsArray.push(doc.data().channelId);
+                  });
+
+                  // अगर डेटाबेस खाली है और माता-पिता ने कोई चैनल ऐड नहीं किया है तो डिफ़ॉल्ट चैनल्स (Khan Sir/Dear Sir) लोड करें
                   if(whitelistedChannelsArray.length === 0) {
                       whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"];
                   }
+
+                  // जैसे ही पिन किए गए चैनल्स मिल जाएं, तुरंत यूट्यूब फीड इंजन चालू करें
                   fetchWhitelistedFeedsEngine();
               }, err => {
+                  console.log("Database Sync Failure:", err);
+                  // एरर आने पर सेफ साइड के लिए डिफ़ॉल्ट लोड कर दें
                   whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"];
                   fetchWhitelistedFeedsEngine();
               });
         }
 
+        // ================= 📡 LIVE CONTENT ASYNC FEED DELIVERY =================
         function fetchWhitelistedFeedsEngine() {
             if(whitelistedChannelsArray.length === 0) return;
+
+            // होम हब पर सबसे पहले वाले पिन किए गए चैनल के लेटेस्ट 12 वीडियो लोड करना
             const feedUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&order=date&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
             
             fetch(feedUrl)
                 .then(res => res.json())
                 .then(data => {
-                    renderVideoGridMatrix(data.items, 'videoGridShell');
-                    renderShortsCarouselMatrix(data.items);
-                }).catch(err => console.log(err));
+                    renderVideoGridMatrix(data.items);
+                    renderShortsCarouselMatrix(data.items); // उन्हीं चैनल्स के शॉर्ट्स फ़िल्टर
+                })
+                .catch(err => {
+                    console.error("Feeds Integration Interrupted:", err);
+                    document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">❌ Failed to sync YouTube APIs. Please check Internet.</div>`;
+                });
         }
 
-        function renderVideoGridMatrix(items, targetShellId) {
-            const shell = document.getElementById(targetShellId);
+        // GRID GENERATOR FOR BIG CLASSROOM VIDEOS
+        function renderVideoGridMatrix(items) {
+            const shell = document.getElementById('videoGridShell');
             if(!items || items.length === 0) {
-                shell.innerHTML = `<div class="skeleton-loading-pulse">⚠️ No videos found in this node.</div>`;
+                shell.innerHTML = `<div class="skeleton-loading-pulse">⚠️ No classroom videos found in this perimeter.</div>`;
                 return;
             }
             shell.innerHTML = "";
@@ -358,8 +349,13 @@
             });
         }
 
+        // CAROUSEL GENERATOR FOR SHORTS
         function renderShortsCarouselMatrix(items) {
             const shell = document.getElementById('shortsCarouselShell');
+            if(!items || items.length === 0) {
+                shell.innerHTML = `<div class="skeleton-loading-pulse">No short-form loops found.</div>`;
+                return;
+            }
             shell.innerHTML = "";
             items.slice(0, 6).forEach(short => {
                 const vidId = short.id.videoId || short.id;
@@ -372,49 +368,36 @@
             });
         }
 
+        // ================= 🔍 FIREWALLED INTERCEPT SEARCH LOGIC =================
         function executeFirewalledSearchNode() {
             const searchQueryText = document.getElementById('globalSearchInput').value.trim();
             if(!searchQueryText) return;
-            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Searching parameters...</div>`;
+
+            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Searching securely inside approved perimeters...</div>`;
+            
+            // फ़ायरवॉल सर्च: यह बाहरी दुनिया के बजाय केवल माता-पिता द्वारा पहले पिन किए गए चैनल के अंदर से ही रिज़ल्ट लाएगा!
             const requestApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(searchQueryText)}&channelId=${whitelistedChannelsArray[0]}&type=video&key=${YT_GATEWAY_KEY}`;
-            fetch(requestApiUrl).then(res => res.json()).then(data => renderVideoGridMatrix(data.items, 'videoGridShell')).catch(err => console.error(err));
+
+            fetch(requestApiUrl)
+                .then(res => res.json())
+                .then(data => renderVideoGridMatrix(data.items))
+                .catch(err => console.error(err));
         }
 
-        function loadWhitelistedChannelsProfiles() {
-            const gridShell = document.getElementById('parentWhitelistGridShell');
-            if (whitelistedChannelsArray.length === 0) return;
-            gridShell.innerHTML = "";
-            whitelistedChannelsArray.forEach(channelId => {
-                fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${YT_GATEWAY_KEY}`)
-                    .then(res => res.json()).then(data => {
-                        if(data.items && data.items.length > 0) {
-                            const info = data.items[0].snippet;
-                            gridShell.innerHTML += `
-                                <div class="video-card-node" style="text-align:center; padding:15px;" onclick="filterFeedBySingleInstructor('${channelId}')">
-                                    <div class="thumb-wrapper" style="aspect-ratio:1/1; border-radius:50%; max-width:120px; margin:0 auto;">
-                                        <img src="${info.thumbnails.medium.url}">
-                                    </div>
-                                    <h4 style="margin-top:10px;">${info.title}</h4>
-                                </div>`;
-                        }
-                    }).catch(err => console.log(err));
-            });
-        }
-
-        function filterFeedBySingleInstructor(channelId) {
-            document.getElementById('videoGridShell').innerHTML = `<div class="skeleton-loading-pulse">Filtering...</div>`;
-            fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=12&order=date&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`)
-                .then(res => res.json()).then(data => {
-                    switchActiveRoomNode('homeRoom', document.querySelectorAll('.sidebar-item')[0]);
-                    renderVideoGridMatrix(data.items, 'videoGridShell');
-                });
-        }
-
+        // ================= 🎬 INTERACTIVE PLAYER EMBED ENGINE ACTIONS =================
         function launchSecurePlayerEngine(videoId, type) {
             currentActiveVideoId = videoId;
             const modal = document.getElementById('globalTheaterModal');
             const iframe = document.getElementById('secureVideoIframe');
-            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+            
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&iv_load_policy=3`;
+            
+            if(type === 'shorts') {
+                iframe.classList.add('shorts-mode');
+            } else {
+                iframe.classList.remove('shorts-mode');
+            }
+
             modal.classList.add('active-player');
             listenToIsolatedCommentsRealtime();
         }
@@ -424,33 +407,66 @@
             document.getElementById('secureVideoIframe').src = "";
         }
 
+        /* ================= 💬 FIREBASE ISOLATED COMMENT MATRIX NODES ================= */
         function commitStudentCommentNode() {
-            const text = document.getElementById('doubtCommentInput').value.trim();
-            if(!text || !currentUser) return;
-            db.collection("focus_comments").add({
-                videoId: currentActiveVideoId, studentUid: currentUser.uid,
-                studentEmail: currentUser.email.split('@')[0], text: text,
+            const commentText = document.getElementById('doubtCommentInput').value.trim();
+            if(!commentText || !currentUser) return;
+
+            const commentPacket = {
+                videoId: currentActiveVideoId,
+                studentUid: currentUser.uid,
+                studentEmail: currentUser.email.split('@')[0],
+                text: commentText,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => { document.getElementById('doubtCommentInput').value = ""; });
+            };
+
+            db.collection("focus_comments").add(commentPacket)
+                .then(() => {
+                    document.getElementById('doubtCommentInput').value = "";
+                })
+                .catch(err => alert("Comment Blocked: " + err.message));
         }
 
         function listenToIsolatedCommentsRealtime() {
             if(!currentUser || !currentActiveVideoId) return;
-            db.collection("focus_comments").where("videoId", "==", currentActiveVideoId).where("studentUid", "==", currentUser.uid)
-                .orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+
+            db.collection("focus_comments")
+                .where("videoId", "==", currentActiveVideoId)
+                .where("studentUid", "==", currentUser.uid) 
+                .orderBy("timestamp", "desc")
+                .onSnapshot((snapshot) => {
                     const container = document.getElementById('singleUserCommentsContainer');
-                    container.innerHTML = snapshot.empty ? "No doubts submitted." : "";
+                    container.innerHTML = "";
+                    
+                    if(snapshot.empty) {
+                        container.innerHTML = `<div style="text-align:center;color:var(--text-muted);font-size:0.85rem;padding:10px;">No doubts submitted yet for this class.</div>`;
+                        return;
+                    }
+
                     snapshot.forEach((doc) => {
-                        const d = doc.data();
-                        container.innerHTML += `<div class="comment-bubble-node"><div class="student-avatar-ball">S</div><div class="comment-strings"><h5>${d.studentEmail}</h5><p>${d.text}</p></div></div>`;
+                        const data = doc.data();
+                        const initial = data.studentEmail ? data.studentEmail.charAt(0).toUpperCase() : "S";
+                        container.innerHTML += `
+                            <div class="comment-bubble-node">
+                                <div class="student-avatar">${initial}</div>
+                                <div class="comment-strings">
+                                    <h5>${data.studentEmail} (You)</h5>
+                                    <p>${data.text}</p>
+                                </div>
+                            </div>
+                        `;
                     });
-                });
+                }, err => console.log(err));
         }
 
+        // 🛡️ SECURITY ROUTE LIFE-CYCLE ENGINE GUARD
         auth.onAuthStateChanged((user) => {
-            if (!user) { window.location.href = "login.html"; } 
-            else { currentUser = user; syncParentWhitelistWithHomeHub(); }
+            if (!user) {
+                window.location.href = "login.html";
+            } else {
+                currentUser = user;
+                // जैसे ही छात्र का ऑथेंटिकेशन टोकन क्लियर होगा, सीधे रीयल-टाइम डेटाबेस सिंक एक्टिव हो जाएगा!
+                syncParentWhitelistWithHomeHub();
+            }
         });
     </script>
-</body>
-</html>
