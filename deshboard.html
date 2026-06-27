@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusTube | Student Dashboard 📺</title>
+    <style>
+        /* ================= 🎨 BRAND ARCHITECTURE (YOUTUBE RED & WHITE) ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        :root {
+            --yt-red: #ff0000;
+            --yt-dark-red: #cc0000;
+            --pure-white: #ffffff;
+            --bg-light: #f9f9f9;
+            --text-dark: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --hover-bg: #f2f2f2;
+        }
+
+        /* 🌙 ULTRA-PROTECTED EYE GUARD DARK MODE */
+        body.student-dark-mode {
+            --bg-light: #0f0f0f;
+            --text-dark: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #272727;
+            --hover-bg: #383838;
+            --pure-white: #212121;
+            background-color: #0f0f0f;
+        }
+
+        body { background-color: var(--bg-light); color: var(--text-dark); transition: background 0.3s, color 0.3s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* 📡 TOP MASTER NAVIGATION BAR */
+        .header-dock { background: var(--pure-white); border-bottom: 1px solid var(--border-color); padding: 10px 4%; display: flex; justify-content: space-between; align-items: center; height: 70px; position: relative; z-index: 10; }
+        
+        .brand-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.3rem; text-decoration: none; color: var(--text-dark); }
+        .brand-logo img { width: 30px; height: 34px; object-fit: contain; }
+        .brand-logo span { color: var(--yt-red); }
+
+        /* 🔍 DYNAMIC ENCAPSULATED FILTER SEARCH BAR */
+        .search-container { flex: 0 1 500px; display: flex; align-items: center; position: relative; margin: 0 15px; }
+        .search-bar-input { width: 100%; padding: 12px 20px; border-radius: 25px 0 0 25px; border: 1px solid var(--border-color); background: var(--bg-light); color: var(--text-dark); outline: none; font-size: 0.95rem; }
+        .search-bar-input:focus { border-color: var(--yt-red); background: var(--pure-white); }
+        
+        .btn-search-trigger { background: var(--bg-light); border: 1px solid var(--border-color); border-left: none; padding: 0 22px; height: 44px; border-radius: 0 25px 25px 0; cursor: pointer; font-size: 1.1rem; color: var(--text-dark); transition: 0.2s; }
+        .btn-search-trigger:hover { background: var(--hover-bg); }
+
+        .header-actions { display: flex; align-items: center; gap: 15px; }
+        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 20px; color: var(--text-dark); cursor: pointer; font-weight: 700; font-size: 0.8rem; }
+
+        /* 🎛️ MAIN WORKSPACE GRID LAYER */
+        .workspace-wrapper { flex: 1; display: flex; position: relative; height: calc(100vh - 70px); overflow: hidden; }
+
+        /* 💻 LAPTOP NAVIGATION SIDEBAR */
+        .sidebar-dock { width: 240px; background: var(--pure-white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding-top: 15px; flex-shrink: 0; }
+        
+        .sidebar-item { display: flex; align-items: center; gap: 20px; padding: 14px 24px; color: var(--text-dark); text-decoration: none; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; }
+        .sidebar-item:hover, .sidebar-item.active { background: var(--hover-bg); }
+        .sidebar-item.active { border-left-color: var(--yt-red); color: var(--yt-red); }
+
+        /* 📺 DYNAMIC CONTENT DISPLAY NODES */
+        .main-content-stream { flex: 1; padding: 25px; overflow-y: auto; display: block; position: relative; }
+        
+        /* App Rooms Hidden States */
+        .app-view-room { display: none; width: 100%; height: 100%; }
+        .app-view-room.active-room { display: block; }
+
+        /* 📱 PERFECT MOBILE BOTOM NAVIGATION BAR BARRIER */
+        .mobile-bottom-dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: var(--pure-white); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; align-items: center; z-index: 100; }
+        
+        .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; font-size: 0.72rem; font-weight: 700; cursor: pointer; flex: 1; height: 100%; gap: 4px; }
+        .mobile-nav-btn.active { color: var(--yt-red); }
+        .mobile-nav-icon { font-size: 1.25rem; }
+
+        /* 🚨 RESPONSIVE ENGINEERING OVERRIDES */
+        @media (max-width: 768px) {
+            .sidebar-dock { display: none; }
+            .mobile-bottom-dock { display: flex; }
+            .header-dock { padding: 10px 15px; }
+            .search-container { flex: 1; margin: 0 10px; }
+            .search-bar-input { padding: 10px 15px; font-size: 0.88rem; }
+            .btn-search-trigger { padding: 0 15px; height: 38px; }
+            .btn-eye-guard { display: none; } /* Hide text toggle on mobile header to save space */
+            .main-content-stream { padding: 15px 15px 85px 15px; } /* Prevent bottom nav clipping */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-dock">
+        <a href="index.html" class="brand-box brand-logo">
+            <img src="logo.png" alt="FocusTube Control Engine">
+            Focus<span>Tube</span>
+        </a>
+
+        <div class="search-container">
+            <input type="text" class="search-input search-bar-input" id="globalSearchInput" placeholder="Search educational parameters...">
+            <button class="btn-search-trigger" onclick="executeFirewalledSearchNode()">🔍</button>
+        </div>
+
+        <div class="header-actions">
+            <button class="btn-theme-toggle btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
+        </div>
+    </header>
+
+    <div class="workspace-wrapper">
+        
+        <aside class="sidebar-dock">
+            <div class="sidebar-item active" onclick="switchActiveRoomNode('homeRoom', this)">
+                <span style="font-size: 1.2rem;">🏠</span> Home Hub
+            </div>
+            <div class="sidebar-item" onclick="switchActiveRoomNode('whitelistRoom', this)">
+                <span style="font-size: 1.2rem;">🛡️</span> Whitelist
+            </div>
+            <div class="sidebar-item" onclick="switchActiveRoomNode('notifyRoom', this)">
+                <span style="font-size: 1.2rem;">🔔</span> Alerts
+            </div>
+            <div class="sidebar-item" onclick="switchActiveRoomNode('adminGateRoom', this)">
+                <span style="font-size: 1.2rem;">⚙️</span> Parent Zone
+            </div>
+        </aside>
+
+        <main class="main-content-stream" id="contentStreamContainer">
+            
+            <div class="app-view-room active-room" id="homeRoom">
+                </div>
+
+            <div class="app-view-room" id="whitelistRoom">
+                </div>
+
+            <div class="app-view-room" id="notifyRoom">
+                </div>
+
+            <div class="app-view-room" id="adminGateRoom">
+                </div>
+
+        </main>
+    </div>
+
+    <nav class="mobile-bottom-dock">
+        <div class="mobile-nav-btn active" onclick="switchActiveRoomNode('homeRoom', this)">
+            <span class="mobile-nav-icon">🏠</span><div>Home</div>
+        </div>
+        <div class="mobile-nav-btn" onclick="switchActiveRoomNode('whitelistRoom', this)">
+            <span class="mobile-nav-icon">🛡️</span><div>Whitelist</div>
+        </div>
+        <div class="mobile-nav-btn" onclick="switchActiveRoomNode('notifyRoom', this)">
+            <span class="mobile-nav-icon">🔔</span><div>Alerts</div>
+        </div>
+        <div class="mobile-nav-btn" onclick="switchActiveRoomNode('adminGateRoom', this)">
+            <span class="mobile-nav-icon">⚙️</span><div>Admin</div>
+        </div>
+    </nav>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🎯 NEW RE-INITIALIZED FIREBASE APP CONFIG (focustube-72084)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let whitelistedChannelsArray = []; // माता-पिता द्वारा अप्रूव्ड चैनल्स का डेटा होल्ड करने के लिए array
+
+        // 👁️ DYNAMIC EYE GUARD THEME MANAGER ENGINE
+        function toggleStudentDashboardTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtnTxt');
+            body.classList.toggle('student-dark-mode');
+            if(body.classList.contains('student-dark-mode')) {
+                btn.innerText = "☀️ Eye Guard Off";
+            } else {
+                btn.innerText = "👁️ Eye Guard On";
+            }
+        }
+
+        // 🔄 ASYNC PAGE ROOM SWITCH ENGINE (LAPTOP + MOBILE HARMONY)
+        function switchActiveRoomNode(roomId, element) {
+            // सारे रूम्स को हाइड करें
+            document.querySelectorAll('.app-view-room').forEach(room => room.classList.remove('active-room'));
+            // एक्टिव टारगेट रूम को शो करें
+            document.getElementById(roomId).classList.add('active-room');
+
+            // लैपटॉप साइडबार की एक्टिव स्टेट रीसेट करें
+            document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+            // मोबाइल बॉटम बार की एक्टिव स्टेट रीसेट करें
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            // जिस बटन को दबाया गया है उसे एक्टिव हाईलाइट करें
+            element.classList.add('active');
+        }
+
+        // 🛡️ SECURITY ROUTE LIFE-CYCLE ENGINE GUARD
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                // अगर यूजर ऑथेंटिकेटेड नहीं है, तो जबरदस्ती लॉगिन.html पर धकेलेगा
+                window.location.href = "login.html";
+            } else {
+                currentUser = user;
+                console.log("Welcome Operator ID:", currentUser.email);
+                // यहाँ से पार्ट 2 में डेटाबेस सिंक लोड इंजन ट्रिगर होगा
+            }
+        });
+    </script>
+</body>
+</html>

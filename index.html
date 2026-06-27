@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FocusTube | Educational Sandbox Terminal 📺</title>
+    <style>
+        /* ================= 🎨 BRAND IDENTITY CORE (YOUTUBE RED & WHITE) ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+        
+        :root {
+            --yt-red: #ff0000;
+            --yt-dark-red: #cc0000;
+            --pure-white: #ffffff;
+            --bg-light: #f9f9f9;
+            --text-dark: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --card-shadow: rgba(0, 0, 0, 0.06);
+            --grid-bg: rgba(255, 0, 0, 0.02);
+        }
+
+        /* 🌙 STUDENT EYE-GUARD DARK MODE CALIBRATION */
+        body.student-dark-mode {
+            --bg-light: #0f0f0f;
+            --text-dark: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #272727;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+            --grid-bg: rgba(255, 255, 255, 0.01);
+            background-color: #0f0f0f;
+        }
+
+        body { background-color: var(--bg-light); color: var(--text-dark); transition: background 0.4s, color 0.4s; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; position: relative; }
+
+        /* 🌌 TECH TECH BACKGROUND GRAPHICS */
+        body::before {
+            content: ""; position: absolute; inset: 0;
+            background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 40px 40px; background-position: center;
+            opacity: 0.3; pointer-events: none; z-index: 1;
+        }
+
+        /* 📡 GLOWING NAVBAR SYSTEM */
+        .navbar { background: var(--pure-white); border-bottom: 1px solid var(--border-color); padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.01); }
+        body.student-dark-mode .navbar { background: #1f1f1f; }
+        
+        .brand-box { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.5rem; text-decoration: none; color: var(--text-dark); z-index: 5; }
+        .brand-logo-img { width: 34px; height: 34px; object-fit: contain; }
+        .brand-box span { color: var(--yt-red); }
+
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+        .btn-theme-toggle { background: transparent; border: 1px solid var(--border-color); padding: 10px 18px; border-radius: 25px; color: var(--text-dark); cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: 0.2s; }
+        .btn-theme-toggle:hover { border-color: var(--yt-red); color: var(--yt-red); }
+
+        /* 🚀 MAIN HERO ENVIRONMENT GRID (MAXIMIZED HEIGHT) */
+        .hero-section { flex: 1; min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: space-between; padding: 60px 8%; gap: 50px; max-width: 1300px; margin: 0 auto; width: 100%; z-index: 5; }
+        .hero-left { flex: 1.2; text-align: left; }
+        
+        .app-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 0, 0, 0.06); color: var(--yt-red); padding: 6px 18px; border-radius: 50px; font-size: 0.82rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 25px; border: 1px solid rgba(255, 0, 0, 0.15); animation: pulseBreathing 2s infinite alternate; }
+        @keyframes pulseBreathing { 0% { opacity: 0.8; } 100% { opacity: 1; box-shadow: 0 0 12px rgba(255,0,0,0.15); } }
+
+        .hero-title { font-size: 3.8rem; font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; }
+        .hero-title span { color: var(--yt-red); }
+        .hero-subtitle { font-size: 1.2rem; color: var(--text-muted); margin-top: 25px; line-height: 1.65; max-width: 650px; }
+
+        /* 🚪 AUTH DOCK & MULTI-PIPELINE ACTIONS */
+        .auth-dock { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 20px; width: 100%; align-items: center; }
+        
+        .btn-google-login { display: flex; align-items: center; justify-content: center; gap: 12px; background: var(--pure-white); color: #000000; border: 1px solid #dadce0; padding: 16px 36px; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none; }
+        .btn-google-login:hover { background: #f8fafc; border-color: #b5b8bc; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+        .google-icon-svg { width: 22px; height: 22px; }
+
+        .btn-pwa-install { display: none; align-items: center; justify-content: center; gap: 10px; background: var(--yt-red); color: white; border: none; padding: 16px 36px; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; box-shadow: 0 6px 20px rgba(255, 0, 0, 0.2); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .btn-pwa-install:hover { background: var(--yt-dark-red); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 0, 0, 0.35); }
+
+        /* ================= 🐙 3D WALKING LOGO MASCOT (FULLY VISIBLE) ================= */
+        .hero-right { flex: 0.8; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; min-width: 320px; height: 480px; }
+        
+        .mascot-viewport-container { position: relative; width: 280px; height: 380px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+        
+        /* THE DYNAMIC HEAD HOVER FLOATING EFFECT */
+        .mascot-head-capsule { width: 200px; height: 200px; position: relative; z-index: 10; transform-origin: bottom center; animation: headFloatBreathing 3s ease-in-out infinite alternate; }
+        @keyframes headFloatBreathing { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-12px) rotate(1deg); } }
+
+        .logo-image-node { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(255, 0, 0, 0.15)); }
+
+        /* ⚙️ MECHANICAL LEGS ENGINE (INCREASED HEIGHT & ABSOLUTE VISIBILITY) */
+        .mechanical-legs-dock { display: flex; justify-content: space-between; width: 120px; height: 90px; position: absolute; top: 185px; z-index: 5; pointer-events: none; }
+        
+        .cyber-leg { width: 18px; height: 90px; background: #1e1e1e; border-radius: 8px; position: relative; transform-origin: top center; animation: inverseLegWalk 1s infinite linear; border: 1px solid rgba(255,255,255,0.1); }
+        body.student-dark-mode .cyber-leg { background: #f9f9f9; }
+        .cyber-leg.right-leg { animation-name: legWalk; animation-delay: 0.5s; }
+
+        /* INTERNAL FOOT JOINT SYSTEM */
+        .cyber-leg::after { content: ""; position: absolute; bottom: -4px; left: -12px; width: 36px; height: 14px; background: var(--yt-red); border-radius: 6px 14px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+
+        @keyframes legWalk {
+            0% { transform: rotate(-24deg) translateY(0); }
+            25% { transform: rotate(0deg) translateY(-10px); }
+            50% { transform: rotate(24deg) translateY(0); }
+            75% { transform: rotate(0deg) translateY(4px); }
+            100% { transform: rotate(-24deg) translateY(0); }
+        }
+        @keyframes inverseLegWalk {
+            0% { transform: rotate(24deg) translateY(0); }
+            25% { transform: rotate(0deg) translateY(4px); }
+            50% { transform: rotate(-24deg) translateY(0); }
+            75% { transform: rotate(0deg) translateY(-10px); }
+            100% { transform: rotate(24deg) translateY(0); }
+        }
+
+        /* 🗺️ PARALLAX MOVING GROUND SURFACE LINE */
+        .moving-ground-surface { width: 320px; height: 6px; background: var(--text-dark); border-radius: 3px; position: absolute; top: 272px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        body.student-dark-mode .moving-ground-surface { background: #ffffff; }
+        .ground-dirt-track { width: 200%; height: 100%; background: linear-gradient(90deg, transparent 0%, var(--yt-red) 30%, transparent 60%, var(--yt-red) 80%, transparent 100%); background-size: 50% 100%; animation: surfaceStream 0.6s infinite linear; }
+        @keyframes surfaceStream { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* ================= 🛠️ EXPERT CAPABILITIES GRID MATRIX ================= */
+        .features-wrapper { width: 100%; background: var(--pure-white); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 8px 0; }
+        body.student-dark-mode .features-wrapper { background: #141414; }
+        
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; padding: 60px 8%; width: 100%; }
+        .feature-card { background: var(--bg-light); border: 1px solid var(--border-color); padding: 35px 30px; border-radius: 18px; box-shadow: 0 4px 20px var(--card-shadow); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        body.student-dark-mode .feature-card { background: #1f1f1f; }
+        .feature-card:hover { transform: translateY(-5px); border-color: var(--yt-red); box-shadow: 0 10px 30px rgba(255, 0, 0, 0.05); }
+        .feat-icon { font-size: 2.2rem; margin-bottom: 18px; display: block; }
+        .feat-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .feat-desc { color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; }
+
+        /* 📱 MOBILE FLOATING APP DOWNLOAD BAR */
+        .pwa-mobile-banner { position: fixed; bottom: -120px; left: 5%; width: 90%; background: #1f1f1f; color: white; padding: 18px 24px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.35); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; border: 1px solid #2d2d2d; }
+        .pwa-mobile-banner.active { bottom: 25px; }
+        .pwa-banner-text h4 { font-size: 1rem; font-weight: 800; margin-bottom: 3px; color: white; }
+        .pwa-banner-text p { font-size: 0.82rem; color: #aaaaaa; }
+        .btn-banner-download { background: var(--yt-red); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-banner-download:hover { background: var(--yt-dark-red); }
+
+        footer { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.88rem; font-weight: 600; border-top: 1px solid var(--border-color); background: var(--bg-light); }
+        body.student-dark-mode footer { background: #0f0f0f; }
+
+        /* 📱 ADVANCED RESPONSIVE ENGINEERING VIEWPORTS */
+        @media (max-width: 968px) {
+            .hero-section { flex-direction: column; text-align: center; padding-top: 60px; gap: 40px; min-height: auto; }
+            .hero-left { text-align: center; order: 1; }
+            .hero-subtitle { margin: 25px auto 0 auto; }
+            .auth-dock { justify-content: center; }
+            .hero-right { order: 2; height: 380px; min-height: 380px; }
+            .hero-title { font-size: 2.8rem; }
+        }
+        @media (max-width: 480px) {
+            .hero-title { font-size: 2.2rem; }
+            .navbar { padding: 15px 5%; }
+            .features-grid { padding: 40px 5%; }
+            .hero-right { transform: scale(0.9); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index" class="brand-box">
+            <img src="logo.png" alt="FocusTube Core" class="brand-logo-img">
+            Focus<span>Tube</span>
+        </a>
+        <div class="nav-actions">
+            <button class="btn-theme-toggle" onclick="toggleStudentPreviewTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="hero-left">
+            <div class="app-badge">📲 LIVE COMPATIBLE PWA INTERFACE ⚡</div>
+            <h1 class="hero-title">Isolate Your Learning From <span>Digital Distractions</span></h1>
+            <p class="hero-subtitle">Welcome to FocusTube. A secure, parent-governed educational sandbox engineered to stream production classroom video feeds and short-form concepts with absolute zero recommendation blackholes.</p>
+            
+            <div class="auth-dock">
+                <a href="login.html" style="text-decoration: none; width: 100%; max-width: 340px;">
+                    <button class="btn-google-login" style="max-width: 100%;">
+                        <svg class="google-icon-svg" viewBox="0 0 24 24">
+                            <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.58 14.96 1 12 1 7.35 1 3.39 3.66 1.41 7.55l3.82 2.96C6.18 7.37 8.87 5.04 12 5.04z"/>
+                            <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.29 1.48-1.14 2.73-2.42 3.57l3.77 2.92c2.2-2.03 3.48-5.02 3.48-8.64z"/>
+                            <path fill="#FBBC05" d="M5.23 14.51c-.24-.71-.38-1.47-.38-2.26s.14-1.55.38-2.26L1.41 7.03C.51 8.82 0 10.85 0 13s.51 4.18 1.41 5.97l3.82-2.97z"/>
+                            <path fill="#34A353" d="M12 23c3.24 0 5.97-1.07 7.96-2.92l-3.77-2.92c-1.11.75-2.53 1.21-4.19 1.21-3.13 0-5.82-2.33-6.77-5.47L1.41 15.87C3.39 19.76 7.35 23 12 23z"/>
+                        </svg>
+                        Continue with Gmail 🚀
+                    </button>
+                </a>
+
+                <button class="btn-pwa-install" id="pwaDesktopBtn" onclick="triggerPwaInstallationEngine()">
+                    📲 Download Desktop App
+                </button>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="mascot-viewport-container">
+                <div class="mascot-head-capsule">
+                    <img src="logo.png" alt="Walking FocusTube Mascot" class="logo-image-node">
+                </div>
+                
+                <div class="mechanical-legs-dock">
+                    <div class="cyber-leg left-leg"></div>
+                    <div class="cyber-leg right-leg"></div>
+                </div>
+
+                <div class="moving-ground-surface">
+                    <div class="ground-dirt-track"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="features-wrapper">
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feat-icon">🔒</span>
+                <h3 class="feat-title">Parental Lock Custody</h3>
+                <p class="feat-desc">Complete administrative credentials firewall with custom pins to manage whitelisted channel arrays safely.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feat-icon">🔍</span>
+                <h3 class="feat-title">Firewalled Queries</h3>
+                <p class="feat-desc">Advanced intercept query layers filtering search values strictly within pre-approved database nodes.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feat-icon">⚡</span>
+                <h3 class="feat-title">Progressive PWA App</h3>
+                <p class="feat-desc">Highly optimized offline service worker offering immediate standalone application downloads inside mobile screens.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feat-icon">💬</span>
+                <h3 class="feat-title">Isolated Comments</h3>
+                <p class="feat-desc">Isolated communication grid blinding global strings, ensuring students view only their own feedback queries.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="pwa-mobile-banner" id="pwaMobilePromptBanner">
+        <div class="pwa-banner-text">
+            <h4>FocusTube App Detected</h4>
+            <p>Install standalone mobile app to isolate learning buffers.</p>
+        </div>
+        <button class="btn-banner-download" onclick="triggerPwaInstallationEngine()">Install 📲</button>
+    </div>
+
+    <footer>&copy; 2026 FocusTube Systems. Engineered for continuous excellence by AmanHotDev.</footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // FIREBASE CLOUD INITIALIZATION CONFIG packets
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdyln75P_abb8FBZb7J_1JNlDZ39k5oIQ",
+            authDomain: "nexus-27b3d.firebaseapp.com",
+            projectId: "nexus-27b3d",
+            storageBucket: "nexus-27b3d.firebasestorage.app",
+            messagingSenderId: "567788799617",
+            appId: "1:567788799617:web:352644dadfbde5732eaf80"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // 👁️ LIVE EYE GUARD LAYOUT SWITCHER
+        function toggleStudentPreviewTheme() {
+            const body = document.body;
+            const btn = document.getElementById('themeBtnTxt');
+            body.classList.toggle('student-dark-mode');
+            if(body.classList.contains('student-dark-mode')) {
+                btn.innerText = "☀️ Eye Guard Off";
+            } else {
+                btn.innerText = "👁️ Eye Guard On";
+            }
+        }
+
+        // Master Authentication Routing Loop Guard
+        auth.onAuthStateChanged((user) => {
+            if (user) { 
+                // अगर यूजर पहले से साइन-इन है, तो ही सीधे डैशबोर्ड पर भेजेगा
+                window.location.href = "dashboard"; 
+            }
+            // अगर लॉगिन नहीं है, तो चुपचाप यूजर को index पर रहने देगा ताकि वो फीचर्स पढ़ सके!
+        });
+
+        // ================= 📲 DEPLOY PWA INTERCEPT WIRELESS SIGNALS =================
+        let deferredPromptParameter = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPromptParameter = e;
+            
+            if (window.innerWidth > 768) {
+                document.getElementById('pwaDesktopBtn').style.display = 'flex';
+            } else {
+                document.getElementById('pwaMobilePromptBanner').classList.add('active');
+            }
+        });
+
+        function triggerPwaInstallationEngine() {
+            if (!deferredPromptParameter) return;
+            
+            deferredPromptParameter.prompt();
+            deferredPromptParameter.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User linked matrix packet accepted.');
+                }
+                document.getElementById('pwaDesktopBtn').style.display = 'none';
+                document.getElementById('pwaMobilePromptBanner').classList.remove('active');
+                deferredPromptParameter = null;
+            });
+        }
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('pwaMobilePromptBanner').classList.remove('active');
+        });
+    </script>
+</body>
+</html>
