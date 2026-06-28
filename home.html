@@ -191,33 +191,68 @@
         }
 
         // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR =================
+        // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR (FORCED RECOVERY) =================
         async function fetchMultiChannelDataPipeline(searchFilterQuery = "") {
             const shell = document.getElementById('globalHomeFeedShell');
             shell.innerHTML = `<div class="pulse-placeholder">Compiling secure classroom grid from pinned creators...</div>`;
             
             compiledVideosMasterList = [];
             let apiPromises = [];
+
+            // अगर फायरबेस से एरे खाली आ रहा है, तो लाइव टेस्टिंग के लिए तुरंत डिफॉल्ट आईडी फोर्स करें
+            if (!whitelistedChannelsArray || whitelistedChannelsArray.length === 0) {
+                whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"];
+            }
+
             const uniqueChannels = [...new Set(whitelistedChannelsArray)];
 
             uniqueChannels.forEach(channelId => {
-                let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=8&order=date&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
+                // ऑर्डर को 'date' से हटाकर 'viewCount' या डिफ़ॉल्ट किया ताकि नया की कोटा ब्लॉक न हो
+                let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
                 
                 if(searchFilterQuery) {
                     apiUrl += `&q=${encodeURIComponent(searchFilterQuery)}`;
                 }
 
-                let request = fetch(apiUrl)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.items) compiledVideosMasterList.push(...data.items);
-                    })
-                    .catch(err => console.log("API Fetch Error for ID: " + channelId));
+                let request = fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error! Status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.items) {
+                        compiledVideosMasterList.push(...data.items);
+                    }
+                })
+                .catch(err => {
+                    console.error("🚨 YouTube API Network Packet Error:", err);
+                });
                 apiPromises.push(request);
             });
 
             await Promise.all(apiPromises);
 
-            // वीडियोस को तारीख के हिसाब से सॉर्ट करें
+            // अगर किसी वजह से मास्टर लिस्ट फिर भी खाली रह जाए (सुरक्षा बैकअप लॉजिक)
+            if (compiledVideosMasterList.length === 0) {
+                shell.innerHTML = `
+                    <div class="pulse-placeholder" style="color: var(--yt-red); font-weight: 600;">
+                        ⚠️ API Network Response Paused.<br>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">
+                            अमन भाई, ब्राउज़र इस समय लाइव यूट्यूब रिक्वेस्ट ब्लॉक कर रहा है। <br>
+                            इसे देखने के लिए स्क्रीन पर राइट-क्लिक करके <b>Inspect</b> दबाएं और <b>Console</b> टैब में देखें कि क्या लाल रंग का एरर आ रहा है।
+                        </span>
+                    </div>`;
+                return;
+            }
+
+            // ताज़ा वीडियो सबसे ऊपर लाने के लिए सॉर्टिंग
             compiledVideosMasterList.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
 
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
