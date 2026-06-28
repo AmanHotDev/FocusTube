@@ -42,83 +42,192 @@
         .yt-tag-btn:hover { background: var(--border-color); }
         .yt-tag-btn.active { background: var(--tag-active-bg); color: var(--tag-active-text); }
 
-        /* ================= 📺 BOLDEST YOUTUBE PLAYLIST FEED STRUCTURE ================= */
+        /* ================= 📺 BOLDEST YOUTUBE VIDEO FEED STRUCTURE ================= */
         .feed-container-stream { display: flex; flex-direction: column; gap: 40px; margin-top: 12px; }
-        .long-videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; row-gap: 32px; }
+        .long-videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; row-gap: 32px; }
         
-        .yt-video-card { display: flex; flex-direction: column; gap: 12px; background: transparent; }
-        .thumbnail-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .thumbnail-wrapper iframe { width: 100%; height: 100%; border: none; }
+        .yt-video-card { display: flex; flex-direction: column; gap: 12px; cursor: pointer; background: transparent; }
+        .thumbnail-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
+        .yt-video-card:hover .thumbnail-wrapper { border-radius: 0px; }
+        .thumbnail-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
         .video-meta-row { display: flex; gap: 12px; padding: 0 4px; }
-        .channel-avatar-mock { width: 36px; height: 36px; border-radius: 50%; background: var(--yt-red); color: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+        .channel-avatar-mock { width: 36px; height: 36px; border-radius: 50%; background: var(--tag-bg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; border: 1px solid var(--border-color); }
         
         .text-meta-block { flex: 1; overflow: hidden; }
-        .video-title-string { font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); margin-bottom: 4px; }
+        .video-title-string { font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
         .channel-name-string { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
 
-        .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
+        .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+        @media (max-width: 480px) {
+            .long-videos-grid { grid-template-columns: 1fr; }
+            body { padding: 10px 12px; }
+        }
     </style>
 </head>
 <body>
 
     <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR -->
     <div class="tags-carousel-container" id="tagsCarouselShell">
-        <button class="yt-tag-btn active" onclick="filterPlaylistEngine('all')">All Classrooms</button>
-        <button class="yt-tag-btn" onclick="filterPlaylistEngine('Mathematics')">Mathematics</button>
-        <button class="yt-tag-btn" onclick="filterPlaylistEngine('Science')">Science</button>
-    </style>
+        <button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All Classes</button>
     </div>
 
     <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
     <div class="feed-container-stream" id="globalHomeFeedShell">
-        <div class="pulse-placeholder">Loading secure FocusTube playlists...</div>
+        <div class="pulse-placeholder">Compiling videos from your pinned playlists...</div>
     </div>
 
-    <script>
-        // ⚡ परमानेंट लोकल प्लेलिस्ट ढांचा (बिना फायरबेस और बिना एपीआई की रुकावट के तुरंत लोड होगा)
-        let masterPlaylistsArray = [
-            { playlistId: "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF", title: "Target Board Mathematics Special", subject: "Mathematics" },
-            { playlistId: "PL63X9msY7v_fV_kZ4n68Uu9vG9eCshIeE", title: "Class 10 Chemistry Course - Khan Sir", subject: "Science" }
-        ];
+    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-        // ================= 🏠 SYSTEM INITIALIZATION =================
-        function initFocusTubeSystem() {
-            // बिना किसी नेटवर्क डिले के तुरंत स्क्रीन पर वीडियो रेंडर करें
-            renderPlaylistGrid(masterPlaylistsArray);
+    <script>
+        // 🎯 FIREBASE PROJECT INSTANCE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // 🔑 1-COST QUOTA LIVE API KEY (सुपर-लो कॉस्ट एंडपॉइंट)
+        const YT_GATEWAY_KEY = "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ";
+        let currentUser = null;
+        
+        // 📥 डिफ़ॉल्ट प्लेलिस्ट आईडी (जो आपने दी है - इसे बेस बना दिया है)
+        let whitelistedPlaylistsArray = ["PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF"]; 
+        let compiledVideosMasterList = []; 
+
+        // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
+        function establishFirestoreSyncNode() {
+            // तुरंत पहली बार डेटा लोड करो बिना फायरबेस के इंतज़ार के
+            fetchPlaylistItemsPipeline();
+
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    
+                    db.collection("pinned_channels")
+                        .onSnapshot((snapshot) => {
+                            let tempArray = [];
+                            snapshot.forEach(doc => {
+                                // माता-पिता जो भी playlistId एंटर करेंगे, वह यहाँ लाइव कैच होगी
+                                if(doc.data().playlistId) tempArray.push(doc.data().playlistId.trim());
+                            });
+                            
+                            if(tempArray.length > 0) {
+                                whitelistedPlaylistsArray = tempArray;
+                                fetchPlaylistItemsPipeline();
+                            }
+                        }, err => {
+                            console.log("Error loading playlists from firebase.");
+                        });
+                }
+            });
         }
 
-        // ================= 🔀 PLAYLIST RENDER MATRIX =================
-        function renderPlaylistGrid(playlists) {
+        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (1 QUOTA COST) =================
+        async function fetchPlaylistItemsPipeline(searchFilterQuery = "") {
             const shell = document.getElementById('globalHomeFeedShell');
-            if(!playlists || playlists.length === 0) {
-                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom courses detected.</div>`;
+            shell.innerHTML = `<div class="pulse-placeholder">Extracting videos from live classrooms...</div>`;
+            
+            compiledVideosMasterList = [];
+            let apiPromises = [];
+            const uniquePlaylists = [...new Set(whitelistedPlaylistsArray)];
+
+            uniquePlaylists.forEach(playlistId => {
+                // 🔥 प्लेलिस्ट के अंदर के सारे वीडियो निकालने का सबसे पावरफुल एंडपॉइंट (Cost: Only 1 Quota Point)
+                let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=20&playlistId=${playlistId}&key=${YT_GATEWAY_KEY}`;
+
+                let request = fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.items) {
+                        data.items.forEach(item => {
+                            // सर्च फ़िल्टर क्वेरी मैच लॉजिक (अगर ऊपर के बटन दबाए जाएँ)
+                            if(searchFilterQuery) {
+                                const title = item.snippet.title.toLowerCase();
+                                if(!title.includes(searchFilterQuery.toLowerCase())) return;
+                            }
+                            compiledVideosMasterList.push(item);
+                        });
+                    }
+                })
+                .catch(err => console.error("🚨 Playlist parsing failed for ID: " + playlistId));
+                
+                apiPromises.push(request);
+            });
+
+            await Promise.all(apiPromises);
+            
+            // टैग बटन्स डायनेमिकली अपडेट करना (चैनल के नाम के आधार पर)
+            generateDynamicTagsFromMasterList();
+
+            // ग्रिड लेआउट बनाना
+            buildRandomizedYoutubeLayout(compiledVideosMasterList);
+        }
+
+        // ================= 🏷️ GENERATE DYNAMIC TAGS FROM CONTENT =================
+        function generateDynamicTagsFromMasterList() {
+            const carousel = document.getElementById('tagsCarouselShell');
+            carousel.innerHTML = `<button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All Classes</button>`;
+            
+            let channelsSet = new Set();
+            compiledVideosMasterList.forEach(video => {
+                if(video.snippet.videoOwnerChannelTitle) {
+                    channelsSet.add(video.snippet.videoOwnerChannelTitle);
+                } else if(video.snippet.channelTitle) {
+                    channelsSet.add(video.snippet.channelTitle);
+                }
+            });
+
+            channelsSet.forEach(channelName => {
+                const tagButton = document.createElement('button');
+                tagButton.className = 'yt-tag-btn';
+                tagButton.innerText = channelName;
+                tagButton.onclick = function() { filterTagsEngine(this, channelName); };
+                carousel.appendChild(tagButton);
+            });
+        }
+
+        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE =================
+        function buildRandomizedYoutubeLayout(items) {
+            const shell = document.getElementById('globalHomeFeedShell');
+            
+            if(!items || items.length === 0) {
+                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos found inside this playlist.</div>`;
                 return;
             }
-
-            shell.innerHTML = "";
+            
+            shell.innerHTML = ""; 
             let gridHtmlBuffer = `<div class="long-videos-grid">`;
 
-            playlists.forEach(course => {
-                const letter = course.subject ? course.subject.charAt(0).toUpperCase() : "C";
-                
-                // एकदम सटीक बिना कुकी वाला ऑफिशियल एम्बेड यूआरएल
-                const playlistEmbedUrl = `https://www.youtube-nocookie.com/embed/videoseries?list=${course.playlistId}&modestbranding=1&rel=0`;
+            items.forEach(video => {
+                // प्लेलिस्ट के डेटा पैकेट से असली वीडियो आईडी निकालना
+                const vidId = video.snippet.resourceId ? video.snippet.resourceId.videoId : "";
+                if(!vidId) return; // अगर आईडी मिसिंग हो तो स्किप करें
+
+                const snip = video.snippet;
+                const channelTitle = snip.videoOwnerChannelTitle || snip.channelTitle || "FocusTube Teacher";
+                const letter = channelTitle.charAt(0).toUpperCase();
+                const thumbnailUrl = snip.thumbnails.medium ? snip.thumbnails.medium.url : "https://img.youtube.com/vi/" + vidId + "/0.jpg";
 
                 gridHtmlBuffer += `
-                    <div class="yt-video-card">
-                        <div class="thumbnail-wrapper">
-                            <iframe 
-                                src="${playlistEmbedUrl}" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
+                    <div class="yt-video-card" onclick="alert('Launching secure player mode! ID: ${vidId}')">
+                        <div class="thumbnail-wrapper"><img src="${thumbnailUrl}" alt="Thumbnail"></div>
                         <div class="video-meta-row">
                             <div class="channel-avatar-mock">${letter}</div>
                             <div class="text-meta-block">
-                                <h4 class="video-title-string">${course.title}</h4>
-                                <p class="channel-name-string">Subject: ${course.subject}</p>
+                                <h4 class="video-title-string">${snip.title}</h4>
+                                <p class="channel-name-string">${channelTitle}</p>
                             </div>
                         </div>
                     </div>
@@ -129,27 +238,26 @@
             shell.innerHTML = gridHtmlBuffer;
         }
 
-        // ================= 🏷️ CATEGORY FILTER LOGIC =================
-        function filterPlaylistEngine(subjectKeyword) {
-            document.querySelectorAll('.yt-tag-btn').forEach(btn => {
-                if(btn.innerText.toLowerCase().includes(subjectKeyword.toLowerCase()) || (subjectKeyword === 'all' && btn.innerText.includes('All'))) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+        // ================= 🏷️ TOP CATEGORY TAGS FILTER EXECUTION =================
+        function filterTagsEngine(btn, targetKeyword) {
+            document.querySelectorAll('.yt-tag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-            if(subjectKeyword === 'all') {
-                renderPlaylistGrid(masterPlaylistsArray);
+            if(targetKeyword === 'all') {
+                buildRandomizedYoutubeLayout(compiledVideosMasterList);
             } else {
-                const filtered = masterPlaylistsArray.filter(p => p.subject.toLowerCase() === subjectKeyword.toLowerCase());
-                renderPlaylistGrid(filtered);
+                const filtered = compiledVideosMasterList.filter(video => {
+                    const cTitle = video.snippet.videoOwnerChannelTitle || video.snippet.channelTitle || "";
+                    return cTitle.toLowerCase() === targetKeyword.toLowerCase();
+                });
+                buildRandomizedYoutubeLayout(filtered);
             }
         }
 
-        // ================= 📡 PARENT DASHBOARD THEME SYNC SIGNAL =================
+        // ================= 📡 PARENT DASHBOARD SCRIPT MESSENGER SIGNALS =================
         window.addEventListener('message', function(event) {
             const messagePacket = event.data;
+            
             if (messagePacket.type === 'theme') {
                 if (messagePacket.mode === 'dark') {
                     document.body.classList.add('dark-mode');
@@ -157,10 +265,13 @@
                     document.body.classList.remove('dark-mode');
                 }
             }
+            
+            if (messagePacket.type === 'search') {
+                fetchPlaylistItemsPipeline(messagePacket.value);
+            }
         });
 
-        // डोम लोड होते ही सिस्टम चालू करें
-        window.addEventListener('DOMContentLoaded', initFocusTubeSystem);
+        window.addEventListener('DOMContentLoaded', establishFirestoreSyncNode);
     </script>
 </body>
 </html>
