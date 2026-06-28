@@ -150,7 +150,7 @@
         </div>
 
         <div class="right-control-pack">
-            <button class="btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁 Dark mode</button>
+            <button class="btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁 Dark Mode</button>
             <a href="notification.html" target="contentFrame" class="nav-btn-link" title="Notifications" onclick="highlightSidebarNode(this)">
                 <img src="path_to_notification_icon.png" alt="Notifications" class="nav-icon-img">
             </a>
@@ -254,7 +254,7 @@
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
             body.classList.toggle('student-dark-mode');
-            btn.innerText = body.classList.contains('student-dark-mode') ? "☀︎ Eye Guard Off" : "👁 Eye Guard On";
+            btn.innerText = body.classList.contains('student-dark-mode') ? "☀︎ Dark Mode" : "👁 Dark Mode";
             
             // अंदर खुले हुए iframe पेज को भी डार्क/लाइट मोड का सिग्नल पास करना
             syncIframeThemeState();
