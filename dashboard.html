@@ -3,236 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FocusTube | Student Dashboard 📺</title>
+    <title>FocusTube Terminal 📺</title>
     <style>
-        /* ================= 🎨 ORIGINAL YOUTUBE LIGHT ARCHITECTURE ================= */
+        /* ================= 🎨 ORIGINAL YOUTUBE MINIMALIST THEME ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', Arial, sans-serif; }
         
         :root {
             --yt-red: #ff0000;
             --pure-white: #ffffff;
-            --bg-light: #ffffff;
-            --text-dark: #0f0f0f;
+            --bg-main: #ffffff;
+            --text-main: #0f0f0f;
             --text-muted: #606060;
-            --border-color: #cccccc;
-            --hover-bg: #f2f2f2;
-            --search-bg: #f8f8f8;
-            --dropdown-shadow: rgba(0, 0, 0, 0.1);
+            --border-color: #e5e5e5;
+            --search-border: #cccccc;
+            --search-btn-bg: #f8f8f8;
+            --sidebar-hover: #f2f2f2;
+            --icon-color: #0f0f0f;
+            --menu-shadow: rgba(0, 0, 0, 0.1);
         }
 
-        /* 🌙 STUDENT EYE-GUARD DARK MODE (YOUTUBE DARK STYLE) */
+        /* 🌙 PERFECT YOUTUBE DARK MODE NIGHT SWITCH */
         body.student-dark-mode {
-            --bg-light: #0f0f0f;
-            --text-dark: #ffffff;
+            --bg-main: #0f0f0f;
+            --pure-white: #212121;
+            --text-main: #ffffff;
             --text-muted: #aaaaaa;
             --border-color: #303030;
-            --hover-bg: #3d3d3d;
-            --pure-white: #212121;
-            --search-bg: #121212;
-            --dropdown-shadow: rgba(0, 0, 0, 0.5);
+            --search-border: #303030;
+            --search-btn-bg: #222222;
+            --sidebar-hover: #3d3d3d;
+            --icon-color: #ffffff;
+            --menu-shadow: rgba(0, 0, 0, 0.5);
             background-color: #0f0f0f;
         }
 
-        body { background-color: var(--bg-light); color: var(--text-dark); transition: background 0.2s, color 0.2s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background-color: var(--bg-main); color: var(--text-main); transition: background 0.2s, color 0.2s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* 📡 TOP NAVIGATION NAVBAR */
-        .header-dock { background: var(--pure-white); border-bottom: 1px solid var(--border-color); padding: 0 16px; display: flex; justify-content: space-between; align-items: center; height: 56px; position: relative; z-index: 100; }
+        /* 📡 TOP MASTER NAVIGATION BAR */
+        .navbar-dock { background: var(--pure-white); padding: 0 16px; display: flex; justify-content: space-between; align-items: center; height: 56px; position: relative; z-index: 100; border-bottom: 1px solid var(--border-color); }
         
-        .nav-left-zone { display: flex; align-items: center; gap: 16px; }
-        .btn-menu-toggle { font-size: 1.25rem; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--text-dark); }
-        .btn-menu-toggle:hover { background: var(--hover-bg); }
+        .left-meta-zone { display: flex; align-items: center; gap: 16px; }
+        .hamburger-menu { font-size: 1.3rem; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--icon-color); }
+        .hamburger-menu:hover { background: var(--sidebar-hover); }
         
-        .brand-logo { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 1.2rem; text-decoration: none; color: var(--text-dark); letter-spacing: -0.5px; }
-        .brand-logo img { width: 28px; height: 28px; object-fit: contain; }
-        .brand-logo span { color: var(--yt-red); }
+        .brand-box { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 1.2rem; text-decoration: none; color: var(--text-main); letter-spacing: -0.5px; }
+        .brand-logo-img { width: 28px; height: 28px; object-fit: contain; }
+        .brand-box span { color: var(--yt-red); }
 
-        /* 🔍 ORIGINAL YOUTUBE SEARCH BAR & VOICE ICON */
-        .search-container { flex: 0 1 640px; display: flex; align-items: center; gap: 8px; margin: 0 20px; }
-        .search-input-wrapper { display: flex; width: 100%; align-items: center; }
-        .search-bar-input { width: 100%; height: 40px; padding: 0 16px; border-radius: 40px 0 0 40px; border: 1px solid var(--border-color); background: var(--search-bg); color: var(--text-dark); outline: none; font-size: 0.95rem; }
-        .search-bar-input:focus { border-color: #1c62b9; background: var(--pure-white); }
+        /* 🔍 REAL YOUTUBE BLACK-GRAY SEARCH SYSTEMS WITH VOICE INPUT */
+        .search-center-wrapper { flex: 0 1 640px; display: flex; align-items: center; gap: 8px; margin: 0 20px; }
+        .search-input-group { display: flex; width: 100%; align-items: center; }
         
-        .btn-search-trigger { background: var(--search-bg); border: 1px solid var(--border-color); border-left: none; padding: 0 24px; height: 40px; border-radius: 0 40px 40px 0; cursor: pointer; font-size: 1rem; color: var(--text-dark); display: flex; align-items: center; justify-content: center; }
-        .btn-search-trigger:hover { background: var(--hover-bg); }
+        .search-input-box { width: 100%; height: 40px; padding: 0 16px; border-radius: 40px 0 0 40px; border: 1px solid var(--search-border); background: transparent; color: var(--text-main); outline: none; font-size: 0.95rem; }
+        .search-input-box:focus { border-color: #1c62b9; background: var(--bg-main); }
         
-        .btn-voice-search { background: var(--search-bg); border: 1px solid var(--border-color); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--text-dark); }
-        .btn-voice-search:hover { background: var(--hover-bg); }
-
-        /* 👤 RIGHT CONTROLS ZONE */
-        .header-actions { display: flex; align-items: center; gap: 12px; position: relative; }
-        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 18px; color: var(--text-dark); cursor: pointer; font-weight: 600; font-size: 0.8rem; }
-        .btn-eye-guard:hover { background: var(--hover-bg); }
+        .btn-search-trigger { background: var(--search-btn-bg); border: 1px solid var(--search-border); border-left: none; padding: 0 24px; height: 40px; border-radius: 0 40px 40px 0; cursor: pointer; color: var(--icon-color); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .btn-search-trigger:hover { background: var(--sidebar-hover); }
         
-        .btn-notification { font-size: 1.3rem; color: var(--text-dark); background: transparent; border: none; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; }
-        .btn-notification:hover { background: var(--hover-bg); }
+        .btn-voice-search { background: var(--search-btn-bg); border: 1px solid var(--search-border); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--icon-color); transition: 0.15s; }
+        .btn-voice-search:hover { background: var(--sidebar-hover); }
 
-        /* PROFILE BUTTON WRAPPER */
-        .profile-container { position: relative; }
-        .student-avatar-trigger { width: 32px; height: 32px; border-radius: 50%; background: #0066cc; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; cursor: pointer; border: 1px solid var(--border-color); overflow: hidden; }
-        .student-avatar-trigger img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* 👤 YOUTUBE STYLE DROPDOWN MENU */
-        .profile-dropdown-box { display: none; position: absolute; top: 40px; right: 0; background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 12px; width: 240px; box-shadow: 0 8px 24px var(--dropdown-shadow); padding: 8px 0; z-index: 1010; }
-        .profile-dropdown-box.active { display: block; }
+        /* 👤 RIGHT SIDE CORNER CONTROLS */
+        .right-control-pack { display: flex; align-items: center; gap: 8px; position: relative; }
+        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 18px; color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 0.78rem; margin-right: 4px; }
+        .btn-eye-guard:hover { background: var(--sidebar-hover); }
         
-        .dropdown-user-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
-        .dropdown-user-meta h4 { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); }
-        .dropdown-user-meta p { font-size: 0.75rem; color: var(--text-muted); }
+        .noti-link-icon { font-size: 1.3rem; text-decoration: none; color: var(--icon-color); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .noti-link-icon:hover { background: var(--sidebar-hover); }
+
+        .user-avatar-trigger { width: 32px; height: 32px; border-radius: 50%; background: #0073e6; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; cursor: pointer; overflow: hidden; border: 1px solid var(--border-color); margin-left: 4px; }
+        .user-avatar-trigger img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* 👤 DROPDOWN HUB FROM AVATAR CLICK */
+        .profile-dropdown-menu { display: none; position: absolute; top: 48px; right: 0; background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 12px; width: 240px; box-shadow: 0 8px 24px var(--menu-shadow); padding: 8px 0; z-index: 1010; }
+        .profile-dropdown-menu.active-menu { display: block; }
         
-        .dropdown-menu-item { display: flex; align-items: center; gap: 16px; padding: 10px 16px; color: var(--text-dark); text-decoration: none; font-size: 0.88rem; font-weight: 500; cursor: pointer; }
-        .dropdown-menu-item:hover { background: var(--hover-bg); }
-        .divider-line { height: 1px; background: var(--border-color); margin: 6px 0; }
-
-        /* 🎛️ MAIN WORKSPACE GRID LAYER */
-        .workspace-wrapper { flex: 1; display: flex; position: relative; height: calc(100vh - 56px); overflow: hidden; }
-
-        /* 💻 YOUTUBE 9-WAY INTERACTIVE SIDEBAR */
-        .sidebar-dock { width: 240px; background: var(--pure-white); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding-top: 8px; flex-shrink: 0; overflow-y: auto; transition: width 0.2s; }
-        .sidebar-dock.collapsed { width: 72px; }
-        .sidebar-dock.collapsed .sidebar-text, .sidebar-dock.collapsed .sidebar-section-title, .sidebar-dock.collapsed .divider-line { display: none; }
-        .sidebar-dock.collapsed .sidebar-item { justify-content: center; padding: 12px 0; margin: 0; border-radius: 0; }
+        .dropdown-user-info { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
+        .dropdown-user-details h4 { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+        .dropdown-user-details p { font-size: 0.78rem; color: var(--text-muted); }
         
-        .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 10px 24px; color: var(--text-dark); text-decoration: none; font-weight: 500; font-size: 0.88rem; cursor: pointer; transition: background 0.15s; border-radius: 10px; margin: 0 12px; }
-        .sidebar-item:hover, .sidebar-item.active { background: var(--hover-bg); }
-        .sidebar-item.active { font-weight: 600; }
-        .sidebar-icon { font-size: 1.25rem; width: 24px; text-align: center; }
-        .sidebar-section-title { font-size: 0.85rem; font-weight: 600; padding: 12px 24px 4px 24px; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.2px; }
+        .dropdown-item-link { display: flex; align-items: center; gap: 14px; padding: 10px 16px; color: var(--text-main); text-decoration: none; font-size: 0.88rem; font-weight: 500; cursor: pointer; }
+        .dropdown-item-link:hover { background: var(--sidebar-hover); }
 
-        /* 📺 DYNAMIC MAIN WORKSPACE PANELS */
-        .main-content-stream { flex: 1; padding: 24px; overflow-y: auto; display: block; position: relative; }
-        .pulse-placeholder { text-align: center; padding: 100px 20px; color: var(--text-muted); font-size: 0.9rem; }
+        /* 🎛️ MAIN WORKSPACE CONTAINER INTERFACE */
+        .app-workspace-body { flex: 1; display: flex; height: calc(100vh - 56px); overflow: hidden; position: relative; }
 
-        /* 📱 MOBILE NAVIGATION BARRIER */
-        .mobile-bottom-dock { position: fixed; bottom: 0; left: 0; width: 100%; height: 50px; background: var(--pure-white); border-top: 1px solid var(--border-color); display: none; justify-content: space-around; align-items: center; z-index: 100; }
-        .mobile-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dark); text-decoration: none; font-size: 0.65rem; font-weight: 500; cursor: pointer; flex: 1; height: 100%; gap: 2px; }
-        .mobile-nav-btn.active { color: var(--yt-red); font-weight: 700; }
-        .mobile-nav-icon { font-size: 1.2rem; }
+        /* 💻 COMPLETE 9-WAY INTERACTIVE SIDEBAR (MONOCHROME ICONS) */
+        .sidebar-wrapper { width: 240px; background: var(--bg-main); display: flex; flex-direction: column; padding: 12px 0; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border-color); transition: width 0.2s; }
+        .sidebar-wrapper.collapsed { width: 72px; }
+        .sidebar-wrapper.collapsed .sidebar-text, .sidebar-wrapper.collapsed .section-divider, .sidebar-wrapper.collapsed .sidebar-heading { display: none; }
+        .sidebar-wrapper.collapsed .sidebar-node-btn { justify-content: center; padding: 12px 0; margin: 0 8px; }
+        
+        .sidebar-node-btn { display: flex; align-items: center; gap: 24px; padding: 10px 24px; color: var(--text-main); text-decoration: none; font-weight: 500; font-size: 0.88rem; cursor: pointer; transition: background 0.15s; border-radius: 10px; margin: 0 12px; }
+        .sidebar-node-btn:hover { background: var(--sidebar-hover); }
+        .sidebar-node-btn.active-node { background: var(--sidebar-hover); font-weight: 600; }
+        .sidebar-icon { font-size: 1.2rem; width: 24px; text-align: center; color: var(--icon-color); display: flex; align-items: center; justify-content: center; }
+        
+        .sidebar-heading { font-size: 0.82rem; font-weight: 600; padding: 12px 24px 6px 24px; color: var(--text-muted); text-transform: none; }
+        .section-divider { height: 1px; background: var(--border-color); margin: 12px 0; width: 100%; }
 
+        /* 📺 DYNAMIC INTERNAL CONTENT PORTAL PANEL */
+        .main-feed-panel { flex: 1; padding: 24px; overflow-y: auto; display: block; background: var(--bg-main); }
+        .pulse-placeholder { text-align: center; padding: 100px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+        /* 📱 MOBILE VIEW CALIBRATION */
         @media (max-width: 768px) {
-            .sidebar-dock { display: none; }
-            .mobile-bottom-dock { display: flex; }
-            .search-container { flex: 1; margin: 0 4px; }
-            .search-bar-input { height: 36px; font-size: 0.9rem; padding: 0 12px; }
-            .btn-search-trigger { height: 36px; padding: 0 14px; }
-            .btn-voice-search, .btn-eye-guard { display: none; }
-            .header-dock { padding: 0 12px; }
-            .main-content-stream { padding: 16px 16px 70px 16px; }
+            .sidebar-wrapper { display: none; }
+            .search-center-wrapper { flex: 1; margin: 0 4px; }
+            .search-input-box { height: 36px; font-size: 0.9rem; padding: 0 12px; border-radius: 20px 0 0 20px; }
+            .btn-search-trigger { height: 36px; padding: 0 14px; border-radius: 0 20px 20px 0; }
+            .btn-voice-search, .btn-eye-guard, .hamburger-menu { display: none; }
+            .navbar-dock { padding: 0 12px; }
+            .main-feed-panel { padding: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header-dock">
-        <div class="nav-left-zone">
-            <button class="btn-menu-toggle" onclick="toggleSidebarCollapseEngine()">☰</button>
-            <a href="index.html" class="brand-logo">
-                <img src="logo.png" alt="FocusTube Engine">
+    <nav class="navbar-dock">
+        <div class="left-meta-zone">
+            <div class="hamburger-menu" onclick="toggleSidebarCollapseEngine()">☰</div>
+            <a href="index.html" class="brand-box">
+                <img src="logo.png" alt="FocusTube Hub" class="brand-logo-img">
                 Focus<span>Tube</span>
             </a>
         </div>
 
-        <div class="search-container">
-            <div class="search-input-wrapper">
-                <input type="text" class="search-bar-input" id="globalSearchInput" placeholder="Search educational parameters...">
-                <button class="btn-search-trigger" onclick="alert('Search node triggered')">🔍</button>
+        <div class="search-center-wrapper">
+            <div class="search-input-group">
+                <input type="text" class="search-input-box" id="globalSearchInput" placeholder="Search secure parameters...">
+                <button class="btn-search-trigger" onclick="alert('Search navigation loop handles across modules!')">🔍</button>
             </div>
-            <button class="btn-voice-search" onclick="alert('Voice search listening...')" title="Search with your voice">🎙️</button>
+            <button class="btn-voice-search" onclick="alert('Voice recognition protocol standby...')" title="Search with your voice">🎙️</button>
         </div>
 
-        <div class="header-actions">
-            <button class="btn-theme-toggle btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
-            <a href="notification.html" class="btn-notification" title="Notifications">🔔</a>
+        <div class="right-control-pack">
+            <button class="btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
+            <a href="notificason.html" class="noti-link-icon" title="Notifications">🔔</a>
             
-            <div class="profile-container">
-                <div class="student-avatar-trigger" id="avatarMenuTrigger" onclick="toggleProfileDropdownMenu()">
-                    <span id="studentAvatarIcon">S</span>
-                </div>
+            <div class="user-avatar-trigger" id="avatarMenuTrigger" onclick="toggleProfileDropdownMenu()">
+                <span id="avatarLetterNode">S</span>
+            </div>
 
-                <div class="profile-dropdown-box" id="profileDropdownShell">
-                    <div class="dropdown-user-header">
-                        <div class="student-avatar-trigger" style="width: 36px; height: 36px;">
-                            <span id="dropdownAvatarIcon">S</span>
-                        </div>
-                        <div class="dropdown-user-meta">
-                            <h4 id="dropdownUserEmailNode">Student</h4>
-                            <p style="color: var(--yt-red); font-weight: 600;">FocusTube Protected</p>
-                        </div>
+            <div class="profile-dropdown-menu" id="profileDropdownShell">
+                <div class="dropdown-user-info">
+                    <div class="user-avatar-trigger" style="width: 32px; height: 32px; margin: 0;">
+                        <span id="dropdownLetterNode">S</span>
                     </div>
-                    
-                    <a href="setting.html" class="dropdown-menu-item">⚙️ Settings</a>
-                    <a href="help.html" class="dropdown-menu-item">❓ Help Center</a>
-                    <a href="help.html" class="dropdown-menu-item">💬 Send Feedback</a>
-                    <div class="divider-line"></div>
-                    <div class="dropdown-menu-item" style="color: var(--yt-red); font-weight: 700;" onclick="triggerSignOutSequence()">Documentation Sign Out 🚪</div>
+                    <div class="dropdown-user-details">
+                        <h4 id="dropdownUserEmailNode">Student Profile</h4>
+                        <p style="color: var(--text-muted); font-size: 0.75rem;">Workspace Node</p>
+                    </div>
                 </div>
+                <a href="setting.html" class="dropdown-item-link">⚙️ Settings & Avatar</a>
+                <a href="help.html" class="dropdown-item-link">❓ Help Center</a>
+                <a href="help.html" class="dropdown-item-link">💬 Send Feedback</a>
+                <div class="section-divider" style="margin: 4px 0;"></div>
+                <div class="dropdown-item-link" style="color: var(--yt-red); font-weight: 600;" onclick="triggerSignOutSequence()">➔ Sign Out</div>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <div class="workspace-wrapper">
+    <div class="app-workspace-body">
         
-        <aside class="sidebar-dock" id="masterSidebarSystem">
-            <a href="home.home.html" class="sidebar-item active">
+        <aside class="sidebar-wrapper" id="masterSidebarSystem">
+            <a href="home.home.html" class="sidebar-node-btn active-node">
                 <span class="sidebar-icon">🏠</span><span class="sidebar-text">Home Hub</span>
             </a>
-            <a href="whitelist.html" class="sidebar-item">
+            <a href="whitelist.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">🛡️</span><span class="sidebar-text">Whitelist</span>
             </a>
-            <a href="short.html" class="sidebar-item">
+            <a href="short.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">⚡</span><span class="sidebar-text">Shorts Loop</span>
             </a>
-            <a href="channel.html" class="sidebar-item">
+            <a href="channal.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">📺</span><span class="sidebar-text">Channels Feed</span>
             </a>
-            <a href="notification.html" class="sidebar-item">
+            <a href="notificason.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">🔔</span><span class="sidebar-text">Notifications</span>
             </a>
 
-            <div class="divider-line"></div>
-            <div class="sidebar-section-title">Library Space</div>
+            <div class="section-divider"></div>
 
-            <a href="playlist.html" class="sidebar-item">
+            <div class="sidebar-heading"><span class="sidebar-text">Library Space</span></div>
+            <a href="playlist.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">📁</span><span class="sidebar-text">Playlists</span>
             </a>
-            <a href="history.html" class="sidebar-item">
+            <a href="history.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">⏳</span><span class="sidebar-text">History Track</span>
             </a>
-            <a href="like.html" class="sidebar-item">
+            <a href="like.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">👍</span><span class="sidebar-text">Liked Videos</span>
             </a>
-            <a href="download.html" class="sidebar-item">
+            <a href="download.html" class="sidebar-node-btn">
                 <span class="sidebar-icon">📥</span><span class="sidebar-text">Offline Vault</span>
             </a>
         </aside>
 
-        <main class="main-content-stream" id="mainFeedPanelCorridor">
+        <main class="main-feed-panel" id="mainFeedPanelCorridor">
             <div class="pulse-placeholder">
-                <h3>FocusTube Secure Space Ready</h3>
-                <p style="margin-top: 8px;">Workspace active. Feature interfaces will be developed in separate modular html files.</p>
+                <h3 style="font-weight: 600;">FocusTube Pure Layout Sandbox</h3>
+                <p style="margin-top: 6px; color: var(--text-muted); font-size: 0.85rem;">UI Shell mapped completely to original YouTube specifications. Functional contents will bundle across individual routing files.</p>
             </div>
         </main>
     </div>
-
-    <nav class="mobile-bottom-dock">
-        <a href="home.home.html" class="mobile-nav-btn active">
-            <span class="mobile-nav-icon">🏠</span><div>Home</div>
-        </a>
-        <a href="whitelist.html" class="mobile-nav-btn">
-            <span class="mobile-nav-icon">🛡️</span><div>Whitelist</div>
-        </a>
-        <a href="short.html" class="mobile-nav-btn">
-            <span class="mobile-nav-icon">⚡</span><div>Shorts</div>
-        </a>
-        <a href="notification.html" class="mobile-nav-btn">
-            <span class="mobile-nav-icon">🔔</span><div>Alerts</div>
-        </a>
-    </nav>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <script>
-        // FIREBASE PACKET GATEWAY CONFIG
+        // CONFIG MASTER packets SYNC
         const firebaseConfig = {
             apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
             authDomain: "focustube-72084.firebaseapp.com",
@@ -245,7 +225,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 👁️ LIVE EYE GUARD LAYOUT SWITCHER
+        // 👁️ EYE GUARD MECHANISM
         function toggleStudentDashboardTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
@@ -253,42 +233,42 @@
             btn.innerText = body.classList.contains('student-dark-mode') ? "☀️ Eye Guard Off" : "👁️ Eye Guard On";
         }
 
-        // 🍔 COLLAPSE SIDEBAR TO ICON ONLY MODE (YOUTUBE MASTER STROKE)
+        // 🍔 HAMBURGER SYSTEM TOGGLE COLLAPSED CHANNELS (YOUTUBE REPLICATED)
         function toggleSidebarCollapseEngine() {
             const sidebar = document.getElementById('masterSidebarSystem');
             sidebar.classList.toggle('collapsed');
         }
 
-        // 👤 PROFILE DROPDOWN MANAGER 
+        // 👤 DROPDOWN MENU INTERCEPTS
         function toggleProfileDropdownMenu() {
             const shell = document.getElementById('profileDropdownShell');
-            shell.classList.toggle('active');
+            shell.classList.toggle('active-menu');
         }
 
-        // 🚪 SIGN OUT TERMINAL SEQUENCE
+        // 🚪 TERMINATION SEQUENCES
         function triggerSignOutSequence() {
             auth.signOut().then(() => {
                 window.location.href = "login.html";
-            }).catch(err => alert("Signout Interrupted: " + err.message));
+            }).catch(err => alert("Signout Error: " + err.message));
         }
 
-        // Dropdown Click-Outside Perimeter Closer
+        // Safety viewport event to catch stray target clicks
         window.addEventListener('click', function(e) {
             const trigger = document.getElementById('avatarMenuTrigger');
             const shell = document.getElementById('profileDropdownShell');
             if (trigger && !trigger.contains(e.target) && shell && !shell.contains(e.target)) {
-                shell.classList.remove('active');
+                shell.classList.remove('active-menu');
             }
         });
 
-        // 🛡️ SECURITY AUTHRUTING MONITOR GUARD LOOP
+        // 🛡️ SECURITY ROUTE GUARDIAN GATEWAY FLOW
         auth.onAuthStateChanged((user) => {
             if (!user) { 
                 window.location.href = "login.html"; 
             } else {
                 const letter = user.email.charAt(0).toUpperCase();
-                document.getElementById('studentAvatarIcon').innerText = letter;
-                document.getElementById('dropdownAvatarIcon').innerText = letter;
+                document.getElementById('avatarLetterNode').innerText = letter;
+                document.getElementById('dropdownLetterNode').innerText = letter;
                 document.getElementById('dropdownUserEmailNode').innerText = user.email.split('@')[0];
             }
         });
