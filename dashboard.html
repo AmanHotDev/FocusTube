@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FocusTube Terminal 📺</title>
     <style>
-        /* ================= 🎨 ORIGINAL YOUTUBE MINIMALIST THEME ================= */
+        /* ================= 🎨 ORIGINAL YOUTUBE LIGHT DESIGN CORES ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', Arial, sans-serif; }
         
         :root {
@@ -16,13 +16,12 @@
             --text-muted: #606060;
             --border-color: #e5e5e5;
             --search-border: #cccccc;
-            --search-btn-bg: #f8f8f8;
+            --search-bg: #f8f8f8;
             --sidebar-hover: #f2f2f2;
-            --icon-color: #0f0f0f;
             --menu-shadow: rgba(0, 0, 0, 0.1);
         }
 
-        /* 🌙 PERFECT YOUTUBE DARK MODE NIGHT SWITCH */
+        /* 🌙 SYSTEM CHILD NODE: MANUAL DARK THEME INTERCEPT */
         body.student-dark-mode {
             --bg-main: #0f0f0f;
             --pure-white: #212121;
@@ -30,100 +29,104 @@
             --text-muted: #aaaaaa;
             --border-color: #303030;
             --search-border: #303030;
-            --search-btn-bg: #222222;
+            --search-bg: #121212;
             --sidebar-hover: #3d3d3d;
-            --icon-color: #ffffff;
             --menu-shadow: rgba(0, 0, 0, 0.5);
             background-color: #0f0f0f;
         }
 
         body { background-color: var(--bg-main); color: var(--text-main); transition: background 0.2s, color 0.2s; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* 📡 TOP MASTER NAVIGATION BAR */
+        /* 📡 TOP MASTER NAVBAR ROW */
         .navbar-dock { background: var(--pure-white); padding: 0 16px; display: flex; justify-content: space-between; align-items: center; height: 56px; position: relative; z-index: 100; border-bottom: 1px solid var(--border-color); }
         
         .left-meta-zone { display: flex; align-items: center; gap: 16px; }
-        .hamburger-menu { font-size: 1.3rem; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--icon-color); }
-        .hamburger-menu:hover { background: var(--sidebar-hover); }
+        .hamburger-menu-btn { width: 40px; height: 40px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .hamburger-menu-btn:hover { background: var(--sidebar-hover); }
+        .hamburger-icon-img { width: 24px; height: 24px; object-fit: contain; }
         
-        .brand-box { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 1.2rem; text-decoration: none; color: var(--text-main); letter-spacing: -0.5px; }
-        .brand-logo-img { width: 28px; height: 28px; object-fit: contain; }
+        .brand-box { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--text-main); letter-spacing: -0.5px; }
+        .brand-logo-img { width: 24px; height: 24px; object-fit: contain; }
         .brand-box span { color: var(--yt-red); }
 
-        /* 🔍 REAL YOUTUBE BLACK-GRAY SEARCH SYSTEMS WITH VOICE INPUT */
-        .search-center-wrapper { flex: 0 1 640px; display: flex; align-items: center; gap: 8px; margin: 0 20px; }
+        /* 🔍 DYNAMIC SYSTEM SEARCH & VOICE PORTS */
+        .search-center-wrapper { flex: 0 1 640px; display: flex; align-items: center; gap: 12px; margin: 0 20px; }
         .search-input-group { display: flex; width: 100%; align-items: center; }
         
-        .search-input-box { width: 100%; height: 40px; padding: 0 16px; border-radius: 40px 0 0 40px; border: 1px solid var(--search-border); background: transparent; color: var(--text-main); outline: none; font-size: 0.95rem; }
-        .search-input-box:focus { border-color: #1c62b9; background: var(--bg-main); }
+        .search-input-box { width: 100%; height: 40px; padding: 0 16px; border-radius: 40px 0 0 40px; border: 1px solid var(--search-border); background: var(--search-bg); color: var(--text-main); outline: none; font-size: 0.92rem; }
+        .search-input-box:focus { border-color: #1c62b9; background: var(--pure-white); }
         
-        .btn-search-trigger { background: var(--search-btn-bg); border: 1px solid var(--search-border); border-left: none; padding: 0 24px; height: 40px; border-radius: 0 40px 40px 0; cursor: pointer; color: var(--icon-color); display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+        .btn-search-trigger { background: var(--search-bg); border: 1px solid var(--search-border); border-left: none; padding: 0 24px; height: 40px; border-radius: 0 40px 40px 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-search-trigger:hover { background: var(--sidebar-hover); }
+        .search-icon-img { width: 18px; height: 18px; object-fit: contain; }
         
-        .btn-voice-search { background: var(--search-btn-bg); border: 1px solid var(--search-border); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--icon-color); transition: 0.15s; }
+        .btn-voice-search { background: var(--search-bg); border: 1px solid var(--search-border); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .btn-voice-search:hover { background: var(--sidebar-hover); }
+        .voice-icon-img { width: 20px; height: 20px; object-fit: contain; }
 
-        /* 👤 RIGHT SIDE CORNER CONTROLS */
+        /* 👤 RIGHT CONTROLS GATEWAY */
         .right-control-pack { display: flex; align-items: center; gap: 8px; position: relative; }
-        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 18px; color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 0.78rem; margin-right: 4px; }
+        .btn-eye-guard { background: transparent; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 16px; color: var(--text-main); cursor: pointer; font-weight: 600; font-size: 0.75rem; margin-right: 4px; }
         .btn-eye-guard:hover { background: var(--sidebar-hover); }
         
-        .noti-link-icon { font-size: 1.3rem; text-decoration: none; color: var(--icon-color); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .noti-link-icon:hover { background: var(--sidebar-hover); }
+        .nav-btn-link { width: 40px; height: 40px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; text-decoration: none; }
+        .nav-btn-link:hover { background: var(--sidebar-hover); }
+        .nav-icon-img { width: 24px; height: 24px; object-fit: contain; }
 
-        .user-avatar-trigger { width: 32px; height: 32px; border-radius: 50%; background: #0073e6; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; cursor: pointer; overflow: hidden; border: 1px solid var(--border-color); margin-left: 4px; }
-        .user-avatar-trigger img { width: 100%; height: 100%; object-fit: cover; }
+        .user-avatar-trigger-box { width: 32px; height: 32px; border-radius: 50%; background: #0073e6; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; cursor: pointer; overflow: hidden; border: 1px solid var(--border-color); margin-left: 4px; }
+        .user-avatar-trigger-box img { width: 100%; height: 100%; object-fit: cover; display: none; } /* Image path add hone par dynamically visible hoga */
 
-        /* 👤 DROPDOWN HUB FROM AVATAR CLICK */
-        .profile-dropdown-menu { display: none; position: absolute; top: 48px; right: 0; background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 12px; width: 240px; box-shadow: 0 8px 24px var(--menu-shadow); padding: 8px 0; z-index: 1010; }
+        /* 👤 PREMIUM YOUTUBE-STYLE PROFILE DROPDOWN MENU */
+        .profile-dropdown-menu { display: none; position: absolute; top: 48px; right: 0; background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 8px; width: 260px; box-shadow: 0 4px 20px var(--menu-shadow); padding: 8px 0; z-index: 1010; }
         .profile-dropdown-menu.active-menu { display: block; }
         
-        .dropdown-user-info { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
-        .dropdown-user-details h4 { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
-        .dropdown-user-details p { font-size: 0.78rem; color: var(--text-muted); }
+        .dropdown-user-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
+        .dropdown-user-meta h4 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); }
+        .dropdown-user-meta p { font-size: 0.75rem; color: var(--text-muted); }
         
-        .dropdown-item-link { display: flex; align-items: center; gap: 14px; padding: 10px 16px; color: var(--text-main); text-decoration: none; font-size: 0.88rem; font-weight: 500; cursor: pointer; }
+        .dropdown-item-link { display: flex; align-items: center; gap: 14px; padding: 10px 16px; color: var(--text-main); text-decoration: none; font-size: 0.85rem; font-weight: 500; cursor: pointer; }
         .dropdown-item-link:hover { background: var(--sidebar-hover); }
+        .dropdown-icon-img { width: 20px; height: 20px; object-fit: contain; }
 
-        /* 🎛️ MAIN WORKSPACE CONTAINER INTERFACE */
+        /* 🎛️ SYSTEM CORE SPACE MODULES CONTAINER */
         .app-workspace-body { flex: 1; display: flex; height: calc(100vh - 56px); overflow: hidden; position: relative; }
 
-        /* 💻 COMPLETE 9-WAY INTERACTIVE SIDEBAR (MONOCHROME ICONS) */
-        .sidebar-wrapper { width: 240px; background: var(--bg-main); display: flex; flex-direction: column; padding: 12px 0; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border-color); transition: width 0.2s; }
+        /* 💻 COMPREHENSIVE 9-WAY SIDEBAR SYSTEM LIST */
+        .sidebar-wrapper { width: 240px; background: var(--pure-white); display: flex; flex-direction: column; padding: 12px 0; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border-color); }
         .sidebar-wrapper.collapsed { width: 72px; }
         .sidebar-wrapper.collapsed .sidebar-text, .sidebar-wrapper.collapsed .section-divider, .sidebar-wrapper.collapsed .sidebar-heading { display: none; }
-        .sidebar-wrapper.collapsed .sidebar-node-btn { justify-content: center; padding: 12px 0; margin: 0 8px; }
+        .sidebar-wrapper.collapsed .sidebar-node-btn { justify-content: center; padding: 12px 0; margin: 0; border-radius: 0; }
         
-        .sidebar-node-btn { display: flex; align-items: center; gap: 24px; padding: 10px 24px; color: var(--text-main); text-decoration: none; font-weight: 500; font-size: 0.88rem; cursor: pointer; transition: background 0.15s; border-radius: 10px; margin: 0 12px; }
+        .sidebar-node-btn { display: flex; align-items: center; gap: 24px; padding: 10px 24px; color: var(--text-main); text-decoration: none; font-weight: 500; font-size: 0.85rem; cursor: pointer; transition: background 0.1s; border-radius: 8px; margin: 0 12px; }
         .sidebar-node-btn:hover { background: var(--sidebar-hover); }
         .sidebar-node-btn.active-node { background: var(--sidebar-hover); font-weight: 600; }
-        .sidebar-icon { font-size: 1.2rem; width: 24px; text-align: center; color: var(--icon-color); display: flex; align-items: center; justify-content: center; }
+        .sidebar-icon-img { width: 22px; height: 22px; object-fit: contain; }
         
-        .sidebar-heading { font-size: 0.82rem; font-weight: 600; padding: 12px 24px 6px 24px; color: var(--text-muted); text-transform: none; }
-        .section-divider { height: 1px; background: var(--border-color); margin: 12px 0; width: 100%; }
+        .sidebar-heading { font-size: 0.8rem; font-weight: 600; padding: 12px 24px 6px 24px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.2px; }
+        .section-divider { height: 1px; background: var(--border-color); margin: 8px 0; width: 100%; }
 
-        /* 📺 DYNAMIC INTERNAL CONTENT PORTAL PANEL */
-        .main-feed-panel { flex: 1; padding: 24px; overflow-y: auto; display: block; background: var(--bg-main); }
-        .pulse-placeholder { text-align: center; padding: 100px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        /* 📺 DYNAMIC SECURE MAIN STREAMS HUB PANEL */
+        .main-feed-panel { flex: 1; padding: 24px; overflow-y: auto; background: var(--bg-main); }
+        .pulse-placeholder { text-align: center; padding: 120px 20px; color: var(--text-muted); font-size: 0.85rem; }
 
-        /* 📱 MOBILE VIEW CALIBRATION */
+        /* 📱 RESPONSIVE CALIBRATION OVERRIDES */
         @media (max-width: 768px) {
             .sidebar-wrapper { display: none; }
             .search-center-wrapper { flex: 1; margin: 0 4px; }
-            .search-input-box { height: 36px; font-size: 0.9rem; padding: 0 12px; border-radius: 20px 0 0 20px; }
-            .btn-search-trigger { height: 36px; padding: 0 14px; border-radius: 0 20px 20px 0; }
-            .btn-voice-search, .btn-eye-guard, .hamburger-menu { display: none; }
+            .search-input-box { height: 36px; font-size: 0.88rem; padding: 0 12px; }
+            .btn-search-trigger { height: 36px; padding: 0 14px; }
+            .btn-voice-search, .btn-eye-guard, .hamburger-menu-btn { display: none; }
             .navbar-dock { padding: 0 12px; }
             .main-feed-panel { padding: 16px; }
         }
     </style>
 </head>
-<body>
-
-    <nav class="navbar-dock">
+<body class="student-light-mode"> <nav class="navbar-dock">
         <div class="left-meta-zone">
-            <div class="hamburger-menu" onclick="toggleSidebarCollapseEngine()">☰</div>
-            <a href="index.html" class="brand-box">
+            <button class="hamburger-menu-btn" onclick="toggleSidebarCollapseEngine()" title="Menu">
+                <img src="path_to_hamburger_icon.png" alt="Menu" class="hamburger-icon-img">
+            </button>
+            <a href="home.home.html" class="brand-box">
                 <img src="logo.png" alt="FocusTube Hub" class="brand-logo-img">
                 Focus<span>Tube</span>
             </a>
@@ -132,34 +135,54 @@
         <div class="search-center-wrapper">
             <div class="search-input-group">
                 <input type="text" class="search-input-box" id="globalSearchInput" placeholder="Search secure parameters...">
-                <button class="btn-search-trigger" onclick="alert('Search navigation loop handles across modules!')">🔍</button>
+                <button class="btn-search-trigger" onclick="alert('Search navigation triggers here!')">
+                    <img src="path_to_search_icon.png" alt="Search" class="search-icon-img">
+                </button>
             </div>
-            <button class="btn-voice-search" onclick="alert('Voice recognition protocol standby...')" title="Search with your voice">🎙️</button>
+            <button class="btn-voice-search" onclick="alert('Voice recognition pipeline ready...')" title="Search with your voice">
+                <img src="path_to_voice_icon.png" alt="Voice Search" class="voice-icon-img">
+            </button>
         </div>
 
         <div class="right-control-pack">
             <button class="btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁️ Eye Guard On</button>
-            <a href="notificason.html" class="noti-link-icon" title="Notifications">🔔</a>
+            <a href="notification.html" class="nav-btn-link" title="Notifications">
+                <img src="path_to_notification_icon.png" alt="Notifications" class="nav-icon-img">
+            </a>
             
-            <div class="user-avatar-trigger" id="avatarMenuTrigger" onclick="toggleProfileDropdownMenu()">
+            <div class="user-avatar-trigger-box" id="avatarMenuTrigger" onclick="toggleProfileDropdownMenu()">
                 <span id="avatarLetterNode">S</span>
+                <img id="avatarActualImageNode" src="" alt="Profile Photo">
             </div>
 
             <div class="profile-dropdown-menu" id="profileDropdownShell">
-                <div class="dropdown-user-info">
-                    <div class="user-avatar-trigger" style="width: 32px; height: 32px; margin: 0;">
+                <div class="dropdown-user-card">
+                    <div class="user-avatar-trigger-box" style="width: 36px; height: 36px; margin:0;">
                         <span id="dropdownLetterNode">S</span>
+                        <img id="dropdownActualImageNode" src="" alt="User Profile">
                     </div>
-                    <div class="dropdown-user-details">
-                        <h4 id="dropdownUserEmailNode">Student Profile</h4>
-                        <p style="color: var(--text-muted); font-size: 0.75rem;">Workspace Node</p>
+                    <div class="dropdown-user-meta">
+                        <h4 id="dropdownUserEmailNode">Student User</h4>
+                        <p style="color: var(--yt-red); font-weight: 700; font-size:0.7rem;">FocusTube Matrix Active</p>
                     </div>
                 </div>
-                <a href="setting.html" class="dropdown-item-link">⚙️ Settings & Avatar</a>
-                <a href="help.html" class="dropdown-item-link">❓ Help Center</a>
-                <a href="help.html" class="dropdown-item-link">💬 Send Feedback</a>
+                
+                <a href="profile.html" class="dropdown-item-link">
+                    <img src="path_to_profile_icon.png" alt="Profile" class="dropdown-icon-img"><span class="sidebar-text">Your Profile</span>
+                </a>
+                <a href="setting.html" class="dropdown-item-link">
+                    <img src="path_to_setting_icon.png" alt="Settings" class="dropdown-icon-img"><span class="sidebar-text">Settings</span>
+                </a>
+                <a href="help.html" class="dropdown-item-link">
+                    <img src="path_to_help_icon.png" alt="Help" class="dropdown-icon-img"><span class="sidebar-text">Help Center</span>
+                </a>
+                <a href="help.html" class="dropdown-item-link">
+                    <img src="path_to_feedback_icon.png" alt="Feedback" class="dropdown-icon-img"><span class="sidebar-text">Send Feedback</span>
+                </a>
                 <div class="section-divider" style="margin: 4px 0;"></div>
-                <div class="dropdown-item-link" style="color: var(--yt-red); font-weight: 600;" onclick="triggerSignOutSequence()">➔ Sign Out</div>
+                <div class="dropdown-item-link" style="color: var(--yt-red); font-weight: 700;" onclick="triggerSignOutSequence()">
+                    <img src="path_to_signout_icon.png" alt="Sign Out" class="dropdown-icon-img"><span class="sidebar-text">Sign Out</span>
+                </div>
             </div>
         </div>
     </nav>
@@ -168,42 +191,42 @@
         
         <aside class="sidebar-wrapper" id="masterSidebarSystem">
             <a href="home.home.html" class="sidebar-node-btn active-node">
-                <span class="sidebar-icon">🏠</span><span class="sidebar-text">Home Hub</span>
+                <img src="path_to_home_icon.png" alt="Home" class="sidebar-icon-img"><span class="sidebar-text">Home Hub</span>
             </a>
             <a href="whitelist.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">🛡️</span><span class="sidebar-text">Whitelist</span>
+                <img src="path_to_whitelist_icon.png" alt="Whitelist" class="sidebar-icon-img"><span class="sidebar-text">Whitelist</span>
             </a>
             <a href="short.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">⚡</span><span class="sidebar-text">Shorts Loop</span>
+                <img src="path_to_shorts_icon.png" alt="Shorts" class="sidebar-icon-img"><span class="sidebar-text">Shorts Loop</span>
             </a>
-            <a href="channal.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">📺</span><span class="sidebar-text">Channels Feed</span>
+            <a href="channel.html" class="sidebar-node-btn">
+                <img src="path_to_channels_icon.png" alt="Channels" class="sidebar-icon-img"><span class="sidebar-text">Channels Feed</span>
             </a>
-            <a href="notificason.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">🔔</span><span class="sidebar-text">Notifications</span>
+            <a href="notification.html" class="sidebar-node-btn">
+                <img src="path_to_notification_icon.png" alt="Alerts" class="sidebar-icon-img"><span class="sidebar-text">Notifications</span>
             </a>
 
             <div class="section-divider"></div>
 
-            <div class="sidebar-heading"><span class="sidebar-text">Library Space</span></div>
+            <div class="sidebar-heading">Library Space</div>
             <a href="playlist.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">📁</span><span class="sidebar-text">Playlists</span>
+                <img src="path_to_playlist_icon.png" alt="Playlists" class="sidebar-icon-img"><span class="sidebar-text">Playlists</span>
             </a>
             <a href="history.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">⏳</span><span class="sidebar-text">History Track</span>
+                <img src="path_to_history_icon.png" alt="History" class="sidebar-icon-img"><span class="sidebar-text">History Track</span>
             </a>
             <a href="like.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">👍</span><span class="sidebar-text">Liked Videos</span>
+                <img src="path_to_like_icon.png" alt="Liked" class="sidebar-icon-img"><span class="sidebar-text">Liked Videos</span>
             </a>
             <a href="download.html" class="sidebar-node-btn">
-                <span class="sidebar-icon">📥</span><span class="sidebar-text">Offline Vault</span>
+                <img src="path_to_download_icon.png" alt="Vault" class="sidebar-icon-img"><span class="sidebar-text">Offline Vault</span>
             </a>
         </aside>
 
         <main class="main-feed-panel" id="mainFeedPanelCorridor">
             <div class="pulse-placeholder">
-                <h3 style="font-weight: 600;">FocusTube Pure Layout Sandbox</h3>
-                <p style="margin-top: 6px; color: var(--text-muted); font-size: 0.85rem;">UI Shell mapped completely to original YouTube specifications. Functional contents will bundle across individual routing files.</p>
+                <h3 style="font-size: 1.1rem; font-weight:600;">FocusTube Secure Interface Frame</h3>
+                <p style="margin-top: 6px; color: var(--text-muted); font-size: 0.85rem;">UI layers established successfully. Core operational features will map onto independent component routing files.</p>
             </div>
         </main>
     </div>
@@ -212,7 +235,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
     <script>
-        // CONFIG MASTER packets SYNC
         const firebaseConfig = {
             apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
             authDomain: "focustube-72084.firebaseapp.com",
@@ -225,7 +247,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 👁️ EYE GUARD MECHANISM
+        // 👁️ LIVE LAYOUT SWITCH ENGINE
         function toggleStudentDashboardTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
@@ -233,26 +255,24 @@
             btn.innerText = body.classList.contains('student-dark-mode') ? "☀️ Eye Guard Off" : "👁️ Eye Guard On";
         }
 
-        // 🍔 HAMBURGER SYSTEM TOGGLE COLLAPSED CHANNELS (YOUTUBE REPLICATED)
+        // 🍔 COLLAPSE SIDEBAR NODE LOOP (YOUTUBE MECHANISM)
         function toggleSidebarCollapseEngine() {
-            const sidebar = document.getElementById('masterSidebarSystem');
-            sidebar.classList.toggle('collapsed');
+            document.getElementById('masterSidebarSystem').classList.toggle('collapsed');
         }
 
-        // 👤 DROPDOWN MENU INTERCEPTS
+        // 👤 PROFILE DROPDOWN MENU INTERCEPT
         function toggleProfileDropdownMenu() {
-            const shell = document.getElementById('profileDropdownShell');
-            shell.classList.toggle('active-menu');
+            document.getElementById('profileDropdownShell').classList.toggle('active-menu');
         }
 
-        // 🚪 TERMINATION SEQUENCES
+        // 🚪 SECURE SIGN OUT PROTOCOL
         function triggerSignOutSequence() {
             auth.signOut().then(() => {
                 window.location.href = "login.html";
-            }).catch(err => alert("Signout Error: " + err.message));
+            }).catch(err => alert(err.message));
         }
 
-        // Safety viewport event to catch stray target clicks
+        // Auto-close overlay layout bounds check
         window.addEventListener('click', function(e) {
             const trigger = document.getElementById('avatarMenuTrigger');
             const shell = document.getElementById('profileDropdownShell');
@@ -261,7 +281,7 @@
             }
         });
 
-        // 🛡️ SECURITY ROUTE GUARDIAN GATEWAY FLOW
+        // 🛡️ PWA PERSISTENT STATE MONITOR GUARD
         auth.onAuthStateChanged((user) => {
             if (!user) { 
                 window.location.href = "login.html"; 
@@ -270,8 +290,21 @@
                 document.getElementById('avatarLetterNode').innerText = letter;
                 document.getElementById('dropdownLetterNode').innerText = letter;
                 document.getElementById('dropdownUserEmailNode').innerText = user.email.split('@')[0];
+                
+                // ऑफलाइन लाइफसाइकिल के लिए ऑथेंटिकेशन टोकन लोकल स्टोरेज में बैकअप करना
+                localStorage.setItem('focustube_session_active', 'true');
             }
         });
+
+        // ================= 📲 DEPLOY OFFLINE PWA SERVICE MATRIX =================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // सर्विस वर्कर फाइल रजिस्टर करना ताकि बिना इंटरनेट भी वेबसाइट खुले
+                navigator.serviceWorker.register('sw.js', { scope: './' })
+                    .then(reg => console.log('FocusTube Offline Engine Synced safely.'))
+                    .catch(err => console.log('ServiceWorker pipeline offline.', err));
+            });
+        }
     </script>
 </body>
 </html>
