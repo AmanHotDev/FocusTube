@@ -142,7 +142,7 @@
                             
                             // Safe Default: अगर फायरबेस में कोई डेटा न हो
                             if(whitelistedChannelsArray.length === 0) {
-                                whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"]; 
+                                whitelistedChannelsArray = ["UCatL-c6pmnjzEOHSyjn-sHA"]; 
                             }
                             
                             // 1. सबसे पहले डायनेमिक बटन्स (Tags) लोड करो
@@ -150,7 +150,7 @@
                             // 2. फिर वीडियो फीड कंपाइल करो
                             fetchMultiChannelDataPipeline();
                         }, err => {
-                            whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"];
+                            whitelistedChannelsArray = ["UCatL-c6pmnjzEOHSyjn-sHA"];
                             generateDynamicCategoryTags();
                             fetchMultiChannelDataPipeline();
                         });
