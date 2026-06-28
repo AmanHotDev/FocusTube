@@ -78,7 +78,8 @@
         .shorts-text-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%); display: flex; align-items: flex-end; padding: 12px; }
         .shorts-title-string { color: white; font-size: 0.8rem; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 
-        .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        .pulse-placeholder { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        .scroll-loader { text-align: center; padding: 20px; font-weight: 500; color: var(--yt-red); display: none; }
 
         @media (max-width: 1024px) {
             .shorts-6-matrix { grid-template-columns: repeat(3, 1fr); gap: 10px; row-gap: 16px; }
@@ -95,13 +96,15 @@
     <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR (DYNAMICS GENERATED) -->
     <div class="tags-carousel-container" id="tagsCarouselShell">
         <button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>
-        <!-- माता-पिता द्वारा जोड़े गए चैनलों के नाम यहाँ ऑटोमैटिकली आ जाएंगे -->
     </div>
 
     <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
     <div class="feed-container-stream" id="globalHomeFeedShell">
         <div class="pulse-placeholder">Connecting to secure terminal arrays...</div>
     </div>
+
+    <!-- 🔄 BOTTOM SCROLL LOADING INDICATOR -->
+    <div class="scroll-loader" id="infiniteScrollLoaderUI">♻️ Loading more classroom videos...</div>
 
     <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -127,6 +130,11 @@
         let currentUser = null;
         let whitelistedChannelsArray = [];
         let compiledVideosMasterList = []; 
+        
+        // 🔄 INFINITE SCROLL STATE TRACKERS
+        let channelTokensMap = {}; // हर चैनल का अगला पेज ट्रैक करने के लिए
+        let isFetchingNextPageBatch = false;
+        let currentActiveFilterQuery = "";
 
         // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
         function establishFirestoreSyncNode() {
@@ -134,25 +142,21 @@
                 if (user) {
                     currentUser = user;
                     
-                    // लाइव पैरेंट कलेक्शन 'pinned_channels' को बिना किसी UID फ़िल्टर के ट्रैक करना
                     db.collection("pinned_channels")
                         .onSnapshot((snapshot) => {
                             whitelistedChannelsArray = [];
                             snapshot.forEach(doc => whitelistedChannelsArray.push(doc.data().channelId));
                             
-                            // Safe Default: अगर फायरबेस में कोई डेटा न हो
                             if(whitelistedChannelsArray.length === 0) {
-                                whitelistedChannelsArray = ["UCatL-c6pmnjzEOHSyjn-sHA"]; 
+                                whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"]; 
                             }
                             
-                            // 1. सबसे पहले डायनेमिक बटन्स (Tags) लोड करो
                             generateDynamicCategoryTags();
-                            // 2. फिर वीडियो फीड कंपाइल करो
-                            fetchMultiChannelDataPipeline();
+                            resetAndInitialFetchFeed();
                         }, err => {
-                            whitelistedChannelsArray = ["UCatL-c6pmnjzEOHSyjn-sHA"];
+                            whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"];
                             generateDynamicCategoryTags();
-                            fetchMultiChannelDataPipeline();
+                            resetAndInitialFetchFeed();
                         });
                 }
             });
@@ -161,14 +165,11 @@
         // ================= 🏷️ DYNAMIC CATEGORY TAGS GENERATOR ENGINE =================
         function generateDynamicCategoryTags() {
             const carousel = document.getElementById('tagsCarouselShell');
-            // 'All' बटन को छोड़कर पुराना डेटा साफ़ करें
             carousel.innerHTML = `<button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>`;
             
-            // डुप्लीकेट चैनल आईडी हटाएं
             const uniqueChannels = [...new Set(whitelistedChannelsArray)];
 
             uniqueChannels.forEach(channelId => {
-                // यूट्यूब एपीआई से प्रत्येक चैनल का असली नाम पता करना
                 const channelApiUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${YT_GATEWAY_KEY}`;
                 
                 fetch(channelApiUrl)
@@ -177,7 +178,6 @@
                         if(data.items && data.items.length > 0) {
                             const channelTitle = data.items[0].snippet.title;
                             
-                            // नया डायनेमिक बटन बनाएं और शेल्फ में जोड़ें
                             const tagButton = document.createElement('button');
                             tagButton.className = 'yt-tag-btn';
                             tagButton.innerText = channelTitle;
@@ -190,95 +190,86 @@
             });
         }
 
-        // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR =================
-        // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR (FORCED RECOVERY) =================
-        async function fetchMultiChannelDataPipeline(searchFilterQuery = "") {
+        // ================= 📡 INITIAL FETCH PIPELINE RESET =================
+        function resetAndInitialFetchFeed(searchFilterQuery = "") {
+            currentActiveFilterQuery = searchFilterQuery;
+            channelTokensMap = {}; // पुराने पेज टोकन्स डिलीट करें
+            compiledVideosMasterList = [];
+            
             const shell = document.getElementById('globalHomeFeedShell');
             shell.innerHTML = `<div class="pulse-placeholder">Compiling secure classroom grid from pinned creators...</div>`;
             
-            compiledVideosMasterList = [];
+            fetchMultiChannelDataPipeline();
+        }
+
+        // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR =================
+        async function fetchMultiChannelDataPipeline() {
+            if (isFetchingNextPageBatch) return;
+            isFetchingNextPageBatch = true;
+
             let apiPromises = [];
-
-            // अगर फायरबेस से एरे खाली आ रहा है, तो लाइव टेस्टिंग के लिए तुरंत डिफॉल्ट आईडी फोर्स करें
-            if (!whitelistedChannelsArray || whitelistedChannelsArray.length === 0) {
-                whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"];
-            }
-
             const uniqueChannels = [...new Set(whitelistedChannelsArray)];
 
             uniqueChannels.forEach(channelId => {
-                // ऑर्डर को 'date' से हटाकर 'viewCount' या डिफ़ॉल्ट किया ताकि नया की कोटा ब्लॉक न हो
                 let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
                 
-                if(searchFilterQuery) {
-                    apiUrl += `&q=${encodeURIComponent(searchFilterQuery)}`;
+                if(currentActiveFilterQuery) {
+                    apiUrl += `&q=${encodeURIComponent(currentActiveFilterQuery)}`;
+                }
+                
+                // अगर इस चैनल का अगला पेज उपलब्ध है, तो उसे टोकन के साथ लोड करें
+                if (channelTokensMap[channelId]) {
+                    apiUrl += `&pageToken=${channelTokensMap[channelId]}`;
                 }
 
-                let request = fetch(apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP Error! Status: ${res.status}`);
-                    }
-                    return res.json();
-                })
+                let request = fetch(apiUrl)
+                .then(res => res.json())
                 .then(data => {
                     if (data && data.items) {
                         compiledVideosMasterList.push(...data.items);
                     }
+                    // अगले स्क्रॉल के लिए नया पेज टोकन सेव करें
+                    if (data && data.nextPageToken) {
+                        channelTokensMap[channelId] = data.nextPageToken;
+                    } else {
+                        delete channelTokensMap[channelId]; // अगर वीडियो खत्म हो जाएं
+                    }
                 })
-                .catch(err => {
-                    console.error("🚨 YouTube API Network Packet Error:", err);
-                });
+                .catch(err => console.error("🚨 API Request Error:", err));
+                
                 apiPromises.push(request);
             });
 
             await Promise.all(apiPromises);
 
-            // अगर किसी वजह से मास्टर लिस्ट फिर भी खाली रह जाए (सुरक्षा बैकअप लॉजिक)
-            if (compiledVideosMasterList.length === 0) {
-                shell.innerHTML = `
-                    <div class="pulse-placeholder" style="color: var(--yt-red); font-weight: 600;">
-                        ⚠️ API Network Response Paused.<br>
-                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">
-                            अमन भाई, ब्राउज़र इस समय लाइव यूट्यूब रिक्वेस्ट ब्लॉक कर रहा है। <br>
-                            इसे देखने के लिए स्क्रीन पर राइट-क्लिक करके <b>Inspect</b> दबाएं और <b>Console</b> टैब में देखें कि क्या लाल रंग का एरर आ रहा है।
-                        </span>
-                    </div>`;
-                return;
-            }
-
-            // ताज़ा वीडियो सबसे ऊपर लाने के लिए सॉर्टिंग
+            // वीडियोस को ताज़ा तारीख के अनुसार व्यवस्थित करें
             compiledVideosMasterList.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
 
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
+            isFetchingNextPageBatch = false;
+            document.getElementById('infiniteScrollLoaderUI').style.display = 'none';
         }
 
-        // ================= 🔀 LAYOUT MATRIX: MIXING VIDEOS & SHORTS =================
+        // ================= 🔀 LAYOUT MATRIX: VIDEOS & SHORTS GRID =================
         function buildRandomizedYoutubeLayout(items) {
             const shell = document.getElementById('globalHomeFeedShell');
             if(!items || items.length === 0) {
                 shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos detected in this zone.</div>`;
                 return;
             }
-            shell.innerHTML = "";
+            
+            shell.innerHTML = ""; // हर बार नया क्लीन लेआउट
 
-            const randomPlacementBarrier = Math.random() > 0.5 ? 3 : 6; 
-
-            let gridHtmlBuffer = `<div class="long-videos-grid">`;
+            let currentGridBuffer = `<div class="long-videos-grid">`;
             let renderedCounter = 0;
-            let shortsInjectedFlag = false;
+            let totalItemsCount = items.length;
 
             items.forEach((video, index) => {
                 const vidId = video.id.videoId || video.id;
                 const snip = video.snippet;
                 const letter = snip.channelTitle.charAt(0).toUpperCase();
 
-                gridHtmlBuffer += `
+                currentGridBuffer += `
                     <div class="yt-video-card" onclick="alert('Launching secure player mode! ID: ${vidId}')">
                         <div class="thumbnail-wrapper"><img src="${snip.thumbnails.medium.url}" alt="Thumbnail"></div>
                         <div class="video-meta-row">
@@ -292,25 +283,25 @@
                 `;
                 renderedCounter++;
 
-                if(renderedCounter === randomPlacementBarrier || (renderedCounter === 6 && index === items.length - 1)) {
-                    gridHtmlBuffer += `</div>`;
-                    shell.innerHTML += gridHtmlBuffer;
-                    gridHtmlBuffer = `<div class="long-videos-grid">`; 
+                // हर 6 लॉन्ग वीडियो ग्रिड के बाद एक शॉर्ट्स शेल्फ डालें
+                if (renderedCounter % 6 === 0 || index === totalItemsCount - 1) {
+                    currentGridBuffer += `</div>`;
+                    shell.innerHTML += currentGridBuffer;
+                    
+                    // अगले स्लॉट के लिए ग्रिड री-ओपन करें
+                    if (index !== totalItemsCount - 1) {
+                        currentGridBuffer = `<div class="long-videos-grid">`;
+                    }
 
-                    if(!shortsInjectedFlag) {
-                        shell.innerHTML += injectShortsShelfHtmlSection(items);
-                        shortsInjectedFlag = true;
+                    // बीच में रैंडम शॉर्ट्स इन्जेक्ट करना
+                    if (renderedCounter % 6 === 0 && index >= 5) {
+                        shell.innerHTML += injectShortsShelfHtmlSection(items, index);
                     }
                 }
             });
-
-            if(renderedCounter > randomPlacementBarrier && renderedCounter % 3 !== 0) {
-                gridHtmlBuffer += `</div>`;
-                shell.innerHTML += gridHtmlBuffer;
-            }
         }
 
-        function injectShortsShelfHtmlSection(items) {
+        function injectShortsShelfHtmlSection(items, currentIndex) {
             let shortsSection = `
                 <div class="shorts-shelf-section">
                     <div class="shorts-header">
@@ -320,7 +311,9 @@
                     <div class="shorts-6-matrix">
             `;
 
-            items.slice(4, 10).forEach(short => {
+            // वर्तमान इंडेक्स के आधार पर अगले 6 वीडियो को शॉर्ट्स की तरह काटें
+            let sliceStart = currentIndex - 4 > 0 ? currentIndex - 4 : 0;
+            items.slice(sliceStart, sliceStart + 6).forEach(short => {
                 const vidId = short.id.videoId || short.id;
                 shortsSection += `
                     <div class="yt-short-card" onclick="alert('Launching Shorts Loop! ID: ${vidId}')">
@@ -342,11 +335,22 @@
             btn.classList.add('active');
 
             if(targetKeyword === 'all') {
-                fetchMultiChannelDataPipeline();
+                resetAndInitialFetchFeed();
             } else {
-                fetchMultiChannelDataPipeline(targetKeyword);
+                resetAndInitialFetchFeed(targetKeyword);
             }
         }
+
+        // ================= 🔄 DETECT WINDOW SCROLL (INFINITE SCROLL ENGINE) =================
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 150) {
+                // अगर टोकन्स बचे हैं और कोई फेचिंग प्रोसेस चालू नहीं है
+                if (!isFetchingNextPageBatch && Object.keys(channelTokensMap).length > 0) {
+                    document.getElementById('infiniteScrollLoaderUI').style.display = 'block';
+                    fetchMultiChannelDataPipeline();
+                }
+            }
+        });
 
         // ================= 📡 PARENT DASHBOARD SCRIPT MESSENGER SIGNALS =================
         window.addEventListener('message', function(event) {
@@ -361,7 +365,7 @@
             }
             
             if (messagePacket.type === 'search') {
-                fetchMultiChannelDataPipeline(messagePacket.value);
+                resetAndInitialFetchFeed(messagePacket.value);
             }
         });
 
