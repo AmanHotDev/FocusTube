@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube Home Feed 🏠</title>
+    <style>
+        /* ================= 🎨 YOUTUBE LIGHT THEME (DEFAULT) ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --yt-red: #ff0000;
+            --bg-home: #ffffff;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --tag-bg: #f2f2f2;
+            --tag-text: #0f0f0f;
+            --tag-active-bg: #0f0f0f;
+            --tag-active-text: #ffffff;
+            --border-color: #e5e5e5;
+            --icon-filter: none;
+        }
+
+        /* 🌙 DASHBOARD SYNC: TRUE DARK MODE INTERNAL */
+        body.dark-mode {
+            --bg-home: #0f0f0f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --tag-bg: #272727;
+            --tag-text: #ffffff;
+            --tag-active-bg: #ffffff;
+            --tag-active-text: #0f0f0f;
+            --border-color: #303030;
+            --icon-filter: invert(1);
+        }
+
+        body { background-color: var(--bg-home); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 12px 24px 40px 24px; overflow-x: hidden; }
+
+        /* 🏷️ YOUTUBE STYLE SCROLLABLE TAGS BAR */
+        .tags-carousel-container { display: flex; gap: 12px; overflow-x: auto; padding: 4px 0 16px 0; background: var(--bg-home); position: sticky; top: 0; z-index: 50; scrollbar-width: none; }
+        .tags-carousel-container::-webkit-scrollbar { display: none; }
+        
+        .yt-tag-btn { background: var(--tag-bg); color: var(--tag-text); border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.88rem; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background 0.1s; }
+        .yt-tag-btn:hover { background: var(--border-color); }
+        .yt-tag-btn.active { background: var(--tag-active-bg); color: var(--tag-active-text); }
+
+        /* ================= 📺 BOLDEST YOUTUBE VIDEO FEED STRUCTURE ================= */
+        .feed-container-stream { display: flex; flex-direction: column; gap: 40px; margin-top: 12px; }
+        
+        /* 3x2 Matrix Grid for Production Video Blocks */
+        .long-videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; row-gap: 32px; }
+        
+        .yt-video-card { display: flex; flex-direction: column; gap: 12px; cursor: pointer; background: transparent; }
+        .thumbnail-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
+        .yt-video-card:hover .thumbnail-wrapper { border-radius: 0px; }
+        .thumbnail-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .video-meta-row { display: flex; gap: 12px; padding: 0 4px; }
+        .channel-avatar-mock { width: 36px; height: 36px; border-radius: 50%; background: var(--tag-bg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; border: 1px solid var(--border-color); }
+        
+        .text-meta-block { flex: 1; overflow: hidden; }
+        .video-title-string { font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+        .channel-name-string { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
+
+        /* ================= 📱 EXQUISITE RANDOM SHORTS PIPELINE ================= */
+        .shorts-shelf-section { display: flex; flex-direction: column; gap: 16px; border-top: 4px solid var(--border-color); border-bottom: 4px solid var(--border-color); padding: 24px 0; margin: 16px 0; }
+        
+        .shorts-header { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+        .shorts-icon-img { width: 20px; height: 24px; object-fit: contain; filter: var(--icon-filter); }
+
+        /* 6 Shorts Flat Layout Grid */
+        .shorts-6-matrix { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+        
+        .yt-short-card { aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.15s; }
+        .yt-short-card:hover { transform: scale(1.02); }
+        .yt-short-card img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .shorts-text-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%); display: flex; align-items: flex-end; padding: 12px; }
+        .shorts-title-string { color: white; font-size: 0.8rem; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+        .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+
+        @media (max-width: 1024px) {
+            .shorts-6-matrix { grid-template-columns: repeat(3, 1fr); gap: 10px; row-gap: 16px; }
+        }
+        @media (max-width: 480px) {
+            .long-videos-grid { grid-template-columns: 1fr; }
+            .shorts-6-matrix { grid-template-columns: repeat(2, 1fr); }
+            body { padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR -->
+    <div class="tags-carousel-container" id="tagsCarouselShell">
+        <button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>
+        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Khan Sir')">Khan Sir</button>
+        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Dear Sir')">Dear Sir</button>
+        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Mathematics')">Mathematics</button>
+        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Science')">Science</button>
+    </div>
+
+    <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
+    <div class="feed-container-stream" id="globalHomeFeedShell">
+        <div class="pulse-placeholder">Connecting to secure terminal arrays...</div>
+    </div>
+
+    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🎯 FIREBASE PROJECT INSTANCE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const YT_GATEWAY_KEY = "AIzaSyB-WbOhuN0GGc9LnoCBYScB6bkioXZuXnY";
+        let currentUser = null;
+        let whitelistedChannelsArray = [];
+        let compiledVideosMasterList = []; // सभी चैनलों के मिक्स्ड वीडियोस होल्ड करने के लिए
+
+        // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
+        function establishFirestoreSyncNode() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    
+                    // लाइव पैरेंट कलेक्शन 'pinned_channels' को ट्रैक करना
+                    db.collection("pinned_channels").where("parentUid", "==", currentUser.uid)
+                        .onSnapshot((snapshot) => {
+                            whitelistedChannelsArray = [];
+                            snapshot.forEach(doc => whitelistedChannelsArray.push(doc.data().channelId));
+                            
+                            // Safe Default: अगर अभी तक पैरेंट्स ने कोई चैनल लॉक नहीं किया है
+                            if(whitelistedChannelsArray.length === 0) {
+                                whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"]; // डियर सर, खान सर
+                            }
+                            fetchMultiChannelDataPipeline();
+                        }, err => {
+                            whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"];
+                            fetchMultiChannelDataPipeline();
+                        });
+                }
+            });
+        }
+
+        // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR =================
+        async function fetchMultiChannelDataPipeline(searchFilterQuery = "") {
+            const shell = document.getElementById('globalHomeFeedShell');
+            shell.innerHTML = `<div class="pulse-placeholder">Compiling secure classroom grid from pinned creators...</div>`;
+            
+            compiledVideosMasterList = [];
+            let apiPromises = [];
+
+            whitelistedChannelsArray.forEach(channelId => {
+                let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=8&order=date&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
+                
+                // अगर कोई स्पेसिफिक टैग या सर्च क्वेरी एक्टिव है
+                if(searchFilterQuery) {
+                    apiUrl += `&q=${encodeURIComponent(searchFilterQuery)}`;
+                }
+
+                let request = fetch(apiUrl)
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.items) compiledVideosMasterList.push(...data.items);
+                    })
+                    .catch(err => console.log("API Fetch Error for ID: " + channelId));
+                apiPromises.push(request);
+            });
+
+            await Promise.all(apiPromises);
+
+            // ताज़ा वीडियो सबसे ऊपर लाने के लिए टाइमस्टैम्प सॉर्टिंग
+            compiledVideosMasterList.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
+
+            buildRandomizedYoutubeLayout(compiledVideosMasterList);
+        }
+
+        // ================= 🔀 LAYOUT MATRIX: MIXING VIDEOS & SHORTS =================
+        function buildRandomizedYoutubeLayout(items) {
+            const shell = document.getElementById('globalHomeFeedShell');
+            if(!items || items.length === 0) {
+                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos detected in this zone.</div>`;
+                return;
+            }
+            shell.innerHTML = "";
+
+            // रैंडम नंबर जनरेटर: शॉर्ट्स कभी 3 वीडियो के बाद (1 रो) तो कभी 6 वीडियो के बाद (2 रो) पॉप-अप होंगे
+            const randomPlacementBarrier = Math.random() > 0.5 ? 3 : 6; 
+
+            let gridHtmlBuffer = `<div class="long-videos-grid">`;
+            let renderedCounter = 0;
+            let shortsInjectedFlag = false;
+
+            items.forEach((video, index) => {
+                const vidId = video.id.videoId || video.id;
+                const snip = video.snippet;
+                const letter = snip.channelTitle.charAt(0).toUpperCase();
+
+                gridHtmlBuffer += `
+                    <div class="yt-video-card" onclick="alert('Launching secure player mode! ID: ${vidId}')">
+                        <div class="thumbnail-wrapper"><img src="${snip.thumbnails.medium.url}" alt="Thumbnail"></div>
+                        <div class="video-meta-row">
+                            <div class="channel-avatar-mock">${letter}</div>
+                            <div class="text-meta-block">
+                                <h4 class="video-title-string">${snip.title}</h4>
+                                <p class="channel-name-string">${snip.channelTitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                renderedCounter++;
+
+                // जब रैंडम बैरियर हिट हो या 6 वीडियोस पूरे हों, रो क्लोज करें
+                if(renderedCounter === randomPlacementBarrier || (renderedCounter === 6 && index === items.length - 1)) {
+                    gridHtmlBuffer += `</div>`;
+                    shell.innerHTML += gridHtmlBuffer;
+                    gridHtmlBuffer = `<div class="long-videos-grid">`; // री-ओपन न्यू ग्रिड
+
+                    if(!shortsInjectedFlag) {
+                        shell.innerHTML += injectShortsShelfHtmlSection(items);
+                        shortsInjectedFlag = true;
+                    }
+                }
+            });
+
+            // बचे हुए कार्ड्स को सेफ क्लोजर देना
+            if(renderedCounter > randomPlacementBarrier && renderedCounter % 3 !== 0) {
+                gridHtmlBuffer += `</div>`;
+                shell.innerHTML += gridHtmlBuffer;
+            }
+        }
+
+        function injectShortsShelfHtmlSection(items) {
+            let shortsSection = `
+                <div class="shorts-shelf-section">
+                    <div class="shorts-header">
+                        <img src="path_to_shorts_black_white_icon.png" alt="Shorts" class="shorts-icon-img">
+                        Shorts
+                    </div>
+                    <div class="shorts-6-matrix">
+            `;
+
+            // क्रॉपिंग एस्पेक्ट पर 6 शॉर्ट्स को फ़्लैट रेंडर करना
+            items.slice(4, 10).forEach(short => {
+                const vidId = short.id.videoId || short.id;
+                shortsSection += `
+                    <div class="yt-short-card" onclick="alert('Launching Shorts Loop! ID: ${vidId}')">
+                        <img src="${short.snippet.thumbnails.medium.url}" alt="Shorts">
+                        <div class="shorts-text-overlay">
+                            <h4 class="shorts-title-string">${short.snippet.title}</h4>
+                        </div>
+                    </div>
+                `;
+            });
+
+            shortsSection += `</div></div>`;
+            return shortsSection;
+        }
+
+        // ================= 🏷️ TOP CATEGORY TAGS FILTER EXECUTION =================
+        function filterTagsEngine(btn, targetKeyword) {
+            document.querySelectorAll('.yt-tag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if(targetKeyword === 'all') {
+                fetchMultiChannelDataPipeline();
+            } else {
+                fetchMultiChannelDataPipeline(targetKeyword);
+            }
+        }
+
+        // ================= 📡 PARENT DASHBOARD SCRIPT MESSENGER SIGNALS =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            
+            // 1. पैरेंट विंडो से थीम बदलने का सिग्नल कैच करना
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+            
+            // 2. पैरेंट विंडो के सर्च बार से क्वेरी कैच करके फ़िल्टर करना
+            if (messagePacket.type === 'search') {
+                fetchMultiChannelDataPipeline(messagePacket.value);
+            }
+        });
+
+        // इनिशियलाइज़ेशन लोड
+        window.addEventListener('DOMContentLoaded', establishFirestoreSyncNode);
+    </script>
+</body>
+</html>
