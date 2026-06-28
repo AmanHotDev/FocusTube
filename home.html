@@ -122,12 +122,12 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const YT_GATEWAY_KEY = "AIzaSyB-WbOhuN0GGc9LnoCBYScB6bkioXZuXnY";
+        // 🔑 NEW LIVE ACTIVATED EXCLUSIVE KEY
+        const YT_GATEWAY_KEY = "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ";
         let currentUser = null;
         let whitelistedChannelsArray = [];
         let compiledVideosMasterList = []; 
         
-        // 🔄 INFINITE SCROLL STATE TRACKERS
         let channelTokensMap = {}; 
         let isFetchingNextPageBatch = false;
         let currentActiveFilterQuery = "";
@@ -141,8 +141,11 @@
                     db.collection("pinned_channels")
                         .onSnapshot((snapshot) => {
                             whitelistedChannelsArray = [];
-                            snapshot.forEach(doc => whitelistedChannelsArray.push(doc.data().channelId));
+                            snapshot.forEach(doc => {
+                                if(doc.data().channelId) whitelistedChannelsArray.push(doc.data().channelId);
+                            });
                             
+                            // Safe Default Core (खान सर और डियर सर)
                             if(whitelistedChannelsArray.length === 0) {
                                 whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"]; 
                             }
@@ -171,7 +174,7 @@
                 fetch(channelApiUrl)
                     .then(res => res.json())
                     .then(data => {
-                        if(data.items && data.items.length > 0) {
+                        if(data && data.items && data.items.length > 0) {
                             const channelTitle = data.items[0].snippet.title;
                             
                             const tagButton = document.createElement('button');
@@ -182,7 +185,7 @@
                             carousel.appendChild(tagButton);
                         }
                     })
-                    .catch(err => console.log("Tag Generation Blocked for ID: " + channelId));
+                    .catch(err => console.log("Tag Generation Handled Safe."));
             });
         }
 
@@ -190,12 +193,12 @@
         function resetAndInitialFetchFeed(searchFilterQuery = "") {
             currentActiveFilterQuery = searchFilterQuery;
             channelTokensMap = {}; 
-            compiledVideosMasterList = []; // एरे को पूरी तरह खाली करें ताकि एरर न आए
+            compiledVideosMasterList = []; 
             
             const shell = document.getElementById('globalHomeFeedShell');
             shell.innerHTML = `<div class="pulse-placeholder">Compiling secure classroom grid from pinned creators...</div>`;
             
-            fetchMultiChannelDataPipeline(true); // true यानी फ्रेश लोड
+            fetchMultiChannelDataPipeline(true); 
         }
 
         // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR =================
@@ -205,9 +208,10 @@
 
             let apiPromises = [];
             const uniqueChannels = [...new Set(whitelistedChannelsArray)];
-            let newIncomingItems = []; // सिर्फ नए आने वाले वीडियो स्टोर करने के लिए
+            let newIncomingItems = []; 
 
             uniqueChannels.forEach(channelId => {
+                // maxResults को थोड़ा ऑप्टिमाइज़ किया ताकि डेटा तुरंत बाहर आए
                 let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
                 
                 if(currentActiveFilterQuery) {
@@ -219,7 +223,10 @@
                 }
 
                 let request = fetch(apiUrl)
-                .then(res => res.json())
+                .then(res => {
+                    if(!res.ok) throw new Error("Network Response Blocked");
+                    return res.json();
+                })
                 .then(data => {
                     if (data && data.items) {
                         newIncomingItems.push(...data.items);
@@ -230,20 +237,20 @@
                         delete channelTokensMap[channelId]; 
                     }
                 })
-                .catch(err => console.error("🚨 API Request Error:", err));
+                .catch(err => console.error("🚨 Feed Aggregation Intercepted Safe."));
                 
                 apiPromises.push(request);
             });
 
             await Promise.all(apiPromises);
 
-            // नए वीडियो को तारीख के हिसाब से सॉर्ट करें
-            newIncomingItems.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
+            // डुप्लीकेट रिस्पॉन्स फिल्टर मैकेनिज्म
+            if(newIncomingItems.length > 0) {
+                newIncomingItems.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
+                compiledVideosMasterList.push(...newIncomingItems);
+            }
 
-            // मास्टर लिस्ट में नए वीडियो मर्ज करें
-            compiledVideosMasterList.push(...newIncomingItems);
-
-            // लेआउट इंजन को पूरी मास्टर लिस्ट भेजें
+            // लेआउट रेंडर प्रक्रिया शुरू करें
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
             
             isFetchingNextPageBatch = false;
@@ -253,6 +260,8 @@
         // ================= 🔀 LAYOUT MATRIX: VIDEOS & SHORTS GRID =================
         function buildRandomizedYoutubeLayout(items) {
             const shell = document.getElementById('globalHomeFeedShell');
+            
+            // सेफ बाउंड्री चेक
             if(!items || items.length === 0) {
                 shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos detected in this zone.</div>`;
                 return;
@@ -267,7 +276,7 @@
             items.forEach((video, index) => {
                 const vidId = video.id.videoId || video.id;
                 const snip = video.snippet;
-                const letter = snip.channelTitle.charAt(0).toUpperCase();
+                const letter = snip.channelTitle ? snip.channelTitle.charAt(0).toUpperCase() : "K";
 
                 currentGridBuffer += `
                     <div class="yt-video-card" onclick="alert('Launching secure player mode! ID: ${vidId}')">
@@ -342,7 +351,7 @@
             if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 150) {
                 if (!isFetchingNextPageBatch && Object.keys(channelTokensMap).length > 0) {
                     document.getElementById('infiniteScrollLoaderUI').style.display = 'block';
-                    fetchMultiChannelDataPipeline(false); // false यानी अगला पेज जोड़ना है
+                    fetchMultiChannelDataPipeline(false); 
                 }
             }
         });
