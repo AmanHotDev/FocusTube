@@ -92,13 +92,10 @@
 </head>
 <body>
 
-    <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR -->
+    <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR (DYNAMICS GENERATED) -->
     <div class="tags-carousel-container" id="tagsCarouselShell">
         <button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>
-        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Khan Sir')">Khan Sir</button>
-        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Dear Sir')">Dear Sir</button>
-        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Mathematics')">Mathematics</button>
-        <button class="yt-tag-btn" onclick="filterTagsEngine(this, 'Science')">Science</button>
+        <!-- माता-पिता द्वारा जोड़े गए चैनलों के नाम यहाँ ऑटोमैटिकली आ जाएंगे -->
     </div>
 
     <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
@@ -129,7 +126,7 @@
         const YT_GATEWAY_KEY = "AIzaSyB-WbOhuN0GGc9LnoCBYScB6bkioXZuXnY";
         let currentUser = null;
         let whitelistedChannelsArray = [];
-        let compiledVideosMasterList = []; // सभी चैनलों के मिक्स्ड वीडियोस होल्ड करने के लिए
+        let compiledVideosMasterList = []; 
 
         // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
         function establishFirestoreSyncNode() {
@@ -137,22 +134,59 @@
                 if (user) {
                     currentUser = user;
                     
-                    // लाइव पैरेंट कलेक्शन 'pinned_channels' को ट्रैक करना
-                    db.collection("pinned_channels").where("parentUid", "==", currentUser.uid)
+                    // लाइव पैरेंट कलेक्शन 'pinned_channels' को बिना किसी UID फ़िल्टर के ट्रैक करना
+                    db.collection("pinned_channels")
                         .onSnapshot((snapshot) => {
                             whitelistedChannelsArray = [];
                             snapshot.forEach(doc => whitelistedChannelsArray.push(doc.data().channelId));
                             
-                            // Safe Default: अगर अभी तक पैरेंट्स ने कोई चैनल लॉक नहीं किया है
+                            // Safe Default: अगर फायरबेस में कोई डेटा न हो
                             if(whitelistedChannelsArray.length === 0) {
-                                whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"]; // डियर सर, खान सर
+                                whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"]; 
                             }
+                            
+                            // 1. सबसे पहले डायनेमिक बटन्स (Tags) लोड करो
+                            generateDynamicCategoryTags();
+                            // 2. फिर वीडियो फीड कंपाइल करो
                             fetchMultiChannelDataPipeline();
                         }, err => {
-                            whitelistedChannelsArray = ["UCwAdPRX48N01M6ywN1fI85A", "UCioThmkvwUorIisXPrx766A"];
+                            whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"];
+                            generateDynamicCategoryTags();
                             fetchMultiChannelDataPipeline();
                         });
                 }
+            });
+        }
+
+        // ================= 🏷️ DYNAMIC CATEGORY TAGS GENERATOR ENGINE =================
+        function generateDynamicCategoryTags() {
+            const carousel = document.getElementById('tagsCarouselShell');
+            // 'All' बटन को छोड़कर पुराना डेटा साफ़ करें
+            carousel.innerHTML = `<button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>`;
+            
+            // डुप्लीकेट चैनल आईडी हटाएं
+            const uniqueChannels = [...new Set(whitelistedChannelsArray)];
+
+            uniqueChannels.forEach(channelId => {
+                // यूट्यूब एपीआई से प्रत्येक चैनल का असली नाम पता करना
+                const channelApiUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${YT_GATEWAY_KEY}`;
+                
+                fetch(channelApiUrl)
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.items && data.items.length > 0) {
+                            const channelTitle = data.items[0].snippet.title;
+                            
+                            // नया डायनेमिक बटन बनाएं और शेल्फ में जोड़ें
+                            const tagButton = document.createElement('button');
+                            tagButton.className = 'yt-tag-btn';
+                            tagButton.innerText = channelTitle;
+                            tagButton.onclick = function() { filterTagsEngine(this, channelTitle); };
+                            
+                            carousel.appendChild(tagButton);
+                        }
+                    })
+                    .catch(err => console.log("Tag Generation Blocked for ID: " + channelId));
             });
         }
 
@@ -163,11 +197,11 @@
             
             compiledVideosMasterList = [];
             let apiPromises = [];
+            const uniqueChannels = [...new Set(whitelistedChannelsArray)];
 
-            whitelistedChannelsArray.forEach(channelId => {
+            uniqueChannels.forEach(channelId => {
                 let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=8&order=date&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
                 
-                // अगर कोई स्पेसिफिक टैग या सर्च क्वेरी एक्टिव है
                 if(searchFilterQuery) {
                     apiUrl += `&q=${encodeURIComponent(searchFilterQuery)}`;
                 }
@@ -183,7 +217,7 @@
 
             await Promise.all(apiPromises);
 
-            // ताज़ा वीडियो सबसे ऊपर लाने के लिए टाइमस्टैम्प सॉर्टिंग
+            // वीडियोस को तारीख के हिसाब से सॉर्ट करें
             compiledVideosMasterList.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
 
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
@@ -198,7 +232,6 @@
             }
             shell.innerHTML = "";
 
-            // रैंडम नंबर जनरेटर: शॉर्ट्स कभी 3 वीडियो के बाद (1 रो) तो कभी 6 वीडियो के बाद (2 रो) पॉप-अप होंगे
             const randomPlacementBarrier = Math.random() > 0.5 ? 3 : 6; 
 
             let gridHtmlBuffer = `<div class="long-videos-grid">`;
@@ -224,11 +257,10 @@
                 `;
                 renderedCounter++;
 
-                // जब रैंडम बैरियर हिट हो या 6 वीडियोस पूरे हों, रो क्लोज करें
                 if(renderedCounter === randomPlacementBarrier || (renderedCounter === 6 && index === items.length - 1)) {
                     gridHtmlBuffer += `</div>`;
                     shell.innerHTML += gridHtmlBuffer;
-                    gridHtmlBuffer = `<div class="long-videos-grid">`; // री-ओपन न्यू ग्रिड
+                    gridHtmlBuffer = `<div class="long-videos-grid">`; 
 
                     if(!shortsInjectedFlag) {
                         shell.innerHTML += injectShortsShelfHtmlSection(items);
@@ -237,7 +269,6 @@
                 }
             });
 
-            // बचे हुए कार्ड्स को सेफ क्लोजर देना
             if(renderedCounter > randomPlacementBarrier && renderedCounter % 3 !== 0) {
                 gridHtmlBuffer += `</div>`;
                 shell.innerHTML += gridHtmlBuffer;
@@ -254,7 +285,6 @@
                     <div class="shorts-6-matrix">
             `;
 
-            // क्रॉपिंग एस्पेक्ट पर 6 शॉर्ट्स को फ़्लैट रेंडर करना
             items.slice(4, 10).forEach(short => {
                 const vidId = short.id.videoId || short.id;
                 shortsSection += `
@@ -287,7 +317,6 @@
         window.addEventListener('message', function(event) {
             const messagePacket = event.data;
             
-            // 1. पैरेंट विंडो से थीम बदलने का सिग्नल कैच करना
             if (messagePacket.type === 'theme') {
                 if (messagePacket.mode === 'dark') {
                     document.body.classList.add('dark-mode');
@@ -296,13 +325,11 @@
                 }
             }
             
-            // 2. पैरेंट विंडो के सर्च बार से क्वेरी कैच करके फ़िल्टर करना
             if (messagePacket.type === 'search') {
                 fetchMultiChannelDataPipeline(messagePacket.value);
             }
         });
 
-        // इनिशियलाइज़ेशन लोड
         window.addEventListener('DOMContentLoaded', establishFirestoreSyncNode);
     </script>
 </body>
