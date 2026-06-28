@@ -18,7 +18,6 @@
             --tag-active-bg: #0f0f0f;
             --tag-active-text: #ffffff;
             --border-color: #e5e5e5;
-            --icon-filter: none;
         }
 
         /* 🌙 DASHBOARD SYNC: TRUE DARK MODE INTERNAL */
@@ -31,7 +30,6 @@
             --tag-active-bg: #ffffff;
             --tag-active-text: #0f0f0f;
             --border-color: #303030;
-            --icon-filter: invert(1);
         }
 
         body { background-color: var(--bg-home); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 12px 24px 40px 24px; overflow-x: hidden; }
@@ -44,49 +42,25 @@
         .yt-tag-btn:hover { background: var(--border-color); }
         .yt-tag-btn.active { background: var(--tag-active-bg); color: var(--tag-active-text); }
 
-        /* ================= 📺 BOLDEST YOUTUBE VIDEO FEED STRUCTURE ================= */
+        /* ================= 📺 BOLDEST YOUTUBE PLAYLIST FEED STRUCTURE ================= */
         .feed-container-stream { display: flex; flex-direction: column; gap: 40px; margin-top: 12px; }
-        
-        /* 3x2 Matrix Grid for Production Video Blocks */
-        .long-videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; row-gap: 32px; }
+        .long-videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; row-gap: 32px; }
         
         .yt-video-card { display: flex; flex-direction: column; gap: 12px; cursor: pointer; background: transparent; }
-        .thumbnail-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
-        .yt-video-card:hover .thumbnail-wrapper { border-radius: 0px; }
-        .thumbnail-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .thumbnail-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border-color); }
+        .thumbnail-wrapper iframe { width: 100%; height: 100%; border: none; }
         
         .video-meta-row { display: flex; gap: 12px; padding: 0 4px; }
-        .channel-avatar-mock { width: 36px; height: 36px; border-radius: 50%; background: var(--tag-bg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; border: 1px solid var(--border-color); }
+        .channel-avatar-mock { width: 36px; height: 36px; border-radius: 50%; background: var(--yt-red); color: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
         
         .text-meta-block { flex: 1; overflow: hidden; }
-        .video-title-string { font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+        .video-title-string { font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); margin-bottom: 4px; }
         .channel-name-string { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
 
-        /* ================= 📱 EXQUISITE RANDOM SHORTS PIPELINE ================= */
-        .shorts-shelf-section { display: flex; flex-direction: column; gap: 16px; border-top: 4px solid var(--border-color); border-bottom: 4px solid var(--border-color); padding: 24px 0; margin: 16px 0; }
-        
-        .shorts-header { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
-        .shorts-icon-img { width: 20px; height: 24px; object-fit: contain; filter: var(--icon-filter); }
+        .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
 
-        /* 6 Shorts Flat Layout Grid */
-        .shorts-6-matrix { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-        
-        .yt-short-card { aspect-ratio: 9/16; background: #000; border-radius: 12px; overflow: hidden; position: relative; cursor: pointer; transition: transform 0.15s; }
-        .yt-short-card:hover { transform: scale(1.02); }
-        .yt-short-card img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .shorts-text-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%); display: flex; align-items: flex-end; padding: 12px; }
-        .shorts-title-string { color: white; font-size: 0.8rem; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-
-        .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-        .scroll-loader { text-align: center; padding: 20px; font-weight: 500; color: var(--yt-red); display: none; }
-
-        @media (max-width: 1024px) {
-            .shorts-6-matrix { grid-template-columns: repeat(3, 1fr); gap: 10px; row-gap: 16px; }
-        }
         @media (max-width: 480px) {
             .long-videos-grid { grid-template-columns: 1fr; }
-            .shorts-6-matrix { grid-template-columns: repeat(2, 1fr); }
             body { padding: 10px 12px; }
         }
     </style>
@@ -95,16 +69,16 @@
 
     <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR -->
     <div class="tags-carousel-container" id="tagsCarouselShell">
-        <button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>
+        <button class="yt-tag-btn active" onclick="filterPlaylistEngine('all')">All Classrooms</button>
+        <button class="yt-tag-btn" onclick="filterPlaylistEngine('Mathematics')">Mathematics</button>
+        <button class="yt-tag-btn" onclick="filterPlaylistEngine('Science')">Science</button>
+        <button class="yt-tag-btn" onclick="filterPlaylistEngine('English')">English</button>
     </div>
 
     <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
     <div class="feed-container-stream" id="globalHomeFeedShell">
-        <div class="pulse-placeholder">Connecting to secure terminal arrays...</div>
+        <div class="pulse-placeholder">Loading secure FocusTube playlists...</div>
     </div>
-
-    <!-- 🔄 BOTTOM SCROLL LOADING INDICATOR -->
-    <div class="scroll-loader" id="infiniteScrollLoaderUI">♻️ Loading more classroom videos...</div>
 
     <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -126,23 +100,19 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 🔑 NEW LIVE ACTIVATED EXCLUSIVE KEY
-        const YT_GATEWAY_KEY = "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ";
         let currentUser = null;
         
-        // 🚀 HARD RESET CRITICAL FORCE DEFAULT (ताकि लोड होने की स्पीड 200% बढ़े)
-        let whitelistedChannelsArray = ["UCioThmkvwUorIisXPrx766A", "UCwAdPRX48N01M6ywN1fI85A"]; 
-        let compiledVideosMasterList = []; 
-        
-        let channelTokensMap = {}; 
-        let isFetchingNextPageBatch = false;
-        let currentActiveFilterQuery = "";
+        // ⚡ SAFE DEFAULT PLAYLISTS: (अगर फायरबेस खाली हो तो ये कोर्सेज अपने आप चलेंगे)
+        // खान सर केमिस्ट्री और डियर सर इंग्लिश प्लेलिस्ट आईडी
+        let masterPlaylistsArray = [
+            { playlistId: "PL63X9msY7v_fV_kZ4n68Uu9vG9eCshIeE", title: "Class 10 Chemistry Course", subject: "Science" },
+            { playlistId: "PLM6bCIsg_SknY8O8Zbe9_uYgscz_TeyM6", title: "Complete English Grammar Masterclass", subject: "English" }
+        ];
 
         // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
         function establishFirestoreSyncNode() {
-            // 🔥 सुपर फिक्स: फायरबेस ऑथ के रिस्पॉन्स का इंतज़ार किए बिना पहले डिफॉल्ट चैनल्स तुरंत चला दो!
-            generateDynamicCategoryTags();
-            resetAndInitialFetchFeed();
+            // पहले डिफ़ॉल्ट प्लेलिस्ट तुरंत रेंडर कर दो
+            renderPlaylistGrid(masterPlaylistsArray);
 
             auth.onAuthStateChanged((user) => {
                 if (user) {
@@ -150,226 +120,99 @@
                     
                     db.collection("pinned_channels")
                         .onSnapshot((snapshot) => {
-                            let tempArray = [];
+                            let tempPlaylists = [];
                             snapshot.forEach(doc => {
-                                if(doc.data().channelId) tempArray.push(doc.data().channelId);
+                                const data = doc.data();
+                                // अगर माता-पिता ने 'playlistId' नाम का फील्ड बनाया है
+                                if(data.playlistId) {
+                                    tempPlaylists.push({
+                                        playlistId: data.playlistId,
+                                        title: data.title || "Pinned Classroom Course",
+                                        subject: data.subject || "General"
+                                    });
+                                }
                             });
                             
-                            // अगर फायरबेस में असली पैरेंट डेटा मौजूद है, तो उसे रिप्लेस करो
-                            if(tempArray.length > 0) {
-                                whitelistedChannelsArray = tempArray;
-                                generateDynamicCategoryTags();
-                                resetAndInitialFetchFeed();
+                            if(tempPlaylists.length > 0) {
+                                masterPlaylistsArray = tempPlaylists;
+                                renderPlaylistGrid(masterPlaylistsArray);
                             }
                         }, err => {
-                            console.log("Using safe local channels channel mode.");
+                            console.log("Running on Safe Local Feed Mode.");
                         });
                 }
             });
         }
 
-        // ================= 🏷️ DYNAMIC CATEGORY TAGS GENERATOR ENGINE =================
-        function generateDynamicCategoryTags() {
-            const carousel = document.getElementById('tagsCarouselShell');
-            carousel.innerHTML = `<button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All</button>`;
-            
-            const uniqueChannels = [...new Set(whitelistedChannelsArray)];
-
-            uniqueChannels.forEach(channelId => {
-                const channelApiUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${YT_GATEWAY_KEY}`;
-                
-                fetch(channelApiUrl)
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data && data.items && data.items.length > 0) {
-                            const channelTitle = data.items[0].snippet.title;
-                            
-                            const tagButton = document.createElement('button');
-                            tagButton.className = 'yt-tag-btn';
-                            tagButton.innerText = channelTitle;
-                            tagButton.onclick = function() { filterTagsEngine(this, channelTitle); };
-                            
-                            carousel.appendChild(tagButton);
-                        }
-                    })
-                    .catch(err => console.log("Tag Loaded locally."));
-            });
-        }
-
-        // ================= 📡 INITIAL FETCH PIPELINE RESET =================
-        function resetAndInitialFetchFeed(searchFilterQuery = "") {
-            currentActiveFilterQuery = searchFilterQuery;
-            channelTokensMap = {}; 
-            compiledVideosMasterList = []; 
-            
+        // ================= 🔀 LAYOUT MATRIX: EMBED PLAYER GRID =================
+        function renderPlaylistGrid(playlists) {
             const shell = document.getElementById('globalHomeFeedShell');
-            shell.innerHTML = `<div class="pulse-placeholder">Compiling secure classroom grid from pinned creators...</div>`;
-            
-            fetchMultiChannelDataPipeline(true); 
-        }
-
-        // ================= 📡 MULTI-CHANNEL DATA STREAM AGGREGATOR =================
-        async function fetchMultiChannelDataPipeline(isFreshLoad = false) {
-            if (isFetchingNextPageBatch && !isFreshLoad) return;
-            isFetchingNextPageBatch = true;
-
-            let apiPromises = [];
-            const uniqueChannels = [...new Set(whitelistedChannelsArray)];
-            let newIncomingItems = []; 
-
-            uniqueChannels.forEach(channelId => {
-                let apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=6&channelId=${channelId}&type=video&key=${YT_GATEWAY_KEY}`;
-                
-                if(currentActiveFilterQuery) {
-                    apiUrl += `&q=${encodeURIComponent(currentActiveFilterQuery)}`;
-                }
-                
-                if (!isFreshLoad && channelTokensMap[channelId]) {
-                    apiUrl += `&pageToken=${channelTokensMap[channelId]}`;
-                }
-
-                let request = fetch(apiUrl)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.items) {
-                        newIncomingItems.push(...data.items);
-                    }
-                    if (data && data.nextPageToken) {
-                        channelTokensMap[channelId] = data.nextPageToken;
-                    } else {
-                        delete channelTokensMap[channelId]; 
-                    }
-                })
-                .catch(err => console.error("🚨 API connection secure."));
-                
-                apiPromises.push(request);
-            });
-
-            await Promise.all(apiPromises);
-
-            if(newIncomingItems.length > 0) {
-                newIncomingItems.sort((a, b) => new Date(b.snippet.publishedAt) - new Date(a.snippet.publishedAt));
-                compiledVideosMasterList.push(...newIncomingItems);
-            }
-
-            buildRandomizedYoutubeLayout(compiledVideosMasterList);
-            
-            isFetchingNextPageBatch = false;
-            document.getElementById('infiniteScrollLoaderUI').style.display = 'none';
-        }
-
-        // ================= 🔀 LAYOUT MATRIX: VIDEOS & SHORTS GRID =================
-        function buildRandomizedYoutubeLayout(items) {
-            const shell = document.getElementById('globalHomeFeedShell');
-            
-            if(!items || items.length === 0) {
-                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos detected in this zone.</div>`;
+            if(!playlists || playlists.length === 0) {
+                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom courses pinned yet by parents.</div>`;
                 return;
             }
-            
-            shell.innerHTML = ""; 
 
-            let currentGridBuffer = `<div class="long-videos-grid">`;
-            let renderedCounter = 0;
-            let totalItemsCount = items.length;
+            shell.innerHTML = "";
+            let gridHtmlBuffer = `<div class="long-videos-grid">`;
 
-            items.forEach((video, index) => {
-                const vidId = video.id.videoId || video.id;
-                const snip = video.snippet;
-                const letter = snip.channelTitle ? snip.channelTitle.charAt(0).toUpperCase() : "Y";
+            playlists.forEach(course => {
+                const letter = course.subject ? course.subject.charAt(0).toUpperCase() : "C";
+                
+                // यूट्यूब का ऑफिशियल बिना एपीआई वाला प्लेलिस्ट प्लेयर लिंक
+                const playlistEmbedUrl = `https://www.youtube.com/embed/videoseries?list=${course.playlistId}`;
 
-                currentGridBuffer += `
-                    <div class="yt-video-card" onclick="alert('Launching secure player mode! ID: ${vidId}')">
-                        <div class="thumbnail-wrapper"><img src="${snip.thumbnails.medium.url}" alt="Thumbnail"></div>
+                gridHtmlBuffer += `
+                    <div class="yt-video-card">
+                        <div class="thumbnail-wrapper">
+                            <iframe 
+                                src="${playlistEmbedUrl}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
                         <div class="video-meta-row">
                             <div class="channel-avatar-mock">${letter}</div>
                             <div class="text-meta-block">
-                                <h4 class="video-title-string">${snip.title}</h4>
-                                <p class="channel-name-string">${snip.channelTitle}</p>
+                                <h4 class="video-title-string">${course.title}</h4>
+                                <p class="channel-name-string">Subject: ${course.subject}</p>
                             </div>
                         </div>
                     </div>
                 `;
-                renderedCounter++;
+            });
 
-                if (renderedCounter % 6 === 0 || index === totalItemsCount - 1) {
-                    currentGridBuffer += `</div>`;
-                    shell.innerHTML += currentGridBuffer;
-                    
-                    if (index !== totalItemsCount - 1) {
-                        currentGridBuffer = `<div class="long-videos-grid">`;
-                    }
+            gridHtmlBuffer += `</div>`;
+            shell.innerHTML = gridHtmlBuffer;
+        }
 
-                    if (renderedCounter % 6 === 0 && index >= 5) {
-                        shell.innerHTML += injectShortsShelfHtmlSection(items, index);
-                    }
+        // ================= 🏷️ CATEGORY FILTER LOGIC =================
+        function filterPlaylistEngine(subjectKeyword) {
+            // बटन्स की एक्टिव स्टेट बदलना
+            document.querySelectorAll('.yt-tag-btn').forEach(btn => {
+                if(btn.innerText.toLowerCase().includes(subjectKeyword.toLowerCase()) || (subjectKeyword === 'all' && btn.innerText.includes('All'))) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
                 }
             });
-        }
 
-        function injectShortsShelfHtmlSection(items, currentIndex) {
-            let shortsSection = `
-                <div class="shorts-shelf-section">
-                    <div class="shorts-header">
-                        <img src="path_to_shorts_icon.png" alt="Shorts" class="shorts-icon-img">
-                        Shorts
-                    </div>
-                    <div class="shorts-6-matrix">
-            `;
-
-            let sliceStart = currentIndex - 4 > 0 ? currentIndex - 4 : 0;
-            items.slice(sliceStart, sliceStart + 6).forEach(short => {
-                const vidId = short.id.videoId || short.id;
-                shortsSection += `
-                    <div class="yt-short-card" onclick="alert('Launching Shorts Loop! ID: ${vidId}')">
-                        <img src="${short.snippet.thumbnails.medium.url}" alt="Shorts">
-                        <div class="shorts-text-overlay">
-                            <h4 class="shorts-title-string">${short.snippet.title}</h4>
-                        </div>
-                    </div>
-                `;
-            });
-
-            shortsSection += `</div></div>`;
-            return shortsSection;
-        }
-
-        // ================= 🏷️ TOP CATEGORY TAGS FILTER EXECUTION =================
-        function filterTagsEngine(btn, targetKeyword) {
-            document.querySelectorAll('.yt-tag-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            if(targetKeyword === 'all') {
-                resetAndInitialFetchFeed();
+            if(subjectKeyword === 'all') {
+                renderPlaylistGrid(masterPlaylistsArray);
             } else {
-                resetAndInitialFetchFeed(targetKeyword);
+                const filtered = masterPlaylistsArray.filter(p => p.subject.toLowerCase() === subjectKeyword.toLowerCase());
+                renderPlaylistGrid(filtered);
             }
         }
 
-        // ================= 🔄 DETECT WINDOW SCROLL (INFINITE SCROLL ENGINE) =================
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 150) {
-                if (!isFetchingNextPageBatch && Object.keys(channelTokensMap).length > 0) {
-                    document.getElementById('infiniteScrollLoaderUI').style.display = 'block';
-                    fetchMultiChannelDataPipeline(false); 
-                }
-            }
-        });
-
-        // ================= 📡 PARENT DASHBOARD SCRIPT MESSENGER SIGNALS =================
+        // ================= 📡 PARENT DASHBOARD THEME SYNC SIGNAL =================
         window.addEventListener('message', function(event) {
             const messagePacket = event.data;
-            
             if (messagePacket.type === 'theme') {
                 if (messagePacket.mode === 'dark') {
                     document.body.classList.add('dark-mode');
                 } else {
                     document.body.classList.remove('dark-mode');
                 }
-            }
-            
-            if (messagePacket.type === 'search') {
-                resetAndInitialFetchFeed(messagePacket.value);
             }
         });
 
