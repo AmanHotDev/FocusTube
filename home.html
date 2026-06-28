@@ -134,44 +134,56 @@
             });
         }
 
-        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (1 QUOTA COST) =================
+       // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (ALL VIDEOS FETCH LOOP) =================
         async function fetchPlaylistItemsPipeline(searchFilterQuery = "") {
             const shell = document.getElementById('globalHomeFeedShell');
-            shell.innerHTML = `<div class="pulse-placeholder">Extracting videos from live classrooms...</div>`;
+            shell.innerHTML = `<div class="pulse-placeholder">Extracting all videos from live classrooms...</div>`;
             
             compiledVideosMasterList = [];
             let apiPromises = [];
             const uniquePlaylists = [...new Set(whitelistedPlaylistsArray)];
 
-            uniquePlaylists.forEach(playlistId => {
-                // 🔥 प्लेलिस्ट के अंदर के सारे वीडियो निकालने का सबसे पावरफुल एंडपॉइंट (Cost: Only 1 Quota Point)
-                let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=20&playlistId=${playlistId}&key=${YT_GATEWAY_KEY}`;
+            for (const playlistId of uniquePlaylists) {
+                let nextPageToken = "";
+                let keepFetching = true;
 
-                let request = fetch(apiUrl)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.items) {
-                        data.items.forEach(item => {
-                            // सर्च फ़िल्टर क्वेरी मैच लॉजिक (अगर ऊपर के बटन दबाए जाएँ)
-                            if(searchFilterQuery) {
-                                const title = item.snippet.title.toLowerCase();
-                                if(!title.includes(searchFilterQuery.toLowerCase())) return;
-                            }
-                            compiledVideosMasterList.push(item);
-                        });
+                // जब तक प्लेलिस्ट के सारे पन्ने (Pages) लोड नहीं हो जाते, यह लूप चलता रहेगा
+                while (keepFetching) {
+                    let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${YT_GATEWAY_KEY}`;
+                    
+                    if (nextPageToken) {
+                        apiUrl += `&pageToken=${nextPageToken}`;
                     }
-                })
-                .catch(err => console.error("🚨 Playlist parsing failed for ID: " + playlistId));
-                
-                apiPromises.push(request);
-            });
 
-            await Promise.all(apiPromises);
+                    try {
+                        let res = await fetch(apiUrl);
+                        let data = await res.json();
+
+                        if (data && data.items) {
+                            data.items.forEach(item => {
+                                if (searchFilterQuery) {
+                                    const title = item.snippet.title.toLowerCase();
+                                    if (!title.includes(searchFilterQuery.toLowerCase())) return;
+                                }
+                                compiledVideosMasterList.push(item);
+                            });
+                        }
+
+                        // अगर अगला पेज उपलब्ध है, तो टोकन लेकर अगला स्लॉट लोड करो, नहीं तो लूप बंद करो
+                        if (data && data.nextPageToken) {
+                            nextPageToken = data.nextPageToken;
+                        } else {
+                            keepFetching = false;
+                        }
+                    } catch (err) {
+                        console.error("🚨 Playlist parsing loop intercepted safety.");
+                        keepFetching = false;
+                    }
+                }
+            }
             
-            // टैग बटन्स डायनेमिकली अपडेट करना (चैनल के नाम के आधार पर)
+            // टैग बटन्स और ग्रिड लेआउट अपडेट करें
             generateDynamicTagsFromMasterList();
-
-            // ग्रिड लेआउट बनाना
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
         }
 
