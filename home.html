@@ -58,11 +58,6 @@
         .channel-name-string { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; }
 
         .pulse-placeholder { text-align: center; padding: 80px; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
-
-        @media (max-width: 480px) {
-            .long-videos-grid { grid-template-columns: 1fr; }
-            body { padding: 10px 12px; }
-        }
     </style>
 </head>
 <body>
@@ -72,7 +67,7 @@
         <button class="yt-tag-btn active" onclick="filterPlaylistEngine('all')">All Classrooms</button>
         <button class="yt-tag-btn" onclick="filterPlaylistEngine('Mathematics')">Mathematics</button>
         <button class="yt-tag-btn" onclick="filterPlaylistEngine('Science')">Science</button>
-        <button class="yt-tag-btn" onclick="filterPlaylistEngine('English')">English</button>
+    </style>
     </div>
 
     <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
@@ -80,72 +75,24 @@
         <div class="pulse-placeholder">Loading secure FocusTube playlists...</div>
     </div>
 
-    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
     <script>
-        // 🎯 FIREBASE PROJECT INSTANCE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
-            authDomain: "focustube-72084.firebaseapp.com",
-            projectId: "focustube-72084",
-            storageBucket: "focustube-72084.firebasestorage.app",
-            messagingSenderId: "988104840416",
-            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        let currentUser = null;
-        
-        // ⚡ SAFE DEFAULT PLAYLISTS: (आपकी नई प्लेलिस्ट को भी डिफ़ॉल्ट में जोड़ दिया है!)
+        // ⚡ परमानेंट लोकल प्लेलिस्ट ढांचा (बिना फायरबेस और बिना एपीआई की रुकावट के तुरंत लोड होगा)
         let masterPlaylistsArray = [
-            { playlistId: "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF", title: "Pinned Classroom Course", subject: "Mathematics" },
-            { playlistId: "PL63X9msY7v_fV_kZ4n68Uu9vG9eCshIeE", title: "Class 10 Chemistry Course", subject: "Science" }
+            { playlistId: "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF", title: "Target Board Mathematics Special", subject: "Mathematics" },
+            { playlistId: "PL63X9msY7v_fV_kZ4n68Uu9vG9eCshIeE", title: "Class 10 Chemistry Course - Khan Sir", subject: "Science" }
         ];
 
-        // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
-        function establishFirestoreSyncNode() {
+        // ================= 🏠 SYSTEM INITIALIZATION =================
+        function initFocusTubeSystem() {
+            // बिना किसी नेटवर्क डिले के तुरंत स्क्रीन पर वीडियो रेंडर करें
             renderPlaylistGrid(masterPlaylistsArray);
-
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = user;
-                    
-                    db.collection("pinned_channels")
-                        .onSnapshot((snapshot) => {
-                            let tempPlaylists = [];
-                            snapshot.forEach(doc => {
-                                const data = doc.data();
-                                if(data.playlistId) {
-                                    tempPlaylists.push({
-                                        playlistId: data.playlistId.trim(),
-                                        title: data.title || "Pinned Classroom Course",
-                                        subject: data.subject || "General"
-                                    });
-                                }
-                            });
-                            
-                            if(tempPlaylists.length > 0) {
-                                masterPlaylistsArray = tempPlaylists;
-                                renderPlaylistGrid(masterPlaylistsArray);
-                            }
-                        }, err => {
-                            console.log("Running on Safe Local Feed Mode.");
-                        });
-                }
-            });
         }
 
-        // ================= 🔀 LAYOUT MATRIX: EMBED PLAYER GRID =================
+        // ================= 🔀 PLAYLIST RENDER MATRIX =================
         function renderPlaylistGrid(playlists) {
             const shell = document.getElementById('globalHomeFeedShell');
             if(!playlists || playlists.length === 0) {
-                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom courses pinned yet by parents.</div>`;
+                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom courses detected.</div>`;
                 return;
             }
 
@@ -155,8 +102,8 @@
             playlists.forEach(course => {
                 const letter = course.subject ? course.subject.charAt(0).toUpperCase() : "C";
                 
-                // 🔥 ULTIMATE SECURITY BYPASS: 'youtube-nocookie.com' और 'v=video_id' का उपयोग ताकि रिस्ट्रिक्शन टूटे
-                const playlistEmbedUrl = `https://www.youtube-nocookie.com/embed?videoseries=1&list=${course.playlistId}&rel=0&modestbranding=1`;
+                // एकदम सटीक बिना कुकी वाला ऑफिशियल एम्बेड यूआरएल
+                const playlistEmbedUrl = `https://www.youtube-nocookie.com/embed/videoseries?list=${course.playlistId}&modestbranding=1&rel=0`;
 
                 gridHtmlBuffer += `
                     <div class="yt-video-card">
@@ -212,7 +159,8 @@
             }
         });
 
-        window.addEventListener('DOMContentLoaded', establishFirestoreSyncNode);
+        // डोम लोड होते ही सिस्टम चालू करें
+        window.addEventListener('DOMContentLoaded', initFocusTubeSystem);
     </script>
 </body>
 </html>
