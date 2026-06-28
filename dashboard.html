@@ -226,6 +226,9 @@
             <a href="download.html" target="contentFrame" class="sidebar-node-btn" onclick="highlightSidebarNode(this)">
                 <img src="path_to_download_icon.png" alt="Vault" class="sidebar-icon-img"><span class="sidebar-text">Downloads</span>
             </a>
+            <a href="admin.html" target="contentFrame" class="sidebar-node-btn" onclick="highlightSidebarNode(this)">
+                <img src="path_to_admin_icon.png" alt="Settings" class="sidebar-icon-img"><span class="sidebar-text">Admin</span>
+            </a>
         </aside>
 
         <main class="main-feed-panel" id="mainFeedPanelCorridor">
@@ -254,7 +257,7 @@
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
             body.classList.toggle('student-dark-mode');
-            btn.innerText = body.classList.contains('student-dark-mode') ? "☀︎ Dark Mode" : "👁 Dark Mode";
+            btn.innerText = body.classList.contains('student-dark-mode') ? "☀︎ Light Mode" : "👁 Dark Mode";
             
             // अंदर खुले हुए iframe पेज को भी डार्क/लाइट मोड का सिग्नल पास करना
             syncIframeThemeState();
