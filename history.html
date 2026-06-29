@@ -16,24 +16,24 @@
             --border-color: #e5e5e5;
             --yt-blue: #065fd4;
             --hover-bg: #f2f2f2;
+            --icon-invert: 0; /* डार्क मोड में 1 होगा */
             --modal-overlay: rgba(0, 0, 0, 0.5);
-            --icon-invert: 0; 
         }
 
         body.dark-mode {
             --bg-master: #0f0f0f;
-            --bg-card: #0f0f0f;
+            --bg-card: #1f1f1f;
             --text-main: #ffffff;
             --text-muted: #aaaaaa;
             --border-color: #303030;
             --hover-bg: #272727;
+            --icon-invert: 1; /* यहाँ आइकॉन अपने आप ब्लैक से व्हाइट हो जाएंगे */
             --modal-overlay: rgba(0, 0, 0, 0.8);
-            --icon-invert: 1; 
         }
 
         body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 24px 40px; min-height: 100vh; }
         
-        /* मास्टर टू-कॉलम लेआउट */
+        /* मास्टर टू-कॉलम लेआउट (यूट्यूब ओरिजिनल स्टाइल) */
         .history-main-layout { display: flex; gap: 60px; max-width: 1280px; margin: 0 auto; }
         .history-left-feed { flex: 1; display: flex; flex-direction: column; gap: 32px; }
         .history-right-controls { width: 320px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: 24px; height: fit-content; }
@@ -58,6 +58,7 @@
         .v-title { font-size: 1rem; font-weight: 500; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .v-channel { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
         
+        /* सिंगल वीडियो डिलीट आइकॉन */
         .delete-single-btn { position: absolute; right: 12px; top: 12px; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
         .delete-single-btn:hover { background: var(--border-color); }
         .delete-single-btn img { width: 14px; height: 14px; filter: invert(var(--icon-invert)); }
@@ -68,24 +69,20 @@
         .control-action-row img { width: 20px; height: 20px; filter: invert(var(--icon-invert)); flex-shrink: 0; }
         .control-text { font-size: 0.92rem; font-weight: 500; }
 
-        /* ✨ PREMIUM MODAL DIALOG POP-UP STYLE */
-        .ft-modal-overlay { position: fixed; inset: 0; background: var(--modal-overlay); display: none; justify-content: center; align-items: center; z-index: 100000; padding: 20px; backdrop-filter: blur(2px); }
-        .ft-modal-box { background: var(--bg-card); border: 1px solid var(--border-color); width: 100%; max-width: 460px; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: scaleUp 0.2s ease-out; }
-        .ft-modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main); }
-        .ft-modal-desc { font-size: 0.92rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px; }
-        .ft-modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
-        .modal-btn { padding: 10px 20px; border-radius: 20px; border: none; font-weight: 600; cursor: pointer; font-size: 0.88rem; transition: background 0.1s; }
-        .modal-btn-cancel { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
-        .modal-btn-cancel:hover { background: var(--hover-bg); }
-        .modal-btn-confirm { background: var(--yt-blue); color: white; }
-        .modal-btn-confirm:hover { opacity: 0.9; }
-
-        @keyframes scaleUp {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
+        /* ✨ EMPTY STATE UI */
         .empty-history-deck { text-align: center; padding: 100px 20px; color: var(--text-muted); font-size: 1rem; display: none; }
+
+        /* 🚨 PREMIUM CUSTOM MODAL DIALOGS STYLE */
+        .modal-overlay-gateway { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 99999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); }
+        .modal-alert-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border-color); }
+        .modal-alert-card h3 { font-size: 1.2rem; margin-bottom: 10px; font-weight: 700; }
+        .modal-alert-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; }
+        .modal-btn-group { display: flex; justify-content: flex-end; gap: 12px; }
+        .modal-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; }
+        .modal-btn.cancel { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+        .modal-btn.cancel:hover { background: var(--hover-bg); }
+        .modal-btn.confirm { background: var(--yt-blue); color: white; }
+        .modal-btn.confirm:hover { opacity: 0.9; }
 
         @media (max-width: 850px) {
             .history-main-layout { flex-direction: column-reverse; gap: 4px; }
@@ -96,13 +93,13 @@
 </head>
 <body>
 
-    <div class="ft-modal-overlay" id="customConfirmModalUI">
-        <div class="ft-modal-box">
-            <h3 class="ft-modal-title" id="modalTitleUI">Clear watch history?</h3>
-            <p class="ft-modal-desc" id="modalDescUI">Your whitelisted video watch history will be cleared from this local node.</p>
-            <div class="ft-modal-actions">
-                <button class="modal-btn modal-btn-cancel" onclick="closeCustomModalUI()">Cancel</button>
-                <button class="modal-btn modal-btn-confirm" id="modalConfirmTriggerBtn">Clear watch history</button>
+    <div class="modal-overlay-gateway" id="customHistoryModalUI">
+        <div class="modal-alert-card">
+            <h3 id="modalTitleNode">Clear watch history?</h3>
+            <p id="modalDescNode">Your whitelisted focus feed history will be cleared from this device node.</p>
+            <div class="modal-btn-group">
+                <button class="modal-btn cancel" onclick="closeCustomDialogMatrix()">Cancel</button>
+                <button class="modal-btn confirm" id="modalConfirmActionTrigger">Clear</button>
             </div>
         </div>
     </div>
@@ -112,7 +109,8 @@
         <div class="history-left-feed">
             <h2 class="page-heading">Watch history</h2>
             
-            <div id="historyTimelineContainerUI"></div>
+            <div id="historyTimelineContainerUI">
+                </div>
 
             <div class="empty-history-deck" id="emptyHistoryPromptUI">
                 This list has no videos. Start exploring your courses!
@@ -132,7 +130,7 @@
             </div>
 
             <div class="control-action-row" onclick="triggerPauseHistoryModal()">
-                <img src="icons/pause.png" id="pauseIconNode" alt="Pause Toggle">
+                <img src="icons/pause.png" id="pauseIconNode" alt="Pause">
                 <span class="control-text" id="pauseTextNode">Pause watch history</span>
             </div>
 
@@ -146,7 +144,7 @@
 
         let localHistoryArray = [];
         let isHistoryPaused = false;
-        let pendingActionFunction = null;
+        let pendingActionCallback = null;
 
         // ================= 🏠 SYSTEM INITIALIZATION =================
         function initializeHistoryEngine() {
@@ -202,7 +200,10 @@
             items.forEach(v => {
                 const card = document.createElement('div');
                 card.className = "history-video-card";
-                card.onclick = () => window.location.href = `videoplay.html?v=${v.videoId}&list=${v.playlistId || ''}`;
+                card.onclick = (e) => {
+                    if(e.target.closest('button')) return;
+                    window.location.href = `videoplay.html?v=${v.videoId}&list=${v.playlistId || ''}`;
+                };
 
                 card.innerHTML = `
                     <div class="thumb-box">
@@ -212,7 +213,7 @@
                         <h4 class="v-title">${v.title}</h4>
                         <p class="v-channel">${v.channelTitle || 'FocusTube whitelisted lecture'}</p>
                     </div>
-                    <button class="delete-single-btn" onclick="triggerSingleDeleteModal(event, '${v.timestampId}')" title="Remove from history">
+                    <button class="delete-single-btn" onclick="triggerSingleDeleteModal('${v.timestampId}')" title="Remove from history">
                         <img src="icons/delete.png" alt="Remove">
                     </button>
                 `;
@@ -234,35 +235,35 @@
             compileAndRenderTimeline(filtered);
         }
 
-        // ================= 🏛️ CUSTOM EYE-CATCHING MODAL UTILITIES =================
-        function openCustomModalUI(title, desc, confirmText, actionCallback) {
-            document.getElementById('modalTitleUI').innerText = title;
-            document.getElementById('modalDescUI').innerText = desc;
+        // ================= 🚨 PREMIUM CUSTOM MODAL TRIGGERS =================
+        function openCustomDialogMatrix(title, description, confirmBtnText, callback) {
+            document.getElementById('modalTitleNode').innerText = title;
+            document.getElementById('modalDescNode').innerText = description;
             
-            const confirmBtn = document.getElementById('modalConfirmTriggerBtn');
-            confirmBtn.innerText = confirmText;
+            const confirmBtn = document.getElementById('modalConfirmActionTrigger');
+            confirmBtn.innerText = confirmBtnText;
             
-            // पुराने इवेंट्स हटाकर नया क्लिक इवेंट बाइंड करें
-            confirmBtn.onclick = function() {
-                actionCallback();
-                closeCustomModalUI();
-            };
-            
-            document.getElementById('customConfirmModalUI').style.display = "flex";
+            pendingActionCallback = callback;
+            document.getElementById('customHistoryModalUI').style.display = "flex";
         }
 
-        function closeCustomModalUI() {
-            document.getElementById('customConfirmModalUI').style.display = "none";
+        function closeCustomDialogMatrix() {
+            document.getElementById('customHistoryModalUI').style.display = "none";
+            pendingActionCallback = null;
         }
 
-        // ================= 🗑️ MODAL TRIGGER ACTIONS =================
-        function triggerSingleDeleteModal(event, timestampId) {
-            event.stopPropagation();
-            openCustomModalUI(
-                "Remove video from history?",
-                "Are you sure you want to delete this specific lecture track from your log?",
+        document.getElementById('modalConfirmActionTrigger').onclick = function() {
+            if(pendingActionCallback) pendingActionCallback();
+            closeCustomDialogMatrix();
+        };
+
+        // ================= 🗑️ MODAL CONTROLS INTEGRATION =================
+        function triggerSingleDeleteModal(timestampId) {
+            openCustomDialogMatrix(
+                "Remove from watch history?",
+                "This video lecture log will be deleted from your active timeline metrics.",
                 "Remove",
-                function() {
+                () => {
                     localHistoryArray = localHistoryArray.filter(v => v.timestampId !== timestampId);
                     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(localHistoryArray));
                     compileAndRenderTimeline(localHistoryArray);
@@ -271,11 +272,11 @@
         }
 
         function triggerClearHistoryModal() {
-            openCustomModalUI(
+            openCustomDialogMatrix(
                 "Clear watch history?",
-                "This will clear all your whitelisted watch log records from this local device node. You can't undo this action.",
-                "Clear watch history",
-                function() {
+                "Are you sure you want to completely wipe out your whitelisted classroom history? This action cannot be undone.",
+                "Clear History",
+                () => {
                     localHistoryArray = [];
                     localStorage.removeItem(HISTORY_STORAGE_KEY);
                     compileAndRenderTimeline(localHistoryArray);
@@ -286,29 +287,27 @@
         function triggerPauseHistoryModal() {
             const title = isHistoryPaused ? "Turn on watch history?" : "Pause watch history?";
             const desc = isHistoryPaused 
-                ? "FocusTube will resume logging your whitelisted course progress vectors into your dashboard profile."
-                : "Pausing watch history can make it harder to find your whitelisted courses or continue from where you left off.";
-            const actionText = isHistoryPaused ? "Turn on" : "Pause";
+                ? "FocusTube will resume saving your classroom video tracks to build your revision logs."
+                : "Pausing watch history will temporarily halt saving your lecture timeline streams. Pinned playlists remain unaffected.";
+            const btnText = isHistoryPaused ? "Turn On" : "Pause";
 
-            openCustomModalUI(title, desc, actionText, function() {
+            openCustomDialogMatrix(title, desc, btnText, () => {
                 isHistoryPaused = !isHistoryPaused;
                 localStorage.setItem(HISTORY_PAUSE_KEY, isHistoryPaused);
                 updatePauseControlUI();
             });
         }
 
-        // ================= 🔄 DYNAMIC PAUSE / ON ICON SWITCH LOGIC =================
+        // 🎯 जादुई नोड: बंद होने पर icons/on.png और चालू होने पर pause.png लोड करेगा
         function updatePauseControlUI() {
             const textNode = document.getElementById('pauseTextNode');
             const iconNode = document.getElementById('pauseIconNode');
-
-            if (isHistoryPaused) {
+            
+            if(isHistoryPaused) {
                 textNode.innerText = "Turn on watch history";
-                // 🎯 जब हिस्ट्री बंद (पॉज़) होगी, तो इमेज बदलकर icons/on.png हो जाएगी
-                iconNode.src = "icons/on.png";
+                iconNode.src = "icons/on.png"; 
             } else {
                 textNode.innerText = "Pause watch history";
-                // चालू होने पर वापस पॉज़ सिंबल आ जाएगा
                 iconNode.src = "icons/pause.png";
             }
         }
