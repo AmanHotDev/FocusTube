@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Parent Admin Panel 🛡️</title>
+    <style>
+        /* ================= 🎨 MODERN YT DESIGN SYSTEM ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-admin: #f9f9f9;
+            --bg-card: #ffffff;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-red: #cc0000;
+            --yt-blue: #065fd4;
+            --success-green: #2ba640;
+        }
+
+        body { background-color: var(--bg-admin); color: var(--text-main); padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .admin-master-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 24px; }
+        
+        h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
+        p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px; }
+
+        /* 🔒 SUPER SECURE LOCKING GATEWAY */
+        .auth-overlay-gateway { position: fixed; inset: 0; background: rgba(15, 15, 15, 0.98); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .auth-card { background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
+        .auth-card h3 { font-size: 1.4rem; margin-bottom: 12px; }
+        
+        /* 🎛️ FORMS & INPUTS INTERFACES */
+        .panel-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .form-grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        
+        input, select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; outline: none; background: #fff; color: var(--text-main); transition: border 0.1s; }
+        input:focus, select:focus { border-color: var(--yt-blue); }
+        
+        .master-action-btn { background: var(--yt-blue); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.1s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .master-action-btn:hover { background: #054fb0; }
+        .danger-btn { background: var(--yt-red); }
+        .danger-btn:hover { background: #990000; }
+
+        /* 📋 LIVE PLAYLIST GRID / TABLE */
+        .table-wrapper { width: 100%; overflow-x: auto; margin-top: 16px; border: 1px solid var(--border-color); border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem; }
+        th { background: #f1f1f1; padding: 12px; font-weight: 600; color: var(--text-muted); }
+        td { padding: 12px; border-top: 1px solid var(--border-color); }
+        .action-icon-btn { background: transparent; border: none; color: var(--yt-red); font-weight: bold; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+        .action-icon-btn:hover { background: #ffe6e6; }
+
+        /* 🔗 INLINE RESET SUB-TEXT STYLE */
+        .inline-reset-trigger { font-size: 0.8rem; color: var(--text-muted); margin-top: 14px; display: block; text-decoration: none; cursor: pointer; }
+        .inline-reset-trigger:hover { color: var(--yt-blue); text-decoration: underline; }
+
+        .status-toast { font-size: 0.85rem; font-weight: bold; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- 🔒 SCREEN 1: SUPER SECURE GATEWAY OVERLAY -->
+    <div class="auth-overlay-gateway" id="adminAuthOverlayUI">
+        <div class="auth-card" id="welcomeSetupBox" style="display: none;">
+            <h3 style="color: var(--yt-blue);">✨ Welcome to FocusTube!</h3>
+            <p class="subtitle">Set your master security password to restrict child access to configuration settings.</p>
+            <div class="input-group" style="text-align: left; margin-bottom: 16px;">
+                <label>Create Admin Password</label>
+                <input type="password" id="newSetupPasswordInput" placeholder="Minimum 6 characters...">
+            </div>
+            <button class="master-action-btn" style="width:100%;" onclick="executeFirstTimePasswordSetup()">Initialize Secure Framework</button>
+            <div class="status-toast" id="setupToastUI"></div>
+        </div>
+
+        <div class="auth-card" id="standardLoginBox" style="display: none;">
+            <h3>🛡️ Parent Authentication Required</h3>
+            <p class="subtitle">Please enter your secret dashboard credentials to modify classroom feeds.</p>
+            <div class="input-group" style="text-align: left; margin-bottom: 16px;">
+                <label>Master Security Password</label>
+                <input type="password" id="gatekeeperPasswordInput" placeholder="Enter password..." onkeypress="if(event.key === 'Enter') verifyParentGatewayCredentials()">
+            </div>
+            <button class="master-action-btn" style="width:100%;" onclick="verifyParentGatewayCredentials()">Unlock Control Panel</button>
+            
+            <!-- 🔗 छोटे भाग में लिखा हुआ इनलाइन रीसेट ऑप्शन -->
+            <span class="inline-reset-trigger" onclick="triggerInlinePasswordReset()">Forgot or want to Reset Password? Click here</span>
+            <div class="status-toast" id="loginToastUI"></div>
+        </div>
+    </div>
+
+    <!-- 🏛️ SCREEN 2: MAIN CONFIGURATION PANEL (UNLOCKED) -->
+    <div class="admin-master-container">
+        <div>
+            <h2>FocusTube Master Control Panel</h2>
+            <p class="subtitle">Deploy custom educational playlists directly to your child's 4-API mirroring feed node.</p>
+        </div>
+
+        <!-- SECTION A: INJECT LIVE COURSEWARE -->
+        <div class="panel-card">
+            <h3 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📡 Inject New Playlist Module</h3>
+            <div class="form-grid-layout">
+                <div class="input-group">
+                    <label>YouTube Playlist ID</label>
+                    <input type="text" id="targetPlaylistIdInput" placeholder="e.g. PLe8_-h7emkLLkW...">
+                </div>
+                <div class="input-group">
+                    <label>Course Title</label>
+                    <input type="text" id="targetTitleInput" placeholder="e.g. Class 12 Chemistry">
+                </div>
+                <div class="input-group">
+                    <label>Target Subject Category</label>
+                    <select id="targetSubjectInput">
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi / Other</option>
+                    </select>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="master-action-btn" onclick="injectPlaylistToDataMatrix()">Sync Across Mirroring Nodes</button>
+            </div>
+        </div>
+
+        <!-- SECTION B: PROFILE CUSTOMIZATION MATRIX -->
+        <div class="panel-card">
+            <h3 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">⚙️ Custom Child Restrictions</h3>
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                <div class="input-group" style="flex: 1; min-width: 250px;">
+                    <label>Default Player Skip Metric</label>
+                    <select id="childProfileSkipConfig" onchange="syncGlobalProfileSettings()">
+                        <option value="10">10 Seconds (Standard)</option>
+                        <option value="15">15 Seconds (Custom Child)</option>
+                        <option value="30">30 Seconds (Fast Track)</option>
+                    </select>
+                </div>
+                <div class="input-group" style="flex: 1; min-width: 250px; justify-content: center;">
+                    <label style="display: flex; align-items: center; gap: 10px; margin-top: 18px; cursor: pointer;">
+                        <input type="checkbox" id="childSpeedLimiterConfig" checked style="width: auto;" onchange="syncGlobalProfileSettings()">
+                        <span>Allow Acceleration rates up to 2.0x Max Speed</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION C: ACTIVE CONTENT DISPLAY REGISTRY -->
+        <div class="panel-card">
+            <h3 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📋 Active Classroom Registries</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course Title</th>
+                            <th>Subject</th>
+                            <th>Active Playlist Link</th>
+                            <th style="text-align: center;">Revoke</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activeRegistriesTableNode">
+                        <!-- Live Firestore Rows Inject Here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🎯 FIREBASE PROJECT INSTANCE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const MASTER_GATE_DOC = "security_configuration_lock";
+
+        // ================= 🔒 GATEKEEPER AUTOMATED INITIALIZATION =================
+        function checkSecurityGatewayState() {
+            db.collection("admin_settings").doc(MASTER_GATE_DOC).get()
+                .then(doc => {
+                    if (doc.exists && doc.data().admin_password) {
+                        // अगर पासवर्ड पहले से बना हुआ है, तो लॉगिन स्क्रीन दिखाओ
+                        document.getElementById('standardLoginBox').style.display = "block";
+                        document.getElementById('gatekeeperPasswordInput').focus();
+                    } else {
+                        // अगर पहली बार पेज खुला है, तो डायरेक्ट पासवर्ड सेटअप बॉक्स दिखाओ
+                        document.getElementById('welcomeSetupBox').style.display = "block";
+                        document.getElementById('newSetupPasswordInput').focus();
+                    }
+                }).catch(err => console.error("Database connection fault."));
+        }
+
+        // ================= 🔑 FIRST TIME USER SETUP LOGIC =================
+        function executeFirstTimePasswordSetup() {
+            const newPassword = document.getElementById('newSetupPasswordInput').value.trim();
+            const toast = document.getElementById('setupToastUI');
+
+            if (newPassword.length < 6) {
+                showToastFeedback(toast, "⚠️ Password must be at least 6 characters long!", "red");
+                return;
+            }
+
+            db.collection("admin_settings").doc(MASTER_GATE_DOC).set({
+                admin_password: newPassword,
+                default_skip: "10",
+                allow_max_speed: true
+            }).then(() => {
+                showToastFeedback(toast, "🎉 Setup Complete! Redirecting...", "green");
+                setTimeout(() => {
+                    document.getElementById('adminAuthOverlayUI').style.removeProperty('display');
+                    document.getElementById('adminAuthOverlayUI').style.height = '0px';
+                    document.getElementById('adminAuthOverlayUI').style.overflow = 'hidden';
+                    document.getElementById('adminAuthOverlayUI').innerHTML = ''; 
+                }, 1500);
+            });
+        }
+
+        // ================= 🔓 LOGIN CREDENTIALS VERIFICATION =================
+        function verifyParentGatewayCredentials() {
+            const inputPass = document.getElementById('gatekeeperPasswordInput').value.trim();
+            const toast = document.getElementById('loginToastUI');
+
+            db.collection("admin_settings").doc(MASTER_GATE_DOC).get().then(doc => {
+                if (doc.exists && doc.data().admin_password === inputPass) {
+                    showToastFeedback(toast, "🔓 Authentication Granted!", "green");
+                    setTimeout(() => {
+                        // ओवरले स्क्रीन को पूरी तरह हटा दें ताकि पैरेंट कस्टमाइज कर सकें
+                        document.getElementById('adminAuthOverlayUI').style.display = "none";
+                        loadProfileRestrictionsPayload(doc.data());
+                    }, 1000);
+                } else {
+                    showToastFeedback(toast, "❌ Incorrect Master Password! Access Denied.", "red");
+                }
+            });
+        }
+
+        // ================= 🔄 INLINE RESET PASSWORD OPERATION =================
+        function triggerInlinePasswordReset() {
+            const verificationPrompt = prompt("🛡️ SECURITY CONFIRMATION:\nPlease enter your CURRENT password to authorize reset:");
+            if (!verificationPrompt) return;
+
+            db.collection("admin_settings").doc(MASTER_GATE_DOC).get().then(doc => {
+                if (doc.exists && doc.data().admin_password === verificationPrompt.trim()) {
+                    const newPassword = prompt("🔑 Auth Approved! Enter your NEW master password (min 6 characters):");
+                    if (newPassword && newPassword.trim().length >= 6) {
+                        db.collection("admin_settings").doc(MASTER_GATE_DOC).update({
+                            admin_password: newPassword.trim()
+                        }).then(() => alert("✅ Master Password successfully updated! Please log in with your new password."));
+                    } else {
+                        alert("⚠️ Invalid new password formatting.");
+                    }
+                } else {
+                    alert("❌ Verification failed. Unauthorized modifications blocked.");
+                }
+            });
+        }
+
+        // ================= ⚙️ SYNC PROFILE RESTRICTIONS LOAD =================
+        function loadProfileRestrictionsPayload(data) {
+            if(data.default_skip) document.getElementById('childProfileSkipConfig').value = data.default_skip;
+            document.getElementById('childSpeedLimiterConfig').checked = data.allow_max_speed !== false;
+        }
+
+        function syncGlobalProfileSettings() {
+            const skipVal = document.getElementById('childProfileSkipConfig').value;
+            const speedVal = document.getElementById('childSpeedLimiterConfig').checked;
+
+            db.collection("admin_settings").doc(MASTER_GATE_DOC).update({
+                default_skip: skipVal,
+                allow_max_speed: speedVal
+            });
+        }
+
+        // ================= 📡 INJECT PLAYLIST MIRRORING NETWORK =================
+        function injectPlaylistToDataMatrix() {
+            const pId = document.getElementById('targetPlaylistIdInput').value.trim();
+            const pTitle = document.getElementById('targetTitleInput').value.trim();
+            const pSubject = document.getElementById('targetSubjectInput').value;
+
+            if (!pId || !pTitle) {
+                alert("⚠️ Please fill out all configuration form parameters.");
+                return;
+            }
+
+            // फायरबेस में डॉक्यूमेंट आईडी खुद प्लेलिस्ट आईडी बन जाएगी ताकि डुप्लीकेट न बने
+            db.collection("pinned_channels").doc(pId).set({
+                playlistId: pId,
+                title: pTitle,
+                subject: pSubject,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('targetPlaylistIdInput').value = "";
+                document.getElementById('targetTitleInput').value = "";
+                alert("🚀 Master Synchronization Complete! Course deployed to all 4 API Keys.");
+            }).catch(err => alert("Matrix connectivity failure."));
+        }
+
+        // ================= 📋 LIVE REALTIME DATATABLE LISTENER =================
+        function listenToActiveCoursewareRegistry() {
+            db.collection("pinned_channels").orderBy("timestamp", "desc")
+                .onSnapshot(snapshot => {
+                    const tbody = document.getElementById('activeRegistriesTableNode');
+                    tbody.innerHTML = "";
+
+                    if(snapshot.empty) {
+                        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No courses currently active on the home feed.</td></tr>`;
+                        return;
+                    }
+
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                            <td style="font-weight:600;">${d.title}</td>
+                            <td><span style="background:#f0f0f0; padding:4px 8px; border-radius:6px; font-size:0.8rem;">${d.subject}</span></td>
+                            <td style="font-family:monospace; color:var(--yt-blue); font-size:0.82rem;">${d.playlistId}</td>
+                            <td style="text-align:center;">
+                                <button class="action-icon-btn" onclick="revokeActiveCourseware('${d.playlistId}')">🗑️ Remove</button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+        }
+
+        function revokeActiveCourseware(playlistId) {
+            if(confirm("Are you sure you want to completely revoke this classroom module from child's feed?")) {
+                db.collection("pinned_channels").doc(playlistId).delete();
+            }
+        }
+
+        // Helper Feedback Utility
+        function showToastFeedback(element, text, color) {
+            element.innerText = text;
+            element.style.color = color === "green" ? "var(--success-green)" : "var(--yt-red)";
+            element.style.display = "block";
+        }
+
+        // Master Launch
+        window.addEventListener('DOMContentLoaded', () => {
+            checkSecurityGatewayState();
+            listenToActiveCoursewareRegistry();
+        });
+    </script>
+</body>
+</html>
