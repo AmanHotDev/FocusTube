@@ -19,6 +19,7 @@
             --tag-text: #0f0f0f;
             --tag-active-bg: #0f0f0f;
             --tag-active-text: #ffffff;
+            --playlist-stripe: rgba(0, 0, 0, 0.7);
         }
 
         /* 🌙 TRUE DARK MODE SYNC VARIABLES */
@@ -32,6 +33,7 @@
             --tag-text: #ffffff;
             --tag-active-bg: #ffffff;
             --tag-active-text: #0f0f0f;
+            --playlist-stripe: rgba(0, 0, 0, 0.85);
         }
 
         body { background-color: var(--bg-whitelist); color: var(--text-main); padding: 12px 24px 40px 24px; transition: background 0.2s, color 0.2s; overflow-x: hidden; }
@@ -53,12 +55,13 @@
         .course-folder-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px; cursor: pointer; display: flex; flex-direction: column; gap: 12px; position: relative; transition: transform 0.15s, box-shadow 0.15s; overflow: hidden; }
         .course-folder-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         
-        /* 📺 LIVE YT THUMBNAIL MATRIX LAYER WITH PLAYLIST DECK LOOK */
-        .thumbnail-container { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; position: relative; }
+        /* 📺 DIRECT LINK YT THUMBNAIL STORAGE WITH PLAYLIST OVERLAY */
+        .thumbnail-container { width: 100%; aspect-ratio: 16/9; background: #141414; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
         .thumbnail-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* यूट्यूब प्लेलिस्ट का साइड शेडो ओवरले (प्रीमियम लुक) */
-        .playlist-side-overlay { position: absolute; right: 0; top: 0; bottom: 0; width: 40%; background: rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.85rem; gap: 4px; backdrop-filter: blur(2px); border-radius: 0 8px 8px 0; }
+        /* प्रीमियम प्लेलिस्ट काउंटर बार लुक (यूट्यूब ओरिजिनल स्टाइल) */
+        .playlist-side-overlay { position: absolute; right: 0; top: 0; bottom: 0; width: 35%; background: var(--playlist-stripe); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.85rem; gap: 4px; border-radius: 0 8px 8px 0; border-left: 1px solid rgba(255,255,255,0.1); }
+        .playlist-side-overlay span.icon-bar { font-size: 1.2rem; margin-bottom: 2px; }
         
         /* 📜 CARD META LABELS */
         .course-meta-details { display: flex; flex-direction: column; gap: 4px; padding: 0 4px; }
@@ -112,7 +115,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // 🔑 🔥 अमन भाई का 4x4 बैकअप API KEYS पूल (थंबनेल फेच के लिए भी सुरक्षित इंजन)
+        // 🔑 🔥 अमन भाई का 4x4 बैकअप API KEYS पूल
         const YT_KEYS_ARRAY = [
             "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ",
             "AIzaSyCBjjJGtUQIfKb8xfADxukJSqeWpI4mFqo",
@@ -153,7 +156,7 @@
                         }
                     }
 
-                    // 💥 जादू: थंबनेल को रीयल-टाइम में बैकग्राउंड से लोड करें
+                    // 💥 स्क्रीन रेंडर करने से पहले हर हाल में थंबनेल यूआरएल को इन्जेक्ट करेंगे
                     await injectThumbnailsToMasterCache();
                     compileAndRenderGrid(whitelistedMasterCache);
                 }, err => {
@@ -167,39 +170,46 @@
                 });
         }
 
-        // ================= 📡 FETCH PLAYLIST FIRST ITEM THUMBNAIL =================
+        // ================= 📡 BULLETPROOF THUMBNAIL INJECTION NODE =================
         async function injectThumbnailsToMasterCache() {
             for (let course of whitelistedMasterCache) {
                 let success = false;
-                while (!success) {
+                let attempts = 0;
+                
+                // अगर डेटाबेस में पहले से कोई थंबनेल लिंक हार्डकोडेड बैकअप है तो स्किप करो
+                if (course.thumbnail) continue;
+
+                while (!success && attempts < YT_KEYS_ARRAY.length) {
                     let activeKey = YT_KEYS_ARRAY[currentKeyIndex];
                     let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=1&playlistId=${course.playlistId}&key=${activeKey}`;
                     
                     try {
                         let res = await fetch(apiUrl);
                         
-                        // अगर की एक्सपायर हो तो अगली चाबी घुमाओ
+                        // कोटा लिमिट होने पर अगली की (Key) रोटेट करो
                         if (!res.ok) {
-                            if (currentKeyIndex < YT_KEYS_ARRAY.length - 1) {
-                                currentKeyIndex++;
-                                continue; 
-                            } else {
-                                course.thumbnail = "https://img.youtube.com/vi/invalid/0.jpg"; // Fallback
-                                success = true;
-                                break;
-                            }
+                            currentKeyIndex = (currentKeyIndex + 1) % YT_KEYS_ARRAY.length;
+                            attempts++;
+                            continue; 
                         }
 
                         let data = await res.json();
                         if (data && data.items && data.items.length > 0) {
-                            const snip = data.items[0].snippet;
-                            course.thumbnail = snip.thumbnails.medium ? snip.thumbnails.medium.url : `https://img.youtube.com/vi/${snip.resourceId.videoId}/0.jpg`;
+                            // वीडियो आईडी को डायरेक्ट बाहर निकालो
+                            const videoId = data.items[0].snippet.resourceId ? data.items[0].snippet.resourceId.videoId : "";
+                            if (videoId) {
+                                // 🎯 डायरेक्ट इमेज सर्वर से थंबनेल लिंक इन्जेक्ट करो (100% वर्किंग)
+                                course.thumbnail = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+                            } else {
+                                course.thumbnail = `https://img.youtube.com/vi/H4Uj3tHGqoM/mqdefault.jpg`;
+                            }
                         } else {
-                            course.thumbnail = "https://img.youtube.com/vi/invalid/0.jpg"; 
+                            course.thumbnail = `https://img.youtube.com/vi/H4Uj3tHGqoM/mqdefault.jpg`; 
                         }
                         success = true;
                     } catch (err) {
-                        course.thumbnail = "https://img.youtube.com/vi/invalid/0.jpg";
+                        console.error("Thumbnail pipeline retry loop triggered.");
+                        course.thumbnail = `https://img.youtube.com/vi/H4Uj3tHGqoM/mqdefault.jpg`;
                         success = true;
                     }
                 }
@@ -223,15 +233,15 @@
                     window.location.href = `videoplay.html?list=${course.playlistId}&v=${course.playlistId}`;
                 };
 
-                // डिफ़ॉल्ट थंबनेल अगर लोड न हो पाए
-                const finalThumb = course.thumbnail || `https://img.youtube.com/vi/H4Uj3tHGqoM/0.jpg`;
+                // अगर किसी वजह से थंबनेल अभी भी खाली हो तो इस डिफ़ॉल्ट वीडियो का थंबनेल दिखाओ
+                const finalThumb = course.thumbnail || `https://img.youtube.com/vi/H4Uj3tHGqoM/mqdefault.jpg`;
 
                 card.innerHTML = `
                     <div class="thumbnail-container">
-                        <img src="${finalThumb}" alt="Course Thumbnail">
+                        <img src="${finalThumb}" alt="Course Thumbnail" onerror="this.src='https://img.youtube.com/vi/H4Uj3tHGqoM/mqdefault.jpg'">
                         <div class="playlist-side-overlay">
-                            <span>☰</span>
-                            <span style="font-size:0.7rem; font-weight:normal; letter-spacing:0.5px;">PLAYLIST</span>
+                            <span class="icon-bar">☰</span>
+                            <span style="font-size:0.7rem; font-weight:500; letter-spacing:0.5px;">PLAYLIST</span>
                         </div>
                     </div>
                     <div class="course-meta-details">
