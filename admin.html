@@ -18,6 +18,8 @@
             --yt-blue: #065fd4;
             --success-green: #2ba640;
             --table-th-bg: #f1f1f1;
+            --hover-bg: #f2f2f2;
+            --modal-overlay: rgba(0, 0, 0, 0.5);
         }
 
         /* 🌙 TRUE DARK MODE VARIABLES SYNC */
@@ -28,6 +30,8 @@
             --text-muted: #aaaaaa;
             --border-color: #303030;
             --table-th-bg: #2d2d2d;
+            --hover-bg: #272727;
+            --modal-overlay: rgba(0, 0, 0, 0.8);
         }
 
         body { background-color: var(--bg-admin); color: var(--text-main); padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; transition: background 0.2s, color 0.2s; }
@@ -38,7 +42,7 @@
 
         /* 🔒 SUPER SECURE LOCKING GATEWAY */
         .auth-overlay-gateway { position: fixed; inset: 0; background: rgba(15, 15, 15, 0.98); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .auth-card { background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; color: var(--text-main); }
+        .auth-card { background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; color: var(--text-main); border: 1px solid var(--border-color); }
         .auth-card h3 { font-size: 1.4rem; margin-bottom: 12px; }
         
         /* 🎛️ FORMS & INPUTS INTERFACES */
@@ -60,15 +64,42 @@
         td { padding: 12px; border-top: 1px solid var(--border-color); color: var(--text-main); }
         .action-icon-btn { background: transparent; border: none; color: var(--yt-red); font-weight: bold; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
         .action-icon-btn:hover { background: #ffe6e6; }
+        body.dark-mode .action-icon-btn:hover { background: rgba(204, 0, 0, 0.2); }
 
         /* 🔗 INLINE RESET SUB-TEXT STYLE */
         .inline-reset-trigger { font-size: 0.8rem; color: var(--text-muted); margin-top: 14px; display: block; text-decoration: none; cursor: pointer; }
         .inline-reset-trigger:hover { color: var(--yt-blue); text-decoration: underline; }
 
         .status-toast { font-size: 0.85rem; font-weight: bold; margin-top: 10px; display: none; }
+
+        /* 🚨 PREMIUM CUSTOM MODAL DIALOGS STYLE */
+        .modal-overlay-gateway { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 999999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); }
+        .modal-alert-card { background: var(--bg-card); width: 100%; max-width: 400px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border-color); }
+        .modal-alert-card h3 { font-size: 1.2rem; margin-bottom: 10px; font-weight: 700; text-align: left; }
+        .modal-alert-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4; text-align: left; }
+        .modal-input-field { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px; background: var(--bg-master); color: var(--text-main); outline: none; display: none; }
+        .modal-btn-group { display: flex; justify-content: flex-end; gap: 12px; }
+        .modal-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; }
+        .modal-btn.cancel { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+        .modal-btn.cancel:hover { background: var(--hover-bg); }
+        .modal-btn.confirm { background: var(--yt-blue); color: white; }
+        .modal-btn.confirm:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
+
+    <!-- 🚨 NEW: CUSTOM YT STUDIO STYLE MODAL DIALOG OVERLAY -->
+    <div class="modal-overlay-gateway" id="customAdminModalUI">
+        <div class="modal-alert-card">
+            <h3 id="modalTitleNode">Alert</h3>
+            <p id="modalDescNode">Configuration message details...</p>
+            <input type="password" class="modal-input-field" id="modalInputNode" placeholder="">
+            <div class="modal-btn-group">
+                <button class="modal-btn cancel" id="modalCancelBtnTrigger" onclick="closeAdminCustomDialog()">Cancel</button>
+                <button class="modal-btn confirm" id="modalConfirmBtnTrigger">Confirm</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 🔒 SCREEN 1: SUPER SECURE GATEWAY OVERLAY -->
     <div class="auth-overlay-gateway" id="adminAuthOverlayUI">
@@ -190,6 +221,43 @@
 
         const MASTER_GATE_DOC = "security_configuration_lock";
         const DEFAULT_PLAYLIST_ID = "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
+        let pendingModalAction = null;
+
+        // ================= 🚨 PREMIUM CUSTOM DIALOGS PIPELINE =================
+        function openAdminCustomDialog(title, description, buttonText, showInput, placeholder, callback) {
+            document.getElementById('modalTitleNode').innerText = title;
+            document.getElementById('modalDescNode').innerText = description;
+            
+            const confirmBtn = document.getElementById('modalConfirmActionTrigger');
+            confirmBtn.innerText = buttonText;
+            
+            const inputField = document.getElementById('modalInputNode');
+            if (showInput) {
+                inputField.style.display = "block";
+                inputField.value = "";
+                inputField.placeholder = placeholder;
+            } else {
+                inputField.style.display = "none";
+            }
+            
+            const cancelBtn = document.getElementById('modalCancelBtnTrigger');
+            cancelBtn.style.display = callback ? "inline-block" : "none";
+
+            pendingModalAction = callback || (() => closeAdminCustomDialog());
+            document.getElementById('customAdminModalUI').style.display = "flex";
+        }
+
+        function closeAdminCustomDialog() {
+            document.getElementById('customAdminModalUI').style.display = "none";
+            pendingModalAction = null;
+        }
+
+        document.getElementById('modalConfirmActionTrigger').onclick = function() {
+            if(pendingModalAction) {
+                const inputVal = document.getElementById('modalInputNode').value;
+                pendingModalAction(inputVal);
+            }
+        };
 
         // ================= 🔒 GATEKEEPER AUTOMATED INITIALIZATION =================
         function checkSecurityGatewayState() {
@@ -228,7 +296,6 @@
             }).then(() => {
                 showToastFeedback(toast, "🎉 Setup Complete! Unlocking...", "green");
                 
-                // पहली बार सेटअप होने पर डिफ़ॉल्ट रूप से इस प्लेलिस्ट को डेटाबेस में इन्जेक्ट कर दो
                 db.collection("pinned_channels").doc(DEFAULT_PLAYLIST_ID).set({
                     playlistId: DEFAULT_PLAYLIST_ID,
                     title: "2025 परीक्षा के लिए महत्पूर्ण प्रश्न",
@@ -260,25 +327,45 @@
             });
         }
 
-        // ================= 🔄 INLINE RESET PASSWORD OPERATION =================
+        // ================= 🔄 RESET PASSWORD MODAL FIX =================
         function triggerInlinePasswordReset() {
-            const verificationPrompt = prompt("🛡️ SECURITY CONFIRMATION:\nPlease enter your CURRENT password to authorize reset:");
-            if (!verificationPrompt) return;
-
-            db.collection("admin_settings").doc(MASTER_GATE_DOC).get().then(doc => {
-                if (doc.exists && doc.data().admin_password === verificationPrompt.trim()) {
-                    const newPassword = prompt("🔑 Auth Approved! Enter your NEW master password (min 6 characters):");
-                    if (newPassword && newPassword.trim().length >= 6) {
-                        db.collection("admin_settings").doc(MASTER_GATE_DOC).update({
-                            admin_password: newPassword.trim()
-                        }).then(() => alert("✅ Master Password successfully updated! Please log in with your new password."));
-                    } else {
-                        alert("⚠️ Invalid new password formatting.");
-                    }
-                } else {
-                    alert("❌ Verification failed. Unauthorized modifications blocked.");
+            openAdminCustomDialog(
+                "Verify Old Password",
+                "Please authorize this modification by entering your CURRENT security password:",
+                "Verify",
+                true,
+                "Enter current password...",
+                (oldPassword) => {
+                    if(!oldPassword) { closeAdminCustomDialog(); return; }
+                    
+                    db.collection("admin_settings").doc(MASTER_GATE_DOC).get().then(doc => {
+                        if (doc.exists && doc.data().admin_password === oldPassword.trim()) {
+                            
+                            // पुराना पासवर्ड सही होने पर नया पासवर्ड पूछो
+                            openAdminCustomDialog(
+                                "Set New Password",
+                                "Authentication approved! Enter your NEW secure master password (min 6 characters):",
+                                "Update Password",
+                                true,
+                                "Enter new password...",
+                                (newPassword) => {
+                                    if (newPassword && newPassword.trim().length >= 6) {
+                                        db.collection("admin_settings").doc(MASTER_GATE_DOC).update({
+                                            admin_password: newPassword.trim()
+                                        }).then(() => {
+                                            openAdminCustomDialog("Success ✅", "Master Password successfully updated! Close this dialog to continue.", "OK", false, "", () => closeAdminCustomDialog());
+                                        });
+                                    } else {
+                                        openAdminCustomDialog("Error ⚠️", "Invalid password layout formatting.", "Retry", false, "", () => closeAdminCustomDialog());
+                                    }
+                                }
+                            );
+                        } else {
+                            openAdminCustomDialog("Unauthorized ❌", "Verification failed. Modification blocked.", "OK", false, "", () => closeAdminCustomDialog());
+                        }
+                    });
                 }
-            });
+            );
         }
 
         // ================= ⚙️ SYNC PROFILE RESTRICTIONS LOAD =================
@@ -297,14 +384,14 @@
             });
         }
 
-        // ================= 📡 INJECT PLAYLIST MIRRORING NETWORK =================
+        // ================= 📡 INJECT PLAYLIST MODAL LOGIC =================
         function injectPlaylistToDataMatrix() {
             const pId = document.getElementById('targetPlaylistIdInput').value.trim();
             const pTitle = document.getElementById('targetTitleInput').value.trim();
             const pSubject = document.getElementById('targetSubjectInput').value;
 
             if (!pId || !pTitle) {
-                alert("⚠️ Please fill out all configuration form parameters.");
+                openAdminCustomDialog("Incomplete Fields ⚠️", "Please fill out all configuration parameters before syncing.", "OK", false, "", () => closeAdminCustomDialog());
                 return;
             }
 
@@ -316,8 +403,19 @@
             }).then(() => {
                 document.getElementById('targetPlaylistIdInput').value = "";
                 document.getElementById('targetTitleInput').value = "";
-                alert("🚀 Master Synchronization Complete! Course deployed to all 4 API Keys.");
-            }).catch(err => alert("Matrix connectivity failure."));
+                
+                // यूट्यूब स्टूडियो स्टाइल पॉप-अप फ़ीडबैक
+                openAdminCustomDialog(
+                    "Sync Complete 🚀",
+                    `"${pTitle}" successfully deployed across all 4 whitelisted node mirrors!`,
+                    "Great",
+                    false,
+                    "",
+                    () => closeAdminCustomDialog()
+                );
+            }).catch(err => {
+                openAdminCustomDialog("Network Error ⚡", "Matrix server connectivity failure.", "Close", false, "", () => closeAdminCustomDialog());
+            });
         }
 
         // ================= 📋 LIVE REALTIME DATATABLE LISTENER =================
@@ -327,7 +425,6 @@
                     const tbody = document.getElementById('activeRegistriesTableNode');
                     tbody.innerHTML = "";
 
-                    // अगर डेटाबेस एकदम खाली है, तो डिफ़ॉल्ट रूप से "2025 परीक्षा" वाली प्लेलिस्ट को डिलीट बटन के साथ यहाँ रेंडर कर दो
                     if(snapshot.empty) {
                         renderRowMatrix(tbody, DEFAULT_PLAYLIST_ID, "2025 परीक्षा के लिए महत्पूर्ण प्रश्न", "Hindi", true);
                         return;
@@ -340,7 +437,6 @@
                         renderRowMatrix(tbody, d.playlistId, d.title, d.subject, false);
                     });
 
-                    // अगर फायरबेस में डेटा तो है पर डिफ़ॉल्ट प्लेलिस्ट नहीं है, तो उसे ऊपर सुरक्षा के लिए जोड़ दो
                     if(!defaultShown) {
                         renderRowMatrix(tbody, DEFAULT_PLAYLIST_ID, "2025 परीक्षा के लिए महत्पूर्ण प्रश्न", "Hindi", true);
                     }
@@ -354,27 +450,34 @@
                 <td><span style="background:var(--table-th-bg); padding:4px 8px; border-radius:6px; font-size:0.8rem;">${subject}</span></td>
                 <td style="font-family:monospace; color:var(--yt-blue); font-size:0.82rem;">${id}</td>
                 <td style="text-align:center;">
-                    <button class="action-icon-btn" onclick="revokeActiveCourseware('${id}', ${isStaticDefault})">🗑️ Remove</button>
+                    <button class="action-icon-btn" onclick="triggerRevokeModal('${id}', ${isStaticDefault})">🗑️ Remove</button>
                 </td>
             `;
             container.appendChild(row);
         }
 
-        function revokeActiveCourseware(playlistId, isStaticDefault) {
-            if(confirm("Are you sure you want to completely revoke this classroom module?")) {
-                if(isStaticDefault) {
-                    // अगर पैरेंट डिफ़ॉल्ट वाली को हटाता है तो डायरेक्ट फायरबेस में उसकी डिलीट नोड भेज दो
-                    db.collection("pinned_channels").doc(playlistId).delete().then(() => {
-                        alert("Default module removed.");
-                    }).catch(() => {
-                        // अगर क्लाउड खाली था तो लोकल स्क्रीन से साफ़ करने के लिए रिफ्रेश ट्रिगर कर दो
-                        alert("Module dismissed successfully.");
-                        window.location.reload();
-                    });
-                } else {
-                    db.collection("pinned_channels").doc(playlistId).delete();
+        function triggerRevokeModal(playlistId, isStaticDefault) {
+            openAdminCustomDialog(
+                "Revoke Classroom Module?",
+                "Are you sure you want to completely disconnect this educational stream node from child access feeds?",
+                "Yes, Remove",
+                false,
+                "",
+                () => {
+                    if(isStaticDefault) {
+                        db.collection("pinned_channels").doc(playlistId).delete().then(() => {
+                            closeAdminCustomDialog();
+                        }).catch(() => {
+                            closeAdminCustomDialog();
+                            window.location.reload();
+                        });
+                    } else {
+                        db.collection("pinned_channels").doc(playlistId).delete().then(() => {
+                            closeAdminCustomDialog();
+                        });
+                    }
                 }
-            }
+            );
         }
 
         // Helper Feedback Utility
