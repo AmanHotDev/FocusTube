@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FocusTube Secure Player 📺</title>
     <style>
         /* ================= 🎨 ULTRA EYE-CATCHING YT DESIGN SYSTEM ================= */
@@ -34,13 +34,11 @@
 
         /* 🏛️ TWO-COLUMN INTERACTIVE MATRIX */
         .player-main-layout { display: flex; gap: 24px; max-width: 1440px; margin: 0 auto; align-items: flex-start; }
-        .video-stream-column { flex: 2.4; display: flex; flex-direction: column; gap: 16px; }
+        .video-stream-column { flex: 2.4; display: flex; flex-direction: column; gap: 16px; width: 100%; }
         .playlist-queue-column { flex: 1; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; height: calc(100vh - 48px); overflow-y: auto; background: var(--bg-player); position: sticky; top: 24px; }
 
         /* 📺 PREMIUM HIGH-GLOSS VIDEO WINDOW FRAME */
         .video-window-frame { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid var(--border-color); }
-        
-        /* 🎯 माउस इवेंट्स को 'auto' किया ताकि यूट्यूब प्लेयर के सारे क्लिक काम करने लगें */
         .video-window-frame iframe { width: 100%; height: 100%; border: none; pointer-events: auto; position: absolute; top: 0; left: 0; z-index: 1; } 
 
         /* 🔒 SCREEN LOCK OVERLAY */
@@ -84,9 +82,24 @@
         .queue-meta { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
         .queue-meta-title { font-size: 0.84rem; font-weight: 600; line-height: 1.35; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        @media (max-width: 950px) {
-            .player-main-layout { flex-direction: column; }
-            .playlist-queue-column { width: 100%; height: auto; max-height: 400px; position: static; }
+        /* 📱 🔒 MOBILE PHONE RESPONSIVE RE-ENGINEERING GRID */
+        @media (max-width: 768px) {
+            body { padding: 0px 0px 40px 0px; } /* मोबाइल में फुल-स्क्रीन सटा हुआ लुक */
+            .player-main-layout { flex-direction: column; gap: 12px; }
+            .video-stream-column { gap: 10px; }
+            
+            /* वीडियो फ़्रेम मोबाइल में सबसे ऊपर चिपकेगा और रेडियस हट जाएगी */
+            .video-window-frame { border-radius: 0px; border-left: none; border-right: none; border-top: none; }
+            
+            /* कंट्रोल डेक मोबाइल फ्रेंडली */
+            .focus-control-deck { padding: 14px; border-radius: 12px; margin: 0 12px; }
+            .control-row { flex-direction: column; align-items: flex-start; gap: 14px; width: 100%; }
+            .btn-group { width: 100%; justify-content: space-between; }
+            .timelaps-container { width: 100%; }
+            
+            /* प्लेलिस्ट क्यू नीचे स्क्रॉल करने पर दिखेगी */
+            .playlist-queue-column { width: 100%; height: auto; max-height: none; position: static; border: none; border-top: 1px solid var(--border-color); border-radius: 0px; padding: 16px 12px; background: transparent; }
+            .queue-thumb { width: 90px; }
         }
     </style>
 </head>
@@ -98,7 +111,6 @@
         
         <!-- 📺 COLUMN 1: LIVE SECURE LAYER & CONTROLS -->
         <div class="video-stream-column">
-            <!-- डबल क्लिक डिटेक्टर के लिए पैरेंट डिव फ़्रेम (क्लिक करने पर विंडो को कीबोर्ड फोकस मिलेगा) -->
             <div class="video-window-frame" id="playerWindowShell" onclick="handleScreenSingleClickFocus()" ondblclick="handleScreenDoubleTapLike()">
                 <div class="screen-lock-overlay" id="screenLockOverlayUI"></div>
                 
@@ -153,7 +165,6 @@
                             <option value="2">2.0x Max Speed</option>
                         </select>
 
-                        <!-- 🔒 ताले के इमेज आइकॉन के साथ सिक्योर फुलस्क्रीन लॉक बटन -->
                         <button class="action-btn" style="background: var(--yt-red); color: white; border: none;" onclick="toggleScreenLock(true)">
                             <img src="icons/lock.png" class="lock-btn-icon" style="filter: invert(1);" alt="Lock">
                             <span>Fullscreen Lock</span>
@@ -192,14 +203,12 @@
             let vParam = urlParams.get('v');
             let listParam = urlParams.get('list');
 
-            // 🎯 रिफ्रेश रिकवरी फिक्स: यूआरएल खाली होने पर sessionStorage की तिजोरी से आईडी निकालो
             if (!vParam) vParam = sessionStorage.getItem("focustube_last_v");
             if (!listParam) listParam = sessionStorage.getItem("focustube_last_list");
 
             currentVideoId = vParam || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF"; 
             activePlaylistId = listParam || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
 
-            // भविष्य के रिफ्रेश के लिए तिजोरी में लॉक कर दो
             sessionStorage.setItem("focustube_last_v", currentVideoId);
             sessionStorage.setItem("focustube_last_list", activePlaylistId);
             
@@ -247,7 +256,6 @@
             if (!isPaused && currentVideoId) {
                 let currentHistory = JSON.parse(localStorage.getItem("focustube_watch_history_vector")) || [];
                 
-                // डुप्लिकेट एंट्री रोकने के लिए चेक करें
                 const isAlreadySaved = currentHistory.some(entry => entry.videoId === currentVideoId && 
                     new Date(entry.watchedAt).getDate() === new Date().getDate());
 
@@ -263,7 +271,14 @@
                     
                     currentHistory.unshift(historyObject); 
                     localStorage.setItem("focustube_watch_history_vector", JSON.stringify(currentHistory));
-                    console.log("✅ Lecture successfully recorded to history logs.");
+                    
+                    // ☁️ क्लाउड डेटाबेस सिंक फायरबेस
+                    try {
+                        const STUDENT_CLOUD_ID = "aditya_raj_focus_node";
+                        firebase.firestore().collection("students_profile").doc(STUDENT_CLOUD_ID).update({
+                            watchHistory: firebase.firestore.FieldValue.arrayUnion(historyObject)
+                        });
+                    } catch(e){}
                 }
             }
         }
@@ -273,31 +288,26 @@
             window.addEventListener('keydown', function(e) {
                 if (!playerInstance || typeof playerInstance.getPlayerState !== 'function') return;
 
-                // स्पेसबार या 'K' दबाने पर प्ले / पॉज टॉगल
                 if (e.code === "Space" || e.key === "k" || e.key === "K") {
                     e.preventDefault();
                     const state = playerInstance.getPlayerState();
                     if (state === 1) playerInstance.pauseVideo();
                     else playerInstance.playVideo();
                 }
-                // 'F' दबाने पर फुलस्क्रीन लॉक एक्टिवेशन
                 else if (e.key === "f" || e.key === "F") {
                     e.preventDefault();
                     const overlay = document.getElementById('screenLockOverlayUI');
                     if (overlay.style.display === "block") toggleScreenLock(false);
                     else toggleScreenLock(true);
                 }
-                // 'M' दबाने पर म्यूट / अनम्यूट टॉगल
                 else if (e.key === "m" || e.key === "M") {
                     e.preventDefault();
                     if (playerInstance.isMuted()) playerInstance.unMute();
                     else playerInstance.mute();
                 }
-                // राइट एरो से आगे स्किप
                 else if (e.code === "ArrowRight") {
                     triggerSkipAction('forward');
                 }
-                // लेफ्ट एरो से पीछे स्किप
                 else if (e.code === "ArrowLeft") {
                     triggerSkipAction('back');
                 }
@@ -305,7 +315,6 @@
         }
 
         function handleScreenSingleClickFocus() {
-            // प्लेयर पर क्लिक करने पर कीबोर्ड फोकस लॉक करने के लिए ताकि कीबोर्ड काम करे
             window.focus();
         }
 
@@ -353,18 +362,38 @@
         function toggleVideoLikeState() {
             let likedVideos = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
             const index = likedVideos.findIndex(v => v.videoId === currentVideoId);
+            let isLikedAction = false;
 
-            if (index > -1) likedVideos.splice(index, 1);
-            else {
-                likedVideos.push({
-                    videoId: currentVideoId,
-                    playlistId: activePlaylistId,
-                    title: currentVideoTitle,
-                    channelTitle: "FocusTube Lecture"
-                });
+            const videoObject = {
+                videoId: currentVideoId,
+                playlistId: activePlaylistId,
+                title: currentVideoTitle,
+                channelTitle: "FocusTube Lecture"
+            };
+
+            if (index > -1) {
+                likedVideos.splice(index, 1);
+                isLikedAction = false;
+            } else {
+                likedVideos.push(videoObject);
+                isLikedAction = true;
             }
             localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(likedVideos));
             syncLikeButtonUIState();
+
+            // ☁️ क्लाउड फ़ायरबेस सिंक लाइक्स
+            try {
+                const STUDENT_CLOUD_ID = "aditya_raj_focus_node";
+                if(isLikedAction) {
+                    firebase.firestore().collection("students_profile").doc(STUDENT_CLOUD_ID).update({
+                        likedVideos: firebase.firestore.FieldValue.arrayUnion(videoObject)
+                    });
+                } else {
+                    firebase.firestore().collection("students_profile").doc(STUDENT_CLOUD_ID).update({
+                        likedVideos: firebase.firestore.FieldValue.arrayRemove(videoObject)
+                    });
+                }
+            } catch(e){}
         }
 
         // ================= ⏩ PROFILE SKIP INTERVAL =================
