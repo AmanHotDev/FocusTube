@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Student Profile Dashboard 🎓</title>
+    <style>
+        /* ================= 🎨 PREMIUM YT EYE-CATCHING DESIGN SYSTEM ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-master: #f9f9f9;
+            --bg-card: #ffffff;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-blue: #065fd4;
+            --panel-bg: #f2f2f2;
+            --success-green: #2ba640;
+            --icon-invert: 0;
+        }
+
+        body.dark-mode {
+            --bg-master: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --panel-bg: #272727;
+            --icon-invert: 1;
+        }
+
+        body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .profile-master-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 24px; }
+
+        /* 🖼️ STUDENT BRAND AVATAR HEADER */
+        .profile-header-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; display: flex; align-items: center; gap: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); position: relative; flex-wrap: wrap; }
+        
+        .avatar-upload-container { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+        .profile-avatar-display { width: 100%; height: 100%; border-radius: 50%; background: var(--panel-bg); color: var(--yt-blue); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; border: 3px solid var(--border-color); overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); object-fit: cover; }
+        
+        /* छुपा हुआ इनपुट फ़ील्ड और ओवरले कैमरा बटन */
+        .avatar-file-input { display: none; }
+        .avatar-edit-overlay { position: absolute; bottom: 2px; right: 2px; background: var(--yt-blue); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--bg-card); box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .avatar-edit-overlay:hover { transform: scale(1.1); }
+        .avatar-edit-overlay img { width: 14px; height: 14px; filter: invert(1); } /* हमेशा व्हाइट आइकॉन */
+
+        .student-meta-block { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .student-name { font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+        .student-college { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+
+        /* 📊 DYNAMIC PROGRESS METRICS GRID */
+        .analytics-dashboard-title { font-size: 1.15rem; font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
+        .analytics-dashboard-title img { width: 18px; height: 18px; filter: invert(var(--icon-invert)); }
+        
+        .metrics-grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .metric-data-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
+        .metric-numeric-score { font-size: 1.8rem; font-weight: 800; color: var(--yt-blue); }
+        body.dark-mode .metric-numeric-score { color: #3ea6ff; }
+        .metric-meta-text { display: flex; flex-direction: column; gap: 2px; }
+        .metric-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        .metric-value-string { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+
+        /* 🛡️ SECURITY READ-ONLY POLICY LOGS */
+        .policy-panel-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .policy-row-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        .policy-row-flex:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        .policy-meta { display: flex; flex-direction: column; gap: 4px; }
+        .policy-title { font-size: 0.95rem; font-weight: 600; }
+        .policy-desc { font-size: 0.82rem; color: var(--text-muted); }
+        .policy-secure-badge { background: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+
+        /* 🗑️ MANAGEMENT FOOTER SYSTEM */
+        .action-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 12px; }
+        .purge-cache-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: background 0.1s; }
+        .purge-cache-btn:hover { background: var(--border-color); color: #cc0000; }
+    </style>
+</head>
+<body>
+
+    <div class="profile-master-container">
+        
+        <!-- 🖼️ SECTION 1: AVATAR HEADER DECK -->
+        <div class="profile-header-card">
+            
+            <!-- प्रोफ़ाइल फ़ोटो अपलोडर नोड -->
+            <div class="avatar-upload-container">
+                <img id="studentAvatarImageNode" class="profile-avatar-display" src="" alt="A" style="display:none;">
+                <div id="studentAvatarFallbackNode" class="profile-avatar-display">A</div>
+                
+                <!-- कैमरा/एडिट बटन ओवरले -->
+                <label for="avatarFileUploadTrigger" class="avatar-edit-overlay" title="Upload Profile Picture">
+                    <img src="icons/profile.png" alt="Edit">
+                </label>
+                <input type="file" id="avatarFileUploadTrigger" class="avatar-file-input" accept="image/*" onchange="executeStudentAvatarUpload(this)">
+            </div>
+
+            <div class="student-meta-block">
+                <h2 class="student-name">Aditya Raj</h2>
+                <p class="student-college">
+                    <span>🎓</span> Bachelor of Arts (Honours) History — Samastipur College, IGNOU
+                </p>
+            </div>
+        </div>
+
+        <!-- 📊 SECTION 2: LIVE METRICS ANALYTICS VIEW -->
+        <div class="analytics-dashboard-title">
+            <img src="icons/analytics.png" alt="Analytics">
+            <span>Realtime Learning Analytics</span>
+        </div>
+
+        <div class="metrics-grid-layout">
+            <!-- बॉक्स 1: कुल देखे गए वीडियो -->
+            <div class="metric-data-box">
+                <div class="metric-numeric-score" id="historyCountNode">0</div>
+                <div class="metric-meta-text">
+                    <span class="metric-label">Lectures Watched</span>
+                    <span class="metric-value-string">Total Revision Feed</span>
+                </div>
+            </div>
+
+            <!-- बॉक्स 2: सबसे पसंदीदा सब्जेक्ट -->
+            <div class="metric-data-box">
+                <div class="metric-numeric-score" style="font-size:1.5rem; padding: 4px 0;">📚</div>
+                <div class="metric-meta-text">
+                    <span class="metric-label">Primary Target Focus</span>
+                    <span class="metric-value-string" id="favSubjectNode">History Core</span>
+                </div>
+            </div>
+
+            <!-- box 3: टोटल लाइक्स काउंट -->
+            <div class="metric-data-box">
+                <div class="metric-numeric-score" id="likesCountNode">0</div>
+                <div class="metric-meta-text">
+                    <span class="metric-label">Saved Question Banks</span>
+                    <span class="metric-value-string">Liked Study Materials</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🛡️ SECTION 3: READ-ONLY PARENT CONTROL LOGS -->
+        <div class="analytics-dashboard-title">
+            <img src="icons/lock.png" alt="Lock">
+            <span>Parent Gatekeeper Restrictions Payload (Read-Only)</span>
+        </div>
+
+        <div class="policy-panel-card">
+            <!-- पॉलिसी 1 -->
+            <div class="policy-row-flex">
+                <div class="policy-meta">
+                    <span class="policy-title">Default Player Skip Config</span>
+                    <span class="policy-desc">Restricts forward/backward acceleration interval on media streams.</span>
+                </div>
+                <div class="policy-secure-badge">
+                    <span id="policySkipLabelNode">10 Seconds</span>
+                </div>
+            </div>
+
+            <!-- पॉलिसी 2 -->
+            <div class="policy-row-flex">
+                <div class="policy-meta">
+                    <span class="policy-title">Acceleration Threshold Guard</span>
+                    <span class="policy-desc">Enables child profile acceleration access rates up to 2.0x Max Speed.</span>
+                </div>
+                <div class="policy-secure-badge">
+                    <span id="policySpeedLabelNode">Allowed</span>
+                </div>
+            </div>
+
+            <!-- पॉलिसी 3 -->
+            <div class="policy-row-flex">
+                <div class="policy-meta">
+                    <span class="policy-title">Timeline History Track Guard</span>
+                    <span class="policy-desc">Monitors chronological classroom activity loops for revision indexing.</span>
+                </div>
+                <div class="policy-secure-badge">
+                    <span id="policyHistoryLabelNode">Active Tracking</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🗑️ SECTION 4: MANAGEMENT FOOTER CONTROLS -->
+        <div class="action-footer-row">
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">FocusTube Secure Student Node Framework 2026</span>
+            <button class="purge-cache-btn" onclick="purgeLocalWorkspaceCache()">Clear Local App Cache</button>
+        </div>
+
+    </div>
+
+    <!-- 🧠 FIREBASE CONNECTIVITY PACKET (ONLY FOR PARENT RESTRICTION FETCHING) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const AVATAR_STORAGE_KEY = "focustube_student_avatar_stream";
+
+        // ================= 🏠 SYSTEM INITIALIZER & CACHE SYNC =================
+        window.addEventListener('DOMContentLoaded', () => {
+            restoreStudentAvatarFromStorage();
+            compileDynamicMetricsDashboard();
+            fetchParentGatekeeperRestrictions();
+        });
+
+        // ================= 🖼️ REAL UPLOAD PROFILE PHOTO ENGINE =================
+        function executeStudentAvatarUpload(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            // सेफ्टी चेक: फाइल इमेज ही होनी चाहिए
+            if (!file.type.startsWith('image/')) {
+                alert("⚠️ Please upload a valid image file formatting.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64DataStream = event.target.result;
+                
+                // लोकल तिजोरी (localStorage) में हमेशा के लिए लॉक करें
+                localStorage.setItem(AVATAR_STORAGE_KEY, base64DataStream);
+                
+                // यूआई अपडेट करें
+                displayAvatarUINode(base64DataStream);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function restoreStudentAvatarFromStorage() {
+            const savedAvatarStream = localStorage.getItem(AVATAR_STORAGE_KEY);
+            if (savedAvatarStream) {
+                displayAvatarUINode(savedAvatarStream);
+            } else {
+                // डिफ़ॉल्ट अवतार स्टेट (Aditya Raj का 'A')
+                document.getElementById('studentAvatarImageNode').style.display = "none";
+                document.getElementById('studentAvatarFallbackNode').style.display = "flex";
+            }
+        }
+
+        function displayAvatarUINode(streamData) {
+            const imgNode = document.getElementById('studentAvatarImageNode');
+            const fallbackNode = document.getElementById('studentAvatarFallbackNode');
+            
+            imgNode.src = streamData;
+            imgNode.style.display = "block";
+            fallbackNode.style.display = "none";
+        }
+
+        // ================= 📊 DYNAMIC METRICS COMPILER ENGINE =================
+        function compileDynamicMetricsDashboard() {
+            // 1. इतिहास की गिनती
+            const historyVector = JSON.parse(localStorage.getItem("focustube_watch_history_vector")) || [];
+            document.getElementById('historyCountNode').innerText = historyVector.length;
+
+            // 2. लाइक्स की गिनती
+            const likedVector = JSON.parse(localStorage.getItem("focustube_liked_videos_vector")) || [];
+            document.getElementById('likesCountNode').innerText = likedVector.length;
+
+            // 3. लाइव इतिहास गार्ड स्थिति स्टेटस
+            const isHistoryPaused = localStorage.getItem("focustube_history_pause_flag") === "true";
+            document.getElementById('policyHistoryLabelNode').innerText = isHistoryPaused ? "Paused" : "Active Tracking";
+        }
+
+        // ================= 🛡️ FETCH PARENT GATEKEEPER PAYLOAD =================
+        function fetchParentGatekeeperRestrictions() {
+            db.collection("admin_settings").doc("security_configuration_lock").get()
+                .then(doc => {
+                    if (doc.exists && doc.data()) {
+                        const d = doc.data();
+                        
+                        // स्किप मीटर सेट करें
+                        if(d.default_skip) {
+                            document.getElementById('policySkipLabelNode').innerText = `${d.default_skip} Seconds`;
+                        }
+                        
+                        // स्पीड मीटर सेट करें
+                        const isSpeedAllowed = d.allow_max_speed !== false;
+                        document.getElementById('policySpeedLabelNode').innerText = isSpeedAllowed ? "Allowed (Up to 2.0x)" : "Restricted (1.0x Locked)";
+                    }
+                }).catch(err => console.log("Gatekeeper cloud nodes offline."));
+        }
+
+        // ================= 🗑️ PURGE APP WORKSPACE CACHE =================
+        function purgeLocalWorkspaceCache() {
+            if (confirm("🚨 WARNING:\nAre you sure you want to clear your local workspace cache metrics? Your watch history logs, liked folders, and uploaded profile image will be fully deleted.")) {
+                localStorage.clear();
+                alert("✅ Cache successfully purged. Reinitializing student framework nodes.");
+                window.location.reload();
+            }
+        }
+
+        // ================= 📡 PARENT DASHBOARD THEME SIGNAL RECEIVER =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+            }
+        });
+    </script>
+</body>
+</html>
