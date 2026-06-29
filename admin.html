@@ -17,9 +17,20 @@
             --yt-red: #cc0000;
             --yt-blue: #065fd4;
             --success-green: #2ba640;
+            --table-th-bg: #f1f1f1;
         }
 
-        body { background-color: var(--bg-admin); color: var(--text-main); padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        /* 🌙 TRUE DARK MODE VARIABLES SYNC */
+        body.dark-mode {
+            --bg-admin: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --table-th-bg: #2d2d2d;
+        }
+
+        body { background-color: var(--bg-admin); color: var(--text-main); padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; transition: background 0.2s, color 0.2s; }
         .admin-master-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 24px; }
         
         h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; color: var(--text-main); }
@@ -36,18 +47,16 @@
         .input-group { display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-align: left; }
         
-        input, select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; outline: none; background: #fff; color: var(--text-main); transition: border 0.1s; }
+        input, select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; outline: none; background: var(--bg-card); color: var(--text-main); transition: border 0.1s; }
         input:focus, select:focus { border-color: var(--yt-blue); }
         
         .master-action-btn { background: var(--yt-blue); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: background 0.1s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
         .master-action-btn:hover { background: #054fb0; }
-        .danger-btn { background: var(--yt-red); }
-        .danger-btn:hover { background: #990000; }
-
+        
         /* 📋 LIVE PLAYLIST GRID / TABLE */
         .table-wrapper { width: 100%; overflow-x: auto; margin-top: 16px; border: 1px solid var(--border-color); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem; }
-        th { background: #f1f1f1; padding: 12px; font-weight: 600; color: var(--text-muted); }
+        th { background: var(--table-th-bg); padding: 12px; font-weight: 600; color: var(--text-muted); }
         td { padding: 12px; border-top: 1px solid var(--border-color); color: var(--text-main); }
         .action-icon-btn { background: transparent; border: none; color: var(--yt-red); font-weight: bold; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
         .action-icon-btn:hover { background: #ffe6e6; }
@@ -61,6 +70,7 @@
 </head>
 <body>
 
+    <!-- 🔒 SCREEN 1: SUPER SECURE GATEWAY OVERLAY -->
     <div class="auth-overlay-gateway" id="adminAuthOverlayUI">
         
         <div class="auth-card" id="welcomeSetupBox" style="display: none;">
@@ -88,6 +98,7 @@
 
     </div>
 
+    <!-- 🏛️ SCREEN 2: MAIN CONFIGURATION PANEL (UNLOCKED) -->
     <div class="admin-master-container">
         <div>
             <h2>FocusTube Master Control Panel</h2>
@@ -111,7 +122,7 @@
                         <option value="Mathematics">Mathematics</option>
                         <option value="Science">Science</option>
                         <option value="English">English</option>
-                        <option value="Hindi">Hindi / Other</option>
+                        <option value="Hindi">Hindi</option>
                     </select>
                 </div>
             </div>
@@ -153,7 +164,7 @@
                         </tr>
                     </thead>
                     <tbody id="activeRegistriesTableNode">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -178,26 +189,22 @@
         const db = firebase.firestore();
 
         const MASTER_GATE_DOC = "security_configuration_lock";
+        const DEFAULT_PLAYLIST_ID = "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
 
-        // ================= 🔒 GATEKEEPER AUTOMATED INITIALIZATION (EMPTY DB FIX) =================
+        // ================= 🔒 GATEKEEPER AUTOMATED INITIALIZATION =================
         function checkSecurityGatewayState() {
             db.collection("admin_settings").doc(MASTER_GATE_DOC).get()
                 .then(doc => {
-                    // अगर डॉक्यूमेंट मौजूद है और उसमें पासवर्ड है, तो लॉगिन बॉक्स दिखाओ
                     if (doc.exists && doc.data() && doc.data().admin_password) {
                         document.getElementById('standardLoginBox').style.display = "block";
                         document.getElementById('welcomeSetupBox').style.display = "none";
                         document.getElementById('gatekeeperPasswordInput').focus();
                     } else {
-                        // अगर कलेक्शन या डॉक्यूमेंट नहीं बना है, तो बिना क्रैश हुए सीधे सेटअप स्क्रीन खोलो
-                        console.log("No security configuration found. Launching first-time onboarding layer...");
                         document.getElementById('welcomeSetupBox').style.display = "block";
                         document.getElementById('standardLoginBox').style.display = "none";
                         document.getElementById('newSetupPasswordInput').focus();
                     }
                 }).catch(err => {
-                    // अगर रूल्स या खाली कलेक्शन की वजह से कोई एरर आता है, तो भी सेफ साइड में सेटअप बॉक्स खोल दो
-                    console.warn("Intercepted network initialization node. Defaulting to setup interface.");
                     document.getElementById('welcomeSetupBox').style.display = "block";
                     document.getElementById('standardLoginBox').style.display = "none";
                     document.getElementById('newSetupPasswordInput').focus();
@@ -220,11 +227,18 @@
                 allow_max_speed: true
             }).then(() => {
                 showToastFeedback(toast, "🎉 Setup Complete! Unlocking...", "green");
-                setTimeout(() => {
-                    document.getElementById('adminAuthOverlayUI').style.display = "none";
-                }, 1500);
-            }).catch(err => {
-                showToastFeedback(toast, "❌ Storage sync error.", "red");
+                
+                // पहली बार सेटअप होने पर डिफ़ॉल्ट रूप से इस प्लेलिस्ट को डेटाबेस में इन्जेक्ट कर दो
+                db.collection("pinned_channels").doc(DEFAULT_PLAYLIST_ID).set({
+                    playlistId: DEFAULT_PLAYLIST_ID,
+                    title: "2025 परीक्षा के लिए महत्पूर्ण प्रश्न",
+                    subject: "Hindi",
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    setTimeout(() => {
+                        document.getElementById('adminAuthOverlayUI').style.display = "none";
+                    }, 1500);
+                });
             });
         }
 
@@ -243,8 +257,6 @@
                 } else {
                     showToastFeedback(toast, "❌ Incorrect Master Password! Access Denied.", "red");
                 }
-            }).catch(err => {
-                showToastFeedback(toast, "❌ Connection Timeout.", "red");
             });
         }
 
@@ -315,33 +327,53 @@
                     const tbody = document.getElementById('activeRegistriesTableNode');
                     tbody.innerHTML = "";
 
+                    // अगर डेटाबेस एकदम खाली है, तो डिफ़ॉल्ट रूप से "2025 परीक्षा" वाली प्लेलिस्ट को डिलीट बटन के साथ यहाँ रेंडर कर दो
                     if(snapshot.empty) {
-                        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding: 20px;">No courses currently active on the home feed.</td></tr>`;
+                        renderRowMatrix(tbody, DEFAULT_PLAYLIST_ID, "2025 परीक्षा के लिए महत्पूर्ण प्रश्न", "Hindi", true);
                         return;
                     }
 
+                    let defaultShown = false;
                     snapshot.forEach(doc => {
                         const d = doc.data();
-                        const row = document.createElement('tr');
-
-                        row.innerHTML = `
-                            <td style="font-weight:600;">${d.title}</td>
-                            <td><span style="background:#f0f0f0; padding:4px 8px; border-radius:6px; font-size:0.8rem;">${d.subject}</span></td>
-                            <td style="font-family:monospace; color:var(--yt-blue); font-size:0.82rem;">${d.playlistId}</td>
-                            <td style="text-align:center;">
-                                <button class="action-icon-btn" onclick="revokeActiveCourseware('${d.playlistId}')">🗑️ Remove</button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
+                        if(d.playlistId === DEFAULT_PLAYLIST_ID) defaultShown = true;
+                        renderRowMatrix(tbody, d.playlistId, d.title, d.subject, false);
                     });
-                }, err => {
-                    console.log("实时监听遇到了权限或未初始化的问题:", err);
+
+                    // अगर फायरबेस में डेटा तो है पर डिफ़ॉल्ट प्लेलिस्ट नहीं है, तो उसे ऊपर सुरक्षा के लिए जोड़ दो
+                    if(!defaultShown) {
+                        renderRowMatrix(tbody, DEFAULT_PLAYLIST_ID, "2025 परीक्षा के लिए महत्पूर्ण प्रश्न", "Hindi", true);
+                    }
                 });
         }
 
-        function revokeActiveCourseware(playlistId) {
-            if(confirm("Are you sure you want to completely revoke this classroom module from child's feed?")) {
-                db.collection("pinned_channels").doc(playlistId).delete();
+        function renderRowMatrix(container, id, title, subject, isStaticDefault) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="font-weight:600;">${title}</td>
+                <td><span style="background:var(--table-th-bg); padding:4px 8px; border-radius:6px; font-size:0.8rem;">${subject}</span></td>
+                <td style="font-family:monospace; color:var(--yt-blue); font-size:0.82rem;">${id}</td>
+                <td style="text-align:center;">
+                    <button class="action-icon-btn" onclick="revokeActiveCourseware('${id}', ${isStaticDefault})">🗑️ Remove</button>
+                </td>
+            `;
+            container.appendChild(row);
+        }
+
+        function revokeActiveCourseware(playlistId, isStaticDefault) {
+            if(confirm("Are you sure you want to completely revoke this classroom module?")) {
+                if(isStaticDefault) {
+                    // अगर पैरेंट डिफ़ॉल्ट वाली को हटाता है तो डायरेक्ट फायरबेस में उसकी डिलीट नोड भेज दो
+                    db.collection("pinned_channels").doc(playlistId).delete().then(() => {
+                        alert("Default module removed.");
+                    }).catch(() => {
+                        // अगर क्लाउड खाली था तो लोकल स्क्रीन से साफ़ करने के लिए रिफ्रेश ट्रिगर कर दो
+                        alert("Module dismissed successfully.");
+                        window.location.reload();
+                    });
+                } else {
+                    db.collection("pinned_channels").doc(playlistId).delete();
+                }
             }
         }
 
@@ -351,6 +383,18 @@
             element.style.color = color === "green" ? "var(--success-green)" : "var(--yt-red)";
             element.style.display = "block";
         }
+
+        // ================= 📡 PARENT DASHBOARD THEME MESSENGER SIGNAL =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
 
         // Master Launch
         window.addEventListener('DOMContentLoaded', () => {
