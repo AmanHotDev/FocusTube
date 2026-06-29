@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FocusTube - Cloud Student Profile 🎓</title>
+    <title>FocusTube - Student Profile 🎓</title>
     <style>
         /* ================= 🎨 PREMIUM YT EYE-CATCHING DESIGN SYSTEM ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
@@ -35,7 +35,7 @@
         body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
         .profile-master-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 24px; }
 
-        /* 🖼️ CLOUD AVATAR HEADER */
+        /* 🖼️ AVATAR HEADER */
         .profile-header-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 32px; display: flex; align-items: center; gap: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); position: relative; flex-wrap: wrap; }
         
         .avatar-upload-container { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
@@ -55,7 +55,7 @@
         .edit-profile-trigger-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.1s; display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; align-self: flex-start; }
         .edit-profile-trigger-btn:hover { background: var(--panel-bg); }
 
-        /* 📊 CLOUD POWERED METRICS GRID */
+        /* 📊 METRICS GRID */
         .analytics-dashboard-title { font-size: 1.15rem; font-weight: 700; margin-top: 8px; display: flex; align-items: center; gap: 8px; }
         .analytics-dashboard-title img { width: 18px; height: 18px; filter: invert(var(--icon-invert)); }
         
@@ -91,7 +91,7 @@
         .modal-btn.cancel { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
         .modal-btn.confirm { background: var(--yt-blue); color: white; }
 
-        /* ☁️ CLOUD SYNC SYSTEM STATUS INFOBAR */
+        /* ☁️ SYNC SYSTEM STATUS INFOBAR */
         .cloud-sync-status-bar { font-size: 0.8rem; color: var(--success-green); font-weight: bold; display: flex; align-items: center; gap: 6px; }
     </style>
 </head>
@@ -99,8 +99,14 @@
 
     <div class="modal-overlay-gateway" id="academicFormModalUI">
         <div class="modal-alert-card">
-            <h3>Cloud Profile Configuration ☁️</h3>
+            <h3>Profile Setup 🎓</h3>
             
+            <!-- ✏️ नाम बदलने का इनपुट बॉक्स -->
+            <div class="form-input-group">
+                <label>Your Name</label>
+                <input type="text" id="inputNameNode" placeholder="Enter your name">
+            </div>
+
             <div class="form-input-group">
                 <label>School / College Name</label>
                 <input type="text" id="inputCollegeNode" placeholder="e.g. Samastipur College, Bihar">
@@ -145,7 +151,7 @@
                 <img id="studentAvatarImageNode" class="profile-avatar-display" src="" alt="A" style="display:none;">
                 <div id="studentAvatarFallbackNode" class="profile-avatar-display">A</div>
                 
-                <label for="avatarFileUploadTrigger" class="avatar-edit-overlay" title="Upload Photo to Cloud">
+                <label for="avatarFileUploadTrigger" class="avatar-edit-overlay" title="Upload Photo">
                     <img src="icons/path_to_profile_icon.png" alt="Edit">
                 </label>
                 <input type="file" id="avatarFileUploadTrigger" class="avatar-file-input" accept="image/*" onchange="executeCloudAvatarUpload(this)">
@@ -153,10 +159,11 @@
 
             <div class="student-meta-block">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <h2 class="student-name">Aditya Raj</h2>
-                    <div class="cloud-sync-status-bar" id="cloudSyncStatusNode">☁️ Cloud Connected</div>
+                    <!-- डायनामिक स्टूडेंट नेम नोड -->
+                    <h2 class="student-name" id="displayStudentNameNode">Aditya Raj</h2>
+                    <div class="cloud-sync-status-bar" id="cloudSyncStatusNode">Saved Online</div>
                 </div>
-                <p class="student-college" id="displayCollegeNode">Fetching your academic profile from cloud node...</p>
+                <p class="student-college" id="displayCollegeNode">Loading profile...</p>
                 
                 <div class="academic-badge-row">
                     <span class="academic-mini-badge" id="badgeClassNode">Class: --</span>
@@ -165,12 +172,12 @@
                 </div>
 
                 <button class="edit-profile-trigger-btn" onclick="openAcademicModal()">
-                    <span>✏️</span> Edit Academic Details
+                    <span>✏️</span> Edit Profile Details
                 </button>
             </div>
         </div>
 
-        <!-- 📊 SECTION 2: LIVE CLOUD METRICS -->
+        <!-- 📊 SECTION 2: LIVE METRICS -->
         <div class="analytics-dashboard-title">
             <img src="icons/analytics.png" alt="Analytics">
             <span>Realtime Learning Analytics</span>
@@ -202,7 +209,7 @@
             </div>
         </div>
 
-        <!-- 🛡️ SECTION 3: READ-ONLY PARENT CONTROL LOGS -->
+        <!-- 🛡 *SECTION 3: READ-ONLY PARENT CONTROL LOGS -->
         <div class="analytics-dashboard-title">
             <img src="icons/lock.png" alt="Lock">
             <span>Parent Gatekeeper Restrictions Payload (Read-Only)</span>
@@ -242,7 +249,7 @@
 
         <!-- 🗑️ SECTION 4: SYSTEM FOOTER -->
         <div class="action-footer-row">
-            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">FocusTube Secure Cloud Ecosystem Node 2026</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">FocusTube Secure System Panel 2026</span>
         </div>
 
     </div>
@@ -266,7 +273,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 🎯 यूनिक स्टूडेंट डाक्यूमेंट आईडी (अदित्य राज कोर नोड)
         const STUDENT_CLOUD_ID = "aditya_raj_focus_node";
 
         // ================= 🏠 CORE INITIALIZER PIPELINE =================
@@ -278,24 +284,39 @@
         // ================= ☁️ SYNC PAYLOAD FROM FIRESTORE =================
         function syncEntireStudentDashboardFromCloud() {
             const syncStatus = document.getElementById('cloudSyncStatusNode');
-            syncStatus.innerText = "⏳ Syncing...";
+            syncStatus.innerText = "⏳ Loading...";
             syncStatus.style.color = "var(--text-muted)";
 
             db.collection("students_profile").doc(STUDENT_CLOUD_ID).onSnapshot(doc => {
                 if(doc.exists && doc.data()) {
                     const data = doc.data();
                     
-                    // 1. अकादमिक यूआई डेटा रेंडर करें
+                    // 1. नाम अपडेट और फॉलबैक सेटिंग्स
+                    let currentStudentName = "Aditya Raj";
+                    if(data.studentName) {
+                        currentStudentName = data.studentName;
+                    } else if(auth.currentUser && auth.currentUser.displayName) {
+                        // गूगल अकाउंट से पहला बैकअप निकालें
+                        currentStudentName = auth.currentUser.displayName;
+                        db.collection("students_profile").doc(STUDENT_CLOUD_ID).update({ studentName: currentStudentName });
+                    }
+                    
+                    document.getElementById('displayStudentNameNode').innerText = currentStudentName;
+                    
+                    // फ़ॉलबैक लेटर सेट करना (जैसे Aditya का 'A')
+                    document.getElementById('studentAvatarFallbackNode').innerText = currentStudentName.charAt(0).toUpperCase();
+                    
+                    // 2. अकादमिक यूआई डेटा रेंडर करें
                     if(data.college) {
                         document.getElementById('displayCollegeNode').innerText = `🏫 ${data.college}`;
                         document.getElementById('badgeClassNode').innerText = `Class: ${data.classLevel || '--'}`;
                         document.getElementById('badgeStreamNode').innerText = data.stream || '--';
                         document.getElementById('badgeYearNode').innerText = `Target: ${data.targetYear ? data.targetYear.replace(' Target','') : '--'}`;
                     } else {
-                        document.getElementById('displayCollegeNode').innerText = "Welcome! Click 'Edit Details' to set up your profile.";
+                        document.getElementById('displayCollegeNode').innerText = "Welcome! Click 'Edit Profile Details' to set up.";
                     }
 
-                    // 2. प्रोफाइल फोटो रेंडर करें
+                    // 3. प्रोफाइल फोटो रेंडर करें
                     if(data.avatarBase64) {
                         displayAvatarUINode(data.avatarBase64);
                     } else {
@@ -303,35 +324,45 @@
                         document.getElementById('studentAvatarFallbackNode').style.display = "flex";
                     }
 
-                    // 3. क्लाउड सिंक एनालिटिक्स नंबर (History & Likes Arrays)
+                    // 4. एनालिटिक्स नंबर सिंक
                     const historyCount = data.watchHistory ? data.watchHistory.length : 0;
                     const likesCount = data.likedVideos ? data.likedVideos.length : 0;
                     
                     document.getElementById('historyCountNode').innerText = historyCount;
                     document.getElementById('likesCountNode').innerText = likesCount;
 
-                    // लोकल बैकअप भी अपडेट रखें ताकि प्लेयर सिंक हो सके
                     if(data.watchHistory) localStorage.setItem("focustube_watch_history_vector", JSON.stringify(data.watchHistory));
                     if(data.likedVideos) localStorage.setItem("focustube_liked_videos_vector", JSON.stringify(data.likedVideos));
 
-                    syncStatus.innerText = "☁️ Cloud Synced";
+                    syncStatus.innerText = "✓ Synced";
                     syncStatus.style.color = "var(--success-green)";
                 } else {
-                    // अगर क्लाउड पर बिल्कुल नया है तो इनिशियल सेटअप प्रॉम्ट दें
-                    document.getElementById('displayCollegeNode').innerText = "First time? Please click 'Edit Academic Details' to configure.";
-                    setTimeout(() => { openAcademicModal(); }, 1000);
+                    // अगर डेटाबेस में एंट्री ही नहीं है, तो गूगल से इनिशियल बैकअप निकालें
+                    let initialGoogleName = "Aditya Raj";
+                    if(auth.currentUser && auth.currentUser.displayName) {
+                        initialGoogleName = auth.currentUser.displayName;
+                    }
+                    
+                    db.collection("students_profile").doc(STUDENT_CLOUD_ID).set({
+                        studentName: initialGoogleName,
+                        watchHistory: [],
+                        likedVideos: []
+                    }).then(() => {
+                        document.getElementById('displayStudentNameNode').innerText = initialGoogleName;
+                    });
                 }
             }, err => {
-                syncStatus.innerText = "❌ Sync Offline";
+                syncStatus.innerText = "✕ Offline";
                 syncStatus.style.color = "var(--yt-red)";
             });
         }
 
-        // ================= 📝 SAVE ACADEMIC DETAILS TO CLOUD =================
+        // ================= 📝 EDIT DETAILS MODAL =================
         function openAcademicModal() {
             db.collection("students_profile").doc(STUDENT_CLOUD_ID).get().then(doc => {
                 if(doc.exists && doc.data()) {
                     const d = doc.data();
+                    document.getElementById('inputNameNode').value = d.studentName || document.getElementById('displayStudentNameNode').innerText;
                     document.getElementById('inputCollegeNode').value = d.college || "";
                     document.getElementById('inputClassNode').value = d.classLevel || "";
                     if(d.stream) document.getElementById('inputStreamNode').value = d.stream;
@@ -346,60 +377,57 @@
         }
 
         function saveAcademicDetailsToCloud() {
+            const nameVal = document.getElementById('inputNameNode').value.trim();
             const collegeVal = document.getElementById('inputCollegeNode').value.trim();
             const classVal = document.getElementById('inputClassNode').value.trim();
             const streamVal = document.getElementById('inputStreamNode').value;
             const yearVal = document.getElementById('inputYearNode').value;
 
-            if(!collegeVal || !classVal) {
-                alert("⚠️ Please input all academic configuration details.");
+            if(!nameVal || !collegeVal || !classVal) {
+                alert("⚠️ Please input all data parameters.");
                 return;
             }
 
             const saveBtn = document.getElementById('saveBtnNode');
-            saveBtn.innerText = "Uploading...";
+            saveBtn.innerText = "Saving...";
             saveBtn.disabled = true;
 
-            // सीधे फ़ायरबेस में मर्ज (Set with Merge) करें ताकि पुराना इतिहास/लाइक्स डिलीट न हों
             db.collection("students_profile").doc(STUDENT_CLOUD_ID).set({
+                studentName: nameVal,
                 college: collegeVal,
                 classLevel: classVal,
                 stream: streamVal,
                 targetYear: yearVal
             }, { merge: true }).then(() => {
-                saveBtn.innerText = "Save to Cloud";
+                saveBtn.innerText = "Save";
                 saveBtn.disabled = false;
                 closeAcademicModal();
             }).catch(err => {
-                alert("Cloud transmission failed.");
+                alert("Transmission failed.");
                 saveBtn.disabled = false;
             });
         }
 
-        // ================= 🖼️ PHOTO CLOUD TRANSMISSION ENGINE =================
+        // ================= 🖼️ PHOTO TRANSMISSION ENGINE =================
         function executeCloudAvatarUpload(inputElement) {
             const file = inputElement.files[0];
             if (!file) return;
 
             if (!file.type.startsWith('image/')) {
-                alert("⚠️ Only valid image configurations accepted.");
+                alert("⚠️ Only valid image formats accepted.");
                 return;
             }
 
-            // भारी फोटो को कंप्रेस या सीधे बेस64 में भेजने के लिए रीडर नोड
             const reader = new FileReader();
             reader.onload = function(event) {
                 const base64DataStream = event.target.result;
-
-                document.getElementById('cloudSyncStatusNode').innerText = "⏳ Uploading photo...";
+                document.getElementById('cloudSyncStatusNode').innerText = "⏳ Uploading...";
                 
-                // फ़ोटो को सीधे क्लाउड फ़ायरबेस डॉक्यूमेंट में अपडेट करें
                 db.collection("students_profile").doc(STUDENT_CLOUD_ID).update({
                     avatarBase64: base64DataStream
                 }).then(() => {
                     displayAvatarUINode(base64DataStream);
-                    console.log("🚀 Profile Photo committed to Firebase cloud stream successfully.");
-                }).catch(err => alert("Cloud Photo Sync Failed."));
+                }).catch(err => alert("Photo Sync Failed."));
             };
             reader.readAsDataURL(file);
         }
@@ -412,7 +440,7 @@
             fallbackNode.style.display = "none";
         }
 
-        // ================= 🛡️ FETCH PARENT GATEKEEPER PAYLOAD =================
+        // ================= 🛡️ FETCH PARENT GATEKEEPER RESTRICTIONS =================
         function fetchParentGatekeeperRestrictions() {
             db.collection("admin_settings").doc("security_configuration_lock").get()
                 .then(doc => {
@@ -424,7 +452,6 @@
                     }
                 });
             
-            // लाइव इतिहास गार्ड स्थिति स्टेटस लोड करें
             const isHistoryPaused = localStorage.getItem("focustube_history_pause_flag") === "true";
             document.getElementById('policyHistoryLabelNode').innerText = isHistoryPaused ? "Paused" : "Active Tracking";
         }
