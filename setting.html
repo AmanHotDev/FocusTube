@@ -44,7 +44,7 @@
 
         /* दायाँ कॉलम: सेटिंग्स कॉन्फ़िगरेशन फ़ीड */
         .settings-right-content { flex: 1; display: flex; flex-direction: column; gap: 40px; padding-bottom: 100px; }
-        .section-main-heading { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; }
+        .section-main-heading { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-top: 12px; }
         
         /* यूट्यूब स्टाइल सेटिंग रोज़ */
         .settings-row-block { display: flex; flex-direction: column; gap: 24px; }
@@ -57,6 +57,8 @@
         
         /* फ़ॉर्म कंट्रोल्स */
         .control-action-shell { flex-shrink: 0; display: flex; align-items: center; }
+        select { padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-master); color: var(--text-main); font-size: 0.88rem; outline: none; cursor: pointer; }
+        select:focus { border-color: var(--yt-blue); }
         
         /* टॉगल बटन सीएसएस */
         .switch-toggle-box { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -83,7 +85,6 @@
         <!-- 🏛️ LEFT SIDEBAR NAVIGATION MENU -->
         <div class="settings-left-sidebar">
             <h3 class="sidebar-header-title">Student Hub</h3>
-            <!-- 🎯 बटन फिक्स: onclick इवेंट्स जोड़े गए हैं -->
             <div class="settings-nav-item active" id="menuBtnTheme" onclick="switchSettingsSection('displaySettingsSection', this)">
                 <img src="icons/theme.png" alt="Theme">
                 <span>Display & Theme</span>
@@ -97,7 +98,7 @@
         <!-- 📜 RIGHT CONTENT: STUDENT REVISION & VISUAL CONFIG -->
         <div class="settings-right-content">
             
-            <!-- ब्लॉक 1: विजुअलディスプレイ (थीम) -->
+            <!-- ब्लॉक 1: विजुअल डिस्प्ले (थीम) -->
             <div id="displaySettingsSection">
                 <h2 class="section-main-heading">Display Settings</h2>
                 <div class="settings-row-block">
@@ -116,7 +117,7 @@
                 </div>
             </div>
 
-            <!-- ब्लॉक 2: क्लासरूम कंट्रोल्स (पॉज़ हिस्ट्री और पैरेंट लॉक्स) -->
+            <!-- ब्लॉक 2: क्लासरूम कंट्रोल्स (फुली लोडेड छात्र सेटिंग्स) -->
             <div id="classroomControlsSection">
                 <h2 class="section-main-heading">Classroom Logs & Policy</h2>
                 <div class="settings-row-block">
@@ -135,22 +136,67 @@
                         </div>
                     </div>
 
-                    <!-- पैरेंट锁 स्टेटस 1: स्किप सेटिंग -->
+                    <!-- 🚀 नई सेटिंग 1: डिस्ट्रैक्शन गार्ड (Focus Mode) -->
                     <div class="setting-item-node">
                         <div class="setting-meta-text">
-                            <span class="setting-title">Player Skip Setting (Read-Only)</span>
-                            <span class="setting-desc">Your forward/backward timeline skip interval. Locked by your parents from admin hub.</span>
+                            <span class="setting-title">Distraction-Free Classroom Guard</span>
+                            <span class="setting-desc">Hide the sidebar playlist queue inside the player to fully focus on the core lecture video.</span>
+                        </div>
+                        <div class="control-action-shell">
+                            <label class="switch-toggle-box">
+                                <input type="checkbox" id="settingFocusModeCheckbox" onchange="toggleDistractionGuardState(this.checked)">
+                                <span class="slider-round-node"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 🚀 नई सेटिंग 2: ऑटो-प्ले नेक्स्ट लेक्चर -->
+                    <div class="setting-item-node">
+                        <div class="setting-meta-text">
+                            <span class="setting-title">Auto-Play Next Lecture</span>
+                            <span class="setting-desc">Automatically launch the very next educational module when the current video finishes.</span>
+                        </div>
+                        <div class="control-action-shell">
+                            <label class="switch-toggle-box">
+                                <input type="checkbox" id="settingAutoplayCheckbox" onchange="toggleAutoPlayState(this.checked)">
+                                <span class="slider-round-node"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 🚀 नई सेटिंग 3: डिफ़ॉल्ट स्टार्टअप स्पीड -->
+                    <div class="setting-item-node">
+                        <div class="setting-meta-text">
+                            <span class="setting-title">Default Startup Playback Speed</span>
+                            <span class="setting-desc">Set your preferred baseline speed for all incoming course videos on your feed.</span>
+                        </div>
+                        <div class="control-action-shell">
+                            <select id="settingDefaultSpeedDropdown" onchange="changeDefaultSpeedState(this.value)">
+                                <option value="0.5">0.5x (Slow)</option>
+                                <option value="1" selected>Normal Speed</option>
+                                <option value="1.25">1.25x Speed</option>
+                                <option value="1.5">1.5x Speed</option>
+                                <option value="2">2.0x Speed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- पैरेंट लॉक स्टेटस 1: स्किप सेटिंग -->
+                    <div class="setting-item-node" style="background: rgba(0,0,0,0.01); padding: 12px; border-radius: 8px;">
+                        <div class="setting-meta-text">
+                            <span class="setting-title" style="color: var(--text-muted); font-size: 0.9rem;">Player Skip Metric (Read-Only)</span>
+                            <span class="setting-desc">Locked by your parents from admin control hub.</span>
                         </div>
                         <div class="control-action-shell">
                             <div class="secure-badge-view" id="policySkipLabelNode">10 Seconds</div>
                         </div>
                     </div>
 
-                    <!-- पैरेंट锁 स्टेटस 2: स्पीड लिमिटर -->
-                    <div class="setting-item-node">
+                    <!-- पैरेंट लॉक स्टेटस 2: स्पीड लिमिटर -->
+                    <div class="setting-item-node" style="background: rgba(0,0,0,0.01); padding: 12px; border-radius: 8px;">
                         <div class="setting-meta-text">
-                            <span class="setting-title">Speed Acceleration Policy (Read-Only)</span>
-                            <span class="setting-desc">Parent guardian limit for maximum allowable playback acceleration rates up to 2.0x.</span>
+                            <span class="setting-title" style="color: var(--text-muted); font-size: 0.9rem;">Speed Acceleration Policy (Read-Only)</span>
+                            <span class="setting-desc">Maximum allowable acceleration rate enforced by guardians.</span>
                         </div>
                         <div class="control-action-shell">
                             <div class="secure-badge-view" id="policySpeedLabelNode">Allowed</div>
@@ -188,27 +234,37 @@
         });
 
         function initializeSettingsDashboard() {
+            // 1. थीम सिंक लोड
             const currentTheme = localStorage.getItem("focustube_global_theme_mode") || "light";
             if(currentTheme === "dark") {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeToggleCheckboxNode').checked = true;
             }
 
+            // 2. वॉच हिस्ट्री टॉगल स्थिति सिंक
             const isHistoryPaused = localStorage.getItem("focustube_history_pause_flag") === "true";
             document.getElementById('settingHistoryPauseCheckbox').checked = isHistoryPaused;
+
+            // 3. डिस्ट्रैक्शन गार्ड स्थिति सिंक
+            const isFocusMode = localStorage.getItem("focustube_focus_mode_flag") === "true";
+            document.getElementById('settingFocusModeCheckbox').checked = isFocusMode;
+
+            // 4. ऑटोप्ले स्थिति सिंक
+            const isAutoplay = localStorage.getItem("focustube_autoplay_flag") === "true";
+            document.getElementById('settingAutoplayCheckbox').checked = isAutoplay;
+
+            // 5. डिफ़ॉल्ट स्पीड सिंक
+            const defaultSpeed = localStorage.getItem("focustube_default_speed") || "1";
+            document.getElementById('settingDefaultSpeedDropdown').value = defaultSpeed;
         }
 
-        /* ================= 🎯 SECTION NAVIGATION ENGINE (CLICK FIX) ================= */
+        /* ================= 🎯 SECTION NAVIGATION ENGINE ================= */
         function switchSettingsSection(sectionId, clickedElement) {
-            // बाएँ मेनू के सभी आइटम्स से 'active' क्लास हटाओ
             document.querySelectorAll('.settings-nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
-            // केवल क्लिक किए गए मेनू आइटम को 'active' करो
             clickedElement.classList.add('active');
 
-            // दाएँ तरफ़ के टारगेट ब्लॉक पर स्मूथ स्क्रॉल करो
             const targetSection = document.getElementById(sectionId);
             if (targetSection) {
                 targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -224,15 +280,26 @@
             else document.body.classList.remove('dark-mode');
 
             window.parent.postMessage({ type: 'theme', mode: chosenMode }, '*');
-            
-            try {
-                window.parent.frames['content_iframe_name'].postMessage({ type: 'theme', mode: chosenMode }, '*');
-            } catch(e) {}
         }
 
-        /* ================= ⏱️ TIMELINE HISTORY MONITORING ================= */
+        /* ================= ⏱️ STUDENT CONFIGURATION ACTIONS ================= */
         function toggleWatchHistoryPauseState(isPausedOn) {
             localStorage.setItem("focustube_history_pause_flag", isPausedOn);
+        }
+
+        function toggleDistractionGuardState(isFocusOn) {
+            localStorage.setItem("focustube_focus_mode_flag", isFocusOn);
+            console.log(`Distraction Guard Mode Active: ${isFocusOn}`);
+        }
+
+        function toggleAutoPlayState(isAutoplayOn) {
+            localStorage.setItem("focustube_autoplay_flag", isAutoplayOn);
+            console.log(`Autoplay Next Lecture Active: ${isAutoplayOn}`);
+        }
+
+        function changeDefaultSpeedState(speedValue) {
+            localStorage.setItem("focustube_default_speed", speedValue);
+            console.log(`Default Startup Speed Lock: ${speedValue}x`);
         }
 
         /* ================= 🛡️ FETCH READ-ONLY PARENT RESTRICTIONS ================= */
