@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube Secure Player 📺</title>
+    <style>
+        /* ================= 🎨 THEME STRUCTURE & VARIABLES ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        
+        :root {
+            --bg-player: #ffffff;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --card-hover: #f2f2f2;
+            --yt-red: #ff0000;
+        }
+
+        body.dark-mode {
+            --bg-player: #0f0f0f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --card-hover: #272727;
+        }
+
+        body { background-color: var(--bg-player); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 20px; overflow-x: hidden; }
+
+        /* 🏛️ TWO-COLUMN INTERACTIVE MATRIX */
+        .player-main-layout { display: flex; gap: 24px; max-width: 1400px; margin: 0 auto; }
+        .video-stream-column { flex: 2.3; display: flex; flex-direction: column; gap: 16px; }
+        .playlist-queue-column { flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; height: calc(100vh - 40px); overflow-y: auto; background: transparent; }
+
+        /* 📺 SUPER FAST CONTROLLERS LAYER */
+        .video-window-frame { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
+        .video-window-frame iframe { width: 100%; height: 100%; border: none; pointer-events: auto; }
+
+        /* 🔒 SCREEN LOCK OVERLAY */
+        .screen-lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.1); z-index: 9999; display: none; cursor: not-allowed; }
+        .unlock-btn-floating { position: absolute; top: 20px; right: 20px; background: var(--yt-red); color: white; border: none; padding: 10px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; display: none; z-index: 10000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
+        /* ⚙️ CUSTOM DYNAMIC CONTROL BAR */
+        .focus-control-deck { display: flex; flex-direction: column; gap: 12px; background: var(--card-hover); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .control-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .btn-group { display: flex; gap: 8px; align-items: center; }
+        
+        .action-btn { background: var(--bg-player); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 0.88rem; transition: background 0.1s; }
+        .action-btn:hover { background: var(--border-color); }
+        .action-btn.active { background: var(--text-main); color: var(--bg-player); }
+
+        select.action-btn { padding-right: 24px; cursor: pointer; }
+
+        /* ⏱️ TIMELAPSE & PROGRESS DECK */
+        .timelaps-container { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px; }
+        .time-string { font-size: 0.85rem; font-weight: 600; font-family: monospace; color: var(--text-main); }
+        .progress-bar-slider { flex: 1; height: 6px; -webkit-appearance: none; appearance: none; background: var(--border-color); border-radius: 3px; outline: none; cursor: pointer; }
+        .progress-bar-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--yt-red); cursor: pointer; }
+
+        /* 📋 PLAYLIST QUEUE DECK */
+        .queue-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; color: var(--text-main); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; }
+        .queue-list-wrapper { display: flex; flex-direction: column; gap: 12px; }
+        .queue-item-card { display: flex; gap: 10px; cursor: pointer; padding: 6px; border-radius: 8px; transition: background 0.1s; }
+        .queue-item-card:hover { background: var(--card-hover); }
+        .queue-item-card.active { background: var(--border-color); pointer-events: none; }
+        .queue-thumb { width: 120px; aspect-ratio: 16/9; background: #000; border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+        .queue-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .queue-meta { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+        .queue-meta-title { font-size: 0.85rem; font-weight: 600; line-height: 1.3; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* 📱 RESPONSIVE RESPONSIVENESS */
+        @media (max-width: 900px) {
+            .player-main-layout { flex-direction: column; }
+            .playlist-queue-column { height: auto; max-height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="unlock-btn-floating" id="globalUnlockBtnUI" onclick="toggleScreenLock(false)">🔓 Unlock Screen</button>
+
+    <div class="player-main-layout">
+        
+        <!-- 📺 COLUMN 1: LIVE SECURE LAYER & CONTROLS -->
+        <div class="video-stream-column">
+            <div class="video-window-frame" id="playerWindowShell">
+                <div class="screen-lock-overlay" id="screenLockOverlayUI"></div>
+                <!-- YouTube API Iframe Inject Node -->
+                <div id="ytLiveSecurePlayer"></div>
+            </div>
+
+            <!-- ⚙️ ADVANCED CONTROLLER PANEL -->
+            <div class="focus-control-deck">
+                
+                <!-- ROW 1: SKIP CONTROLLERS & TIME LAPSE -->
+                <div class="control-row">
+                    <div class="btn-group">
+                        <button class="action-btn" onclick="triggerSkipAction('back')">⏪ Backward <span class="skip-val-text">10s</span></button>
+                        <button class="action-btn" onclick="triggerSkipAction('forward')">Forward <span class="skip-val-text">10s</span> ⏩</button>
+                    </div>
+
+                    <!-- TIMELAPSE METRICS -->
+                    <div class="timelaps-container">
+                        <span class="time-string" id="currentTimeUI">00:00</span>
+                        <input type="range" class="progress-bar-slider" id="progressSliderUI" min="0" value="0" max="100" oninput="manualTimeSeek(this.value)">
+                        <span class="time-string" id="remainingTimeUI">-00:00</span>
+                    </div>
+                </div>
+
+                <!-- ROW 2: PROFILE CONFIGURATOR, SPEED, SCREEN LOCK -->
+                <div class="control-row" style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 4px;">
+                    <div class="btn-group">
+                        <label style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Skip Setting:</label>
+                        <select class="action-btn" id="parentSkipTimeConfig" onchange="updateProfileSkipInterval(this.value)">
+                            <option value="10" selected>10 Seconds (Standard)</option>
+                            <option value="15">15 Seconds (Child Custom)</option>
+                            <option value="30">30 Seconds (Fast Mode)</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-group">
+                        <!-- SPEED SPEED SETTING -->
+                        <select class="action-btn" id="videoSpeedConfig" onchange="adjustPlaybackSpeed(this.value)">
+                            <option value="0.5">0.5x Speed</option>
+                            <option value="1" selected>Normal Speed</option>
+                            <option value="1.25">1.25x Speed</option>
+                            <option value="1.5">1.5x Speed</option>
+                            <option value="2">2.0x Max Speed</option>
+                        </select>
+
+                        <!-- FULLSCREEN SCREEN LOCK -->
+                        <button class="action-btn" style="background: var(--yt-red); color: white; border: none;" onclick="toggleScreenLock(true)">🔒 Fullscreen Lock</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 📋 COLUMN 2: CLOSED PLAYLIST QUEUE ONLY -->
+        <div class="playlist-queue-column">
+            <h3 class="queue-title">Classroom Lectures</h3>
+            <div class="queue-list-wrapper" id="playlistQueueItemsShell">
+                <div class="pulse-placeholder">Syncing playlist course modules...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🧠 LOADING YOUTUBE IFRAME API CORE -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        let playerInstance = null;
+        let currentVideoId = "";
+        let activePlaylistId = "";
+        let parentConfiguredSkipInterval = 10; // डिफ़ॉल्ट प्रोफाइल स्किप टाइम
+        
+        const YT_GATEWAY_KEY = "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ";
+
+        // ================= 📡 EXTRACT PARAMS ON LOAD =================
+        function parseUrlRouteParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentVideoId = urlParams.get('v') || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF"; // Fallback Test
+            activePlaylistId = urlParams.get('list') || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
+            
+            // अगर एडमिन पैनल या प्रोफाइल सेटिंग से पहले से सेट वैल्यू भेजनी हो
+            const customSkip = urlParams.get('skip');
+            if(customSkip) updateProfileSkipInterval(customSkip);
+        }
+
+        // ================= 🧠 YOUTUBE IFRAME API INITIALIZER =================
+        function onYouTubeIframeAPIReady() {
+            parseUrlRouteParameters();
+            
+            playerInstance = new YT.Player('ytLiveSecurePlayer', {
+                height: '100%',
+                width: '100%',
+                videoId: currentVideoId,
+                playerVars: {
+                    'autoplay': 1,
+                    'controls': 1, // डिफ़ॉल्ट टाइमलैप्स और क्वालिटी कंट्रोल यूट्यूब अंदर से ही हैंडल करेगा
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'iv_load_policy': 3,
+                    'showinfo': 0
+                },
+                events: {
+                    'onReady': onPlayerSystemReady,
+                    'onStateChange': onPlayerStateTick
+                }
+            });
+            
+            fetchSidebarPlaylistQueue();
+        }
+
+        function onPlayerSystemReady(event) {
+            // हर 1 सेकंड में कस्टम टाइमलैप्स ट्रैकर को अपडेट करने का टाइमर चालू करें
+            setInterval(updateTimelapseMetrics, 1000);
+        }
+
+        function onPlayerStateTick(event) {
+            // वीडियो ख़त्म होने पर क्या करना है, यहाँ लॉजिक डाल सकते हैं
+        }
+
+        // ================= ⏱️ TIMELAPSE & PROGRESS MATRIX =================
+        function updateTimelapseMetrics() {
+            if (!playerInstance || typeof playerInstance.getCurrentTime !== 'function') return;
+
+            const currentTime = playerInstance.getCurrentTime();
+            const totalDuration = playerInstance.getDuration();
+
+            if (totalDuration > 0) {
+                // वर्तमान समय सेट करें
+                document.getElementById('currentTimeUI').innerText = formatTimeLayout(currentTime);
+                
+                // कितना समय बचा है (Remaining Timelapse Calculate)
+                const remainingTime = totalDuration - currentTime;
+                document.getElementById('remainingTimeUI').innerText = "-" + formatTimeLayout(remainingTime);
+
+                // स्लाइडर बार की लाइव प्रोग्रेस सिंक करें
+                const currentPercentage = (currentTime / totalDuration) * 100;
+                document.getElementById('progressSliderUI').value = currentPercentage;
+            }
+        }
+
+        function formatTimeLayout(timeInSeconds) {
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = Math.floor(timeInSeconds % 60);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function manualTimeSeek(percentageValue) {
+            if (!playerInstance) return;
+            const totalDuration = playerInstance.getDuration();
+            const targetedSeconds = (percentageValue / 100) * totalDuration;
+            playerInstance.seekTo(targetedSeconds, true);
+        }
+
+        // ================= ⏩ PROFILE SKIP (10s / 15s) CONTROL ENGINE =================
+        function updateProfileSkipInterval(secondsValue) {
+            parentConfiguredSkipInterval = parseInt(secondsValue);
+            document.querySelectorAll('.skip-val-text').forEach(el => el.innerText = secondsValue + "s");
+            document.getElementById('parentSkipTimeConfig').value = secondsValue;
+        }
+
+        function triggerSkipAction(direction) {
+            if (!playerInstance) return;
+            const currentTime = playerInstance.getCurrentTime();
+            let newTargetTime = direction === 'forward' 
+                ? currentTime + parentConfiguredSkipInterval 
+                : currentTime - parentConfiguredSkipInterval;
+            
+            playerInstance.seekTo(Math.max(0, newTargetTime), true);
+        }
+
+        // ================= 📈 PLAYBACK SPEED ENGINE (MAX 2X) =================
+        function adjustPlaybackSpeed(speedMultiplier) {
+            if (!playerInstance || typeof playerInstance.setPlaybackRate !== 'function') return;
+            playerInstance.setPlaybackRate(parseFloat(speedMultiplier));
+        }
+
+        // ================= 🔒 SCREEN LOCK & FULLSCREEN LOGIC =================
+        function toggleScreenLock(shouldLock) {
+            const frame = document.getElementById('playerWindowShell');
+            const overlay = document.getElementById('screenLockOverlayUI');
+            const unlockBtn = document.getElementById('globalUnlockBtnUI');
+
+            if (shouldLock) {
+                overlay.style.display = "block";
+                unlockBtn.style.display = "block";
+                
+                // ब्राउज़र नेटिव फुलस्क्रीन एक्टिवेशन
+                if (frame.requestFullscreen) frame.requestFullscreen();
+                else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+            } else {
+                overlay.style.display = "none";
+                unlockBtn.style.display = "none";
+                
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // फुलस्क्रीन एग्जिट डिटेक्ट करने के लिए सेफ्टी चेक
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                toggleScreenLock(false);
+            }
+        });
+
+        // ================= 📋 SIDEBAR PLAYLIST QUEUE DISTRACTION-FREE =================
+        function fetchSidebarPlaylistQueue() {
+            const sidebar = document.getElementById('playlistQueueItemsShell');
+            const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${activePlaylistId}&key=${YT_GATEWAY_KEY}`;
+
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.items) {
+                        sidebar.innerHTML = "";
+                        data.items.forEach(item => {
+                            const vidId = item.snippet.resourceId.videoId;
+                            const title = item.snippet.title;
+                            const thumb = item.snippet.thumbnails.medium ? item.snippet.thumbnails.medium.url : `https://img.youtube.com/vi/${vidId}/0.jpg`;
+                            const isActive = (vidId === currentVideoId) ? "active" : "";
+
+                            const itemCard = document.createElement('div');
+                            itemCard.className = `queue-item-card ${isActive}`;
+                            itemCard.onclick = () => {
+                                window.location.href = `videoplay.html?v=${vidId}&list=${activePlaylistId}&skip=${parentConfiguredSkipInterval}`;
+                            };
+
+                            itemCard.innerHTML = `
+                                <div class="queue-thumb"><img src="${thumb}" alt="thumb"></div>
+                                <div class="queue-meta">
+                                    <h4 class="queue-meta-title">${title}</h4>
+                                </div>
+                            `;
+                            sidebar.appendChild(itemCard);
+                        });
+                    }
+                })
+                .catch(err => {
+                    sidebar.innerHTML = `<div class="pulse-placeholder">⚠️ Unable to load custom classroom queue.</div>`;
+                });
+        }
+
+        // ================= 📡 PARENT DASHBOARD SCRIPT MESSENGER SIGNALS =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+            }
+        });
+    </script>
+</body>
+</html>
