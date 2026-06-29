@@ -5,257 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FocusTube - Watch History 📜</title>
     <style>
-        /* ================= 🎨 MODERN YT DESIGN SYSTEM ================= */
+        /* ================= 🎨 MODERN YOUTUBE HISTORY DESIGN SYSTEM ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
         
         :root {
-            --bg-history: #ffffff;
-            --bg-card: #f9f9f9;
+            --bg-master: #ffffff;
+            --bg-card: #ffffff;
             --text-main: #0f0f0f;
             --text-muted: #606060;
             --border-color: #e5e5e5;
             --yt-blue: #065fd4;
-            --yt-red: #cc0000;
-            --hover-bg: #f1f1f1;
-            --sidebar-bg: #f9f9f9;
+            --hover-bg: #f2f2f2;
+            --icon-invert: 0; /* डार्क मोड में 1 होगा */
         }
 
-        /* 🌙 TRUE DARK MODE SYNC VARIABLES */
         body.dark-mode {
-            --bg-history: #0f0f0f;
-            --bg-card: #1f1f1f;
+            --bg-master: #0f0f0f;
+            --bg-card: #0f0f0f;
             --text-main: #ffffff;
             --text-muted: #aaaaaa;
             --border-color: #303030;
-            --yt-blue: #3ea6ff;
             --hover-bg: #272727;
-            --sidebar-bg: #1f1f1f;
+            --icon-invert: 1; /* यहाँ आइकॉन अपने आप ब्लैक से व्हाइट हो जाएंगे */
         }
 
-        body { background-color: var(--bg-history); color: var(--text-main); padding: 24px; transition: background 0.2s, color 0.2s; min-height: 100vh; }
+        body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 24px 40px; min-height: 100vh; }
         
-        .history-layout-container { display: flex; gap: 40px; max-width: 1100px; margin: 0 auto; }
-        .history-main-content { flex: 2; display: flex; flex-direction: column; gap: 24px; }
-        .history-control-sidebar { flex: 1; max-width: 300px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; height: fit-content; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; }
+        /* मास्टर टू-कॉलम लेआउट (यूट्यूब ओरिजिनल स्टाइल) */
+        .history-main-layout { display: flex; gap: 60px; max-width: 1280px; margin: 0 auto; }
+        .history-left-feed { flex: 1; display: flex; flex-direction: column; gap: 32px; }
+        .history-right-controls { width: 320px; display: flex; flex-direction: column; gap: 24px; position: sticky; top: 24px; height: fit-content; }
 
-        h2 { font-size: 1.5rem; font-weight: 700; }
-        .date-section-heading { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; color: var(--text-main); }
+        .page-heading { font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; }
+        .date-group-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+
+        /* 🔍 SEARCH WATCH HISTORY BAR */
+        .history-search-box { display: flex; align-items: center; border-bottom: 1px solid var(--text-main); padding: 6px 0; margin-bottom: 16px; }
+        .history-search-box input { background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.95rem; flex: 1; padding-right: 10px; }
+        .history-search-box img { width: 18px; height: 18px; filter: invert(var(--icon-invert)); }
+
+        /* 📺 YOUTUBE LIST-STYLE VIDEO CARD */
+        .video-history-list { display: flex; flex-direction: column; gap: 16px; }
+        .history-video-card { display: flex; gap: 16px; cursor: pointer; position: relative; padding: 8px; border-radius: 8px; transition: background 0.1s; }
+        .history-video-card:hover { background: var(--hover-bg); }
+
+        .thumb-box { width: 200px; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* 🔍 SEARCH AND SIDEBAR CONTROLS */
-        .search-history-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; outline: none; background: var(--bg-history); color: var(--text-main); }
-        .search-history-input:focus { border-color: var(--yt-blue); }
+        .meta-box { flex: 1; display: flex; flex-direction: column; gap: 4px; padding-right: 30px; }
+        .v-title { font-size: 1rem; font-weight: 500; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-channel { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+        
+        /* सिंगल वीडियो डिलीट आइकॉन */
+        .delete-single-btn { position: absolute; right: 12px; top: 12px; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .delete-single-btn:hover { background: var(--border-color); }
+        .delete-single-btn img { width: 14px; height: 14px; filter: invert(var(--icon-invert)); }
 
-        .control-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; text-align: left; display: flex; align-items: center; gap: 10px; transition: background 0.1s; width: 100%; }
-        .control-btn:hover { background: var(--hover-bg); }
-        .control-btn.danger-btn:hover { color: var(--yt-red); border-color: var(--yt-red); }
+        /* 🎛️ RIGHT SIDE CONTROLS INTERFACE */
+        .control-action-row { display: flex; align-items: center; gap: 16px; padding: 12px 8px; cursor: pointer; border-radius: 8px; transition: background 0.1s; }
+        .control-action-row:hover { background: var(--hover-bg); }
+        .control-action-row img { width: 20px; height: 20px; filter: invert(var(--icon-invert)); flex-shrink: 0; }
+        .control-text { font-size: 0.92rem; font-weight: 500; }
 
-        /* 📺 CHRONOLOGICAL VIDEO LIST ROWS */
-        .history-list-group { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
-        .history-video-row { display: flex; gap: 16px; padding: 8px; border-radius: 12px; position: relative; transition: background 0.15s; }
-        .history-video-row:hover { background: var(--bg-card); }
+        /* ✨ EMPTY STATE UI */
+        .empty-history-deck { text-align: center; padding: 100px 20px; color: var(--text-muted); font-size: 1rem; display: none; }
 
-        .thumb-wrapper { width: 180px; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; flex-shrink: 0; cursor: pointer; }
-        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-        .meta-wrapper { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; cursor: pointer; }
-        .v-title { font-size: 0.95rem; font-weight: 600; line-height: 1.3; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .v-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-
-        .remove-single-item { background: transparent; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; position: absolute; right: 12px; top: 12px; padding: 4px; border-radius: 4px; }
-        .remove-single-item:hover { color: var(--yt-red); background: var(--hover-bg); }
-
-        /* ✨ EMPTY STATE INTERFACE */
-        .empty-history-prompt { text-align: center; padding: 100px 20px; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 12px; }
-        .empty-icon { font-size: 3.5rem; }
-
-        @media (max-width: 768px) {
-            .history-layout-container { flex-direction: column-reverse; gap: 24px; }
-            .history-control-sidebar { max-width: 100%; position: static; }
-            .thumb-wrapper { width: 140px; }
+        @media (max-width: 850px) {
+            .history-main-layout { flex-direction: column-reverse; gap: 4px; }
+            .history-right-controls { width: 100%; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px; position: static; }
+            .thumb-box { width: 140px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="history-layout-container">
+    <div class="history-main-layout">
         
-        <!-- 🏠 LEFT COLUMN: CHRONOLOGICAL TIMELINE FEED -->
-        <div class="history-main-content">
-            <h2>Watch History 📜</h2>
-            <div id="timelineContainerShell">
-                <!-- जावास्क्रिप्ट यहाँ तारीख के अनुसार ग्रुप्स इंजेक्ट करेगा -->
+        <!-- 📜 LEFT SIDE: WATCH FEED TIMELINE -->
+        <div class="history-left-feed">
+            <h2 class="page-heading">Watch history</h2>
+            
+            <div id="historyTimelineContainerUI">
+                <!-- डेट-वाइज़ डेटा यहाँ लोड होगा (Today, Yesterday, Older) -->
             </div>
 
-            <!-- EMPTY STATE UI -->
-            <div class="empty-history-prompt" id="emptyHistoryPromptUI">
-                <div class="empty-icon">📂</div>
-                <h4 style="color: var(--text-main); font-size: 1.1rem;">Your watch history is empty</h4>
-                <p style="font-size: 0.88rem;">Videos you watch will be tracked and displayed here chronologically.</p>
+            <!-- एम्प्टी स्क्रीन प्रॉम्ट -->
+            <div class="empty-history-deck" id="emptyHistoryPromptUI">
+                This list has no videos. Start exploring your courses!
             </div>
         </div>
 
-        <!-- 🎛️ RIGHT COLUMN: MASTER CONTROLS SIDEBAR -->
-        <div class="history-control-sidebar">
-            <input type="text" id="historySearchInput" class="search-history-input" placeholder="🔍 Search watch history..." oninput="executeHistorySearch()">
+        <!-- 🎛️ RIGHT SIDE: MANAGEMENT CONTROL PANEL -->
+        <div class="history-right-controls">
             
-            <button class="control-btn danger-btn" onclick="clearEntireWatchHistory()">
-                <span>🗑️</span> Clear All Watch History
-            </button>
-            
-            <button class="control-btn" id="pauseToggleBtn" onclick="toggleWatchHistoryTracking()">
-                <span id="pauseIconNode">⏸️</span> <span id="pauseTextNode">Pause Watch History</span>
-            </button>
+            <!-- सर्च बार -->
+            <div class="history-search-box">
+                <input type="text" id="historySearchInputNode" placeholder="Search watch history" oninput="executeHistorySearch()">
+                <img src="icons/path_to_search_icon.png" alt="Search">
+            </div>
+
+            <!-- क्लियर ऑल हिस्ट्री -->
+            <div class="control-action-row" onclick="clearEntireWatchHistory()">
+                <img src="icons/clear.png" alt="Clear">
+                <span class="control-text">Clear all watch history</span>
+            </div>
+
+            <!-- पॉज़ हिस्ट्री टॉगल -->
+            <div class="control-action-row" onclick="togglePauseHistoryState()">
+                <img src="icons/pause.png" id="pauseIconNode" src="icons/pause.png" alt="Pause">
+                <span class="control-text" id="pauseTextNode">Pause watch history</span>
+            </div>
+
         </div>
 
     </div>
 
     <script>
         const HISTORY_STORAGE_KEY = "focustube_watch_history_vector";
-        const PAUSE_TRACKING_KEY = "focustube_pause_history_flag";
-        
-        let localHistoryCache = [];
+        const HISTORY_PAUSE_KEY = "focustube_history_pause_flag";
 
-        // ================= 🏠 TIMELINE ENGINE INITIALIZATION =================
-        function loadChronologicalHistoryFeed() {
-            localHistoryCache = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || [];
-            compileAndRenderTimeline(localHistoryCache);
+        let localHistoryArray = [];
+        let isHistoryPaused = false;
+
+        // ================= 🏠 SYSTEM INITIALIZATION =================
+        function initializeHistoryEngine() {
+            // पॉज़ स्टेट चेक करें
+            isHistoryPaused = localStorage.getItem(HISTORY_PAUSE_KEY) === "true";
+            updatePauseControlUI();
+
+            // लोकल स्टोरेज से वीडियो लिस्ट उठाएं
+            localHistoryArray = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || [];
+            
+            compileAndRenderTimeline(localHistoryArray);
         }
 
-        // ================= 🔀 GROUP BY DATE & RENDER MATRIX =================
-        function compileAndRenderTimeline(historyArray) {
-            const shell = document.getElementById('timelineContainerShell');
+        // ================= 🔀 DATETIME TIMELINE GROUPER ENGINE =================
+        function compileAndRenderTimeline(dataList) {
+            const container = document.getElementById('historyTimelineContainerUI');
             const emptyPrompt = document.getElementById('emptyHistoryPromptUI');
 
-            if (!historyArray || historyArray.length === 0) {
-                shell.innerHTML = "";
-                emptyPrompt.style.display = "flex";
+            if (!dataList || dataList.length === 0) {
+                container.innerHTML = "";
+                emptyPrompt.style.display = "block";
                 return;
             }
-
             emptyPrompt.style.display = "none";
-            shell.innerHTML = "";
+            container.innerHTML = "";
 
-            // वीडियो को आज, कल और पुराने तारीखों में ग्रुप करने का मैप
-            let groupedMap = {
-                "Today": [],
-                "Yesterday": [],
-                "Older": []
-            };
-
+            // डेटा को तीन बकेट में बाँटें: Today, Yesterday, Older
+            let buckets = { today: [], yesterday: [], older: [] };
             const now = new Date();
-            const todayStr = now.toDateString();
-            
-            const yesterday = new Date();
-            yesterday.setDate(now.getDate() - 1);
-            const yesterdayStr = yesterday.toDateString();
 
-            historyArray.forEach(item => {
-                if(!item.timestamp) return;
-                const itemDate = new Date(item.timestamp);
-                const itemDateStr = itemDate.toDateString();
+            dataList.forEach(item => {
+                const itemDate = new Date(item.watchedAt);
+                
+                const isToday = itemDate.getDate() === now.getDate() && itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+                
+                let yesterday = new Date();
+                yesterday.setDate(now.getDate() - 1);
+                const isYesterday = itemDate.getDate() === yesterday.getDate() && itemDate.getMonth() === yesterday.getMonth() && itemDate.getFullYear() === yesterday.getFullYear();
 
-                if (itemDateStr === todayStr) {
-                    groupedMap["Today"].push(item);
-                } else if (itemDateStr === yesterdayStr) {
-                    groupedMap["Yesterday"].push(item);
-                } else {
-                    groupedMap["Older"].push(item);
-                }
+                if (isToday) buckets.today.push(item);
+                else if (isYesterday) buckets.yesterday.push(item);
+                else buckets.older.push(item);
             });
 
-            // प्रत्येक ग्रुप को स्क्रीन पर रेंडर करें
-            for (let category in groupedMap) {
-                if (groupedMap[category].length > 0) {
-                    const section = document.createElement('div');
-                    section.className = "history-list-group";
-                    section.innerHTML = `<h3 class="date-section-heading">${category}</h3>`;
-
-                    groupedMap[category].forEach(video => {
-                        const row = document.createElement('div');
-                        row.className = "history-video-row";
-                        row.id = `history-row-${video.uid}`;
-
-                        row.innerHTML = `
-                            <div class="thumb-wrapper" onclick="navigateToPlayer('${video.videoId}', '${video.playlistId}')">
-                                <img src="https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg" alt="Thumbnail">
-                            </div>
-                            <div class="meta-wrapper" onclick="navigateToPlayer('${video.videoId}', '${video.playlistId}')">
-                                <h4 class="v-title">${video.title}</h4>
-                                <p class="v-subtitle">Watched on FocusTube Classroom</p>
-                            </div>
-                            <button class="remove-single-item" onclick="removeSingleHistoryItem('${video.uid}')" title="Remove from History">✕</button>
-                        `;
-                        section.appendChild(row);
-                    });
-
-                    shell.appendChild(section);
-                }
-            }
-
-            // अगर सर्च करने पर कोई ग्रुप मैच न खाए
-            if (shell.children.length === 0) {
-                emptyPrompt.style.display = "flex";
-            }
+            // प्रत्येक बकेट को लाइन से रेंडर करें
+            if (buckets.today.length > 0) renderDateSegmentNode(container, "Today", buckets.today);
+            if (buckets.yesterday.length > 0) renderDateSegmentNode(container, "Yesterday", buckets.yesterday);
+            if (buckets.older.length > 0) renderDateSegmentNode(container, "Older", buckets.older);
         }
 
-        function navigateToPlayer(vId, pId) {
-            window.location.href = `videoplay.html?v=${vId}&list=${pId}`;
+        function renderDateSegmentNode(parent, titleText, items) {
+            const segmentWrapper = document.createElement('div');
+            segmentWrapper.style.marginBottom = "24px";
+            
+            segmentWrapper.innerHTML = `<h3 class="date-group-title">${titleText}</h3>`;
+            
+            const listContainer = document.createElement('div');
+            listContainer.className = "video-history-list";
+
+            items.forEach(v => {
+                const card = document.createElement('div');
+                card.className = "history-video-card";
+                card.onclick = () => window.location.href = `videoplay.html?v=${v.videoId}&list=${v.playlistId || ''}`;
+
+                card.innerHTML = `
+                    <div class="thumb-box">
+                        <img src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" alt="Thumbnail">
+                    </div>
+                    <div class="meta-box">
+                        <h4 class="v-title">${v.title}</h4>
+                        <p class="v-channel">${v.channelTitle || 'FocusTube whitelisted lecture'}</p>
+                    </div>
+                    <button class="delete-single-btn" onclick="removeSingleVideoFromHistory(event, '${v.timestampId}')" title="Remove from history">
+                        <img src="icons/delete.png" alt="Remove">
+                    </button>
+                `;
+                listContainer.appendChild(card);
+            });
+
+            segmentWrapper.appendChild(listContainer);
+            parent.appendChild(segmentWrapper);
         }
 
         // ================= 🔍 LIVE SEARCH OPERATION =================
         function executeHistorySearch() {
-            const query = document.getElementById('historySearchInput').value.toLowerCase().trim();
+            const query = document.getElementById('historySearchInputNode').value.trim().toLowerCase();
             if (!query) {
-                compileAndRenderTimeline(localHistoryCache);
+                compileAndRenderTimeline(localHistoryArray);
                 return;
             }
 
-            const filtered = localHistoryCache.filter(item => {
-                return item.title && item.title.toLowerCase().includes(query);
-            });
+            const filtered = localHistoryArray.filter(v => v.title.toLowerCase().includes(query));
             compileAndRenderTimeline(filtered);
         }
 
-        // ================= 🗑️ ACTIONS: DELETE OPERATIONS =================
-        function removeSingleHistoryItem(uid) {
-            if (confirm("Remove this video from your watch history?")) {
-                localHistoryCache = localHistoryCache.filter(item => item.uid !== uid);
-                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(localHistoryCache));
-                compileAndRenderTimeline(localHistoryCache);
-            }
+        // ================= 🗑️ MASTER HISTORY CONTROLS =================
+        function removeSingleVideoFromHistory(event, timestampId) {
+            event.stopPropagation(); // कार्ड क्लिक ट्रिगर होने से रोकें
+            localHistoryArray = localHistoryArray.filter(v => v.timestampId !== timestampId);
+            localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(localHistoryArray));
+            compileAndRenderTimeline(localHistoryArray);
         }
 
         function clearEntireWatchHistory() {
-            if (confirm("Are you sure you want to completely clear your FocusTube watch history? This cannot be undone.")) {
-                localHistoryCache = [];
-                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(localHistoryCache));
-                compileAndRenderTimeline(localHistoryCache);
+            if (confirm("Are you sure you want to clear your entire watch history?")) {
+                localHistoryArray = [];
+                localStorage.removeItem(HISTORY_STORAGE_KEY);
+                compileAndRenderTimeline(localHistoryArray);
             }
         }
 
-        // ================= ⏸️ ACTION: PAUSE TRACKING CONTROLLER =================
-        function toggleWatchHistoryTracking() {
-            let isPaused = localStorage.getItem(PAUSE_TRACKING_KEY) === "true";
-            isPaused = !isPaused;
-            localStorage.setItem(PAUSE_TRACKING_KEY, isPaused);
-            updatePauseButtonUI(isPaused);
+        function togglePauseHistoryState() {
+            isHistoryPaused = !isHistoryPaused;
+            localStorage.setItem(HISTORY_PAUSE_KEY, isHistoryPaused);
+            updatePauseControlUI();
+            alert(isHistoryPaused ? "Watch history has been paused." : "Watch history has been resumed.");
         }
 
-        function updatePauseButtonUI(isPaused) {
-            const icon = document.getElementById('pauseIconNode');
-            const text = document.getElementById('pauseTextNode');
-            if (isPaused) {
-                icon.innerText = "▶️";
-                text.innerText = "Resume Watch History";
-            } else {
-                icon.innerText = "⏸️";
-                text.innerText = "Pause Watch History";
-            }
-        }
-
-        function checkInitialPauseState() {
-            const isPaused = localStorage.getItem(PAUSE_TRACKING_KEY) === "true";
-            updatePauseButtonUI(isPaused);
+        function updatePauseControlUI() {
+            const textNode = document.getElementById('pauseTextNode');
+            textNode.innerText = isHistoryPaused ? "Turn on watch history" : "Pause watch history";
         }
 
         // ================= 📡 PARENT DASHBOARD THEME SIGNAL RECEIVER =================
@@ -270,11 +261,8 @@
             }
         });
 
-        // Master Launch
-        window.addEventListener('DOMContentLoaded', () => {
-            loadChronologicalHistoryFeed();
-            checkInitialPauseState();
-        });
+        // Launch Core Engine
+        window.addEventListener('DOMContentLoaded', initializeHistoryEngine);
     </script>
 </body>
 </html>
