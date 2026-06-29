@@ -19,7 +19,7 @@
             --search-bg: #f8f8f8;
             --sidebar-hover: #f2f2f2;
             --menu-shadow: rgba(0, 0, 0, 0.1);
-            --icon-filter: none; /* लाइट मोड में आईकॉन नॉर्मल रहेंगे */
+            --icon-filter: none;
         }
 
         /* 🌙 SYSTEM CHILD NODE: MANUAL DARK THEME INTERCEPT */
@@ -33,7 +33,7 @@
             --search-bg: #121212;
             --sidebar-hover: #3d3d3d;
             --menu-shadow: rgba(0, 0, 0, 0.5);
-            --icon-filter: invert(1); /* डार्क मोड में सारे ब्लैक आइकॉन्स व्हाइट हो जाएंगे 🔥 */
+            --icon-filter: invert(1);
             background-color: #0f0f0f;
         }
 
@@ -46,16 +46,15 @@
         .hamburger-menu-btn { width: 40px; height: 40px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
         .hamburger-menu-btn:hover { background: var(--sidebar-hover); }
         
-        /* आईकॉन इमेज के फिल्टर का नियम */
-        .hamburger-icon-img, .search-icon-img, .voice-icon-img, .nav-icon-img, .dropdown-icon-img, .sidebar-icon-img { 
+        .hamburger-icon-img, .search-icon-img, .voice-icon-img, .nav-icon-img, .dropdown-icon-img, .sidebar-icon-img, .bottom-icon-img { 
             width: 24px; height: 24px; object-fit: contain; filter: var(--icon-filter); transition: filter 0.2s; 
         }
         
         .brand-box { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--text-main); letter-spacing: -0.5px; }
-        .brand-logo-img { width: 24px; height: 24px; object-fit: contain; filter: none !important; } /* लोगो का रंग नहीं बदलेगा */
+        .brand-logo-img { width: 24px; height: 24px; object-fit: contain; filter: none !important; }
         .brand-box span { color: var(--yt-red); }
 
-        /* 🔍 DYNAMIC SYSTEM SEARCH & VOICE PORTS */
+        /* 🔍 SEARCH & VOICE PORTS */
         .search-center-wrapper { flex: 0 1 640px; display: flex; align-items: center; gap: 12px; margin: 0 20px; }
         .search-input-group { display: flex; width: 100%; align-items: center; }
         
@@ -81,7 +80,7 @@
         .user-avatar-trigger-box { width: 32px; height: 32px; border-radius: 50%; background: #0073e6; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; cursor: pointer; overflow: hidden; border: 1px solid var(--border-color); margin-left: 4px; }
         .user-avatar-trigger-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
 
-        /* 👤 PREMIUM YOUTUBE-STYLE PROFILE DROPDOWN MENU */
+        /* 👤 PROFILE DROPDOWN MENU */
         .profile-dropdown-menu { display: none; position: absolute; top: 48px; right: 0; background: var(--pure-white); border: 1px solid var(--border-color); border-radius: 8px; width: 260px; box-shadow: 0 4px 20px var(--menu-shadow); padding: 8px 0; z-index: 1010; }
         .profile-dropdown-menu.active-menu { display: block; }
         
@@ -96,8 +95,8 @@
         /* 🎛️ SYSTEM CORE SPACE MODULES CONTAINER */
         .app-workspace-body { flex: 1; display: flex; height: calc(100vh - 56px); overflow: hidden; position: relative; }
 
-        /* 💻 COMPREHENSIVE 9-WAY SIDEBAR SYSTEM LIST */
-        .sidebar-wrapper { width: 240px; background: var(--pure-white); display: flex; flex-direction: column; padding: 12px 0; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border-color); }
+        /* 💻 COMPREHENSIVE LAPTOP SIDEBAR SYSTEM LIST (7 BUTTONS RE-SECURED) */
+        .sidebar-wrapper { width: 240px; background: var(--pure-white); display: flex; flex-direction: column; padding: 12px 0; flex-shrink: 0; overflow-y: auto; border-right: 1px solid var(--border-color); transition: width 0.2s; }
         .sidebar-wrapper.collapsed { width: 72px; }
         .sidebar-wrapper.collapsed .sidebar-text, .sidebar-wrapper.collapsed .section-divider, .sidebar-wrapper.collapsed .sidebar-heading { display: none; }
         .sidebar-wrapper.collapsed .sidebar-node-btn { justify-content: center; padding: 12px 0; margin: 0; border-radius: 0; }
@@ -109,18 +108,54 @@
         .sidebar-heading { font-size: 0.8rem; font-weight: 600; padding: 12px 24px 6px 24px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.2px; }
         .section-divider { height: 1px; background: var(--border-color); margin: 8px 0; width: 100%; }
 
-        /* ================= 📺 ASYNC IFRAME PANEL (DASHBOARD INNER TERMINAL) ================= */
+        /* ================= 📺 ASYNC IFRAME PANEL ================= */
         .main-feed-panel { flex: 1; width: 100%; height: 100%; background: var(--bg-main); padding: 0; overflow: hidden; position: relative; }
         .secure-app-iframe { width: 100%; height: 100%; border: none; background: transparent; }
 
-        /* 📱 RESPONSIVE CALIBRATION OVERRIDES */
+        /* 📱 MOBILE BOTTOM NAVBAR SYSTEM */
+        .mobile-bottom-navbar-dock { 
+            display: none; 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 48px; 
+            background: var(--pure-white); 
+            border-top: 1px solid var(--border-color); 
+            z-index: 9999; 
+            justify-content: space-around; 
+            align-items: center; 
+        }
+        .bottom-nav-item-btn { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            color: var(--text-main); 
+            text-decoration: none; 
+            font-size: 0.62rem; 
+            font-weight: 500; 
+            flex: 1; 
+            height: 100%; 
+            gap: 2px;
+            cursor: pointer;
+        }
+        .bottom-nav-item-btn.active-bottom-node { 
+            font-weight: 700; 
+            color: var(--yt-red); 
+        }
+
+        /* 📱 RESPONSIVE MEDIA QUERIES OVERRIDES */
         @media (max-width: 768px) {
-            .sidebar-wrapper { display: none; }
+            .sidebar-wrapper { display: none !important; } /* मोबाइल में साइडबार पूरी तरह क्लोज */
             .search-center-wrapper { flex: 1; margin: 0 4px; }
             .search-input-box { height: 36px; font-size: 0.88rem; padding: 0 12px; }
             .btn-search-trigger { height: 36px; padding: 0 14px; }
             .btn-voice-search, .btn-eye-guard, .hamburger-menu-btn { display: none; }
             .navbar-dock { padding: 0 12px; }
+            
+            .app-workspace-body { height: calc(100vh - 104px); } 
+            .mobile-bottom-navbar-dock { display: flex; } /* मोबाइल होते ही बॉटम बार चमकेगा */
         }
     </style>
 </head>
@@ -151,7 +186,7 @@
 
         <div class="right-control-pack">
             <button class="btn-eye-guard" onclick="toggleStudentDashboardTheme()" id="themeBtnTxt">👁 Dark Mode</button>
-            <a href="notification.html" target="contentFrame" class="nav-btn-link" title="Notifications" onclick="highlightSidebarNode(this)">
+            <a href="notification.html" target="contentFrame" class="nav-btn-link" title="Notifications" onclick="syncSidebarAndMobileUI('notification.html')">
                 <img src="icons/path_to_notification_icon.png" alt="Notifications" class="nav-icon-img">
             </a>
             
@@ -194,6 +229,7 @@
 
     <div class="app-workspace-body">
         
+        <!-- 💻 SIDEBAR (DESKTOP MODE COMPLETE 7 BUTTONS LIVE) -->
         <aside class="sidebar-wrapper" id="masterSidebarSystem">
             <a href="home.html" target="contentFrame" class="sidebar-node-btn active-node" onclick="highlightSidebarNode(this)">
                 <img src="icons/path_to_home_icon.png" alt="Home" class="sidebar-icon-img"><span class="sidebar-text">Home</span>
@@ -227,6 +263,26 @@
         </main>
     </div>
 
+    <!-- 📱 MOBILE BOTTOM NAVIGATION DECK -->
+    <div class="mobile-bottom-navbar-dock">
+        <a href="home.html" target="contentFrame" class="bottom-nav-item-btn active-bottom-node" onclick="syncSidebarAndMobileUI('home.html')">
+            <img src="icons/path_to_home_icon.png" alt="Home" class="bottom-icon-img">
+            <span>Home</span>
+        </a>
+        <a href="whitelist.html" target="contentFrame" class="bottom-nav-item-btn" onclick="syncSidebarAndMobileUI('whitelist.html')">
+            <img src="icons/path_to_whitelist_icon.png" alt="Whitelist" class="bottom-icon-img">
+            <span>Whitelist</span>
+        </a>
+        <a href="notification.html" target="contentFrame" class="bottom-nav-item-btn" onclick="syncSidebarAndMobileUI('notification.html')">
+            <img src="icons/path_to_notification_icon.png" alt="Alerts" class="bottom-icon-img">
+            <span>Alerts</span>
+        </a>
+        <a href="admin.html" target="contentFrame" class="bottom-nav-item-btn" onclick="syncSidebarAndMobileUI('admin.html')">
+            <img src="icons/path_to_admin_icon.png" alt="Admin" class="bottom-icon-img">
+            <span>Admin</span>
+        </a>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 
@@ -243,58 +299,61 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // 👁️ LIVE LAYOUT SWITCH ENGINE WITH DARK MODE SUB-THEME SYSTEM SYNC
         function toggleStudentDashboardTheme() {
             const body = document.body;
             const btn = document.getElementById('themeBtnTxt');
             body.classList.toggle('student-dark-mode');
             btn.innerText = body.classList.contains('student-dark-mode') ? "☀︎ Light Mode" : "👁 Dark Mode";
             
-            // अंदर खुले हुए iframe पेज को भी डार्क/लाइट मोड का सिग्नल पास करना
             syncIframeThemeState();
         }
 
-        // 🍔 COLLAPSE SIDEBAR NODE LOOP
         function toggleSidebarCollapseEngine() {
             document.getElementById('masterSidebarSystem').classList.toggle('collapsed');
         }
 
-        // 👤 PROFILE DROPDOWN MENU INTERCEPT
         function toggleProfileDropdownMenu() {
             document.getElementById('profileDropdownShell').classList.toggle('active-menu');
         }
 
-        // 🚪 SECURE SIGN OUT PROTOCOL
         function triggerSignOutSequence() {
             auth.signOut().then(() => {
                 window.location.href = "login.html";
             }).catch(err => alert(err.message));
         }
 
-        // Sidebar active highlighter function
-        function highlightSidebarNode(element) {
-            document.querySelectorAll('.sidebar-node-btn').forEach(btn => btn.classList.remove('active-node'));
-            // अगर नोटिफिकेशन बेल पर क्लिक हुआ तो साइडबार का नोटिफिकेशन लिंक एक्टिव होगा
-            if (element.classList.contains('sidebar-node-btn')) {
-                element.classList.add('active-node');
-            } else {
-                // नोटिफिकेशन लिंक को खोजकर एक्टिव करें
-                const notiBtn = document.querySelector('aside a[href="notification.html"]');
-                if(notiBtn) notiBtn.classList.add('active-node');
-            }
+        // ================= 🔄 RE-ENGINEERED SIDEBAR & MOBILE NAVIGATION SYNC =================
+        function syncSidebarAndMobileUI(targetHref) {
+            // 1. डेस्कटॉप साइडबार लिंक्स को हाइलाइट करें
+            document.querySelectorAll('.sidebar-node-btn').forEach(btn => {
+                btn.classList.remove('active-node');
+                if(btn.getAttribute('href') === targetHref) {
+                    btn.classList.add('active-node');
+                }
+            });
+
+            // 2. मोबाइल बॉटम बार लिंक्स को हाइलाइट करें
+            document.querySelectorAll('.bottom-nav-item-btn').forEach(btn => {
+                btn.classList.remove('active-bottom-node');
+                if(btn.getAttribute('href') === targetHref) {
+                    btn.classList.add('active-bottom-node');
+                }
+            });
         }
 
-        // सर्च बार की क्वेरी को iframe पेज के अंदर भेजने का मैकेनिज्म
+        function highlightSidebarNode(element) {
+            const targetHref = element.getAttribute('href');
+            syncSidebarAndMobileUI(targetHref);
+        }
+
         function triggerSearchInsideIframe() {
             const query = document.getElementById('globalSearchInput').value.trim();
             const iframe = document.getElementById('contentFrameId');
             if(query && iframe.contentWindow) {
-                // iframe के अंदर 'searchTriggered' नाम का कस्टम इवेंट पोस्ट करना
                 iframe.contentWindow.postMessage({ type: 'search', value: query }, '*');
             }
         }
 
-        // थीम स्टेट को iframe के अंदर ट्रांसफर करने का सिंक मैनेजर
         function syncIframeThemeState() {
             const isDarkMode = document.body.classList.contains('student-dark-mode');
             const iframe = document.getElementById('contentFrameId');
@@ -303,10 +362,8 @@
             }
         }
 
-        // जब भी नया iframe लोड हो, उसे पैरेंट डैशबोर्ड की थीम ऑटोमैटिकली मिल जानी चाहिए
         document.getElementById('contentFrameId').addEventListener('load', syncIframeThemeState);
 
-        // Auto-close overlay layout bounds check
         window.addEventListener('click', function(e) {
             const trigger = document.getElementById('avatarMenuTrigger');
             const shell = document.getElementById('profileDropdownShell');
@@ -315,7 +372,7 @@
             }
         });
 
-        // 🛡️ PWA PERSISTENT STATE MONITOR GUARD
+        // 🛡️ AUTH STATE & CLOUD AVATAR FETCH
         auth.onAuthStateChanged((user) => {
             if (!user) { 
                 window.location.href = "login.html"; 
@@ -325,6 +382,21 @@
                 document.getElementById('dropdownLetterNode').innerText = letter;
                 document.getElementById('dropdownUserEmailNode').innerText = user.email.split('@')[0];
                 localStorage.setItem('focustube_session_active', 'true');
+
+                const db = firebase.firestore();
+                db.collection("students_profile").doc("aditya_raj_focus_node").onSnapshot(doc => {
+                    if(doc.exists && doc.data() && doc.data().avatarBase64) {
+                        const imgStr = doc.data().avatarBase64;
+                        
+                        document.getElementById('avatarActualImageNode').src = imgStr;
+                        document.getElementById('avatarActualImageNode').style.display = "block";
+                        document.getElementById('avatarLetterNode').style.display = "none";
+
+                        document.getElementById('dropdownActualImageNode').src = imgStr;
+                        document.getElementById('dropdownActualImageNode').style.display = "block";
+                        document.getElementById('dropdownLetterNode').style.display = "none";
+                    }
+                });
             }
         });
 
