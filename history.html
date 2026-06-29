@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Watch History 📜</title>
+    <style>
+        /* ================= 🎨 MODERN YT DESIGN SYSTEM ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-history: #ffffff;
+            --bg-card: #f9f9f9;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-blue: #065fd4;
+            --yt-red: #cc0000;
+            --hover-bg: #f1f1f1;
+            --sidebar-bg: #f9f9f9;
+        }
+
+        /* 🌙 TRUE DARK MODE SYNC VARIABLES */
+        body.dark-mode {
+            --bg-history: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --yt-blue: #3ea6ff;
+            --hover-bg: #272727;
+            --sidebar-bg: #1f1f1f;
+        }
+
+        body { background-color: var(--bg-history); color: var(--text-main); padding: 24px; transition: background 0.2s, color 0.2s; min-height: 100vh; }
+        
+        .history-layout-container { display: flex; gap: 40px; max-width: 1100px; margin: 0 auto; }
+        .history-main-content { flex: 2; display: flex; flex-direction: column; gap: 24px; }
+        .history-control-sidebar { flex: 1; max-width: 300px; background: var(--sidebar-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; height: fit-content; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; }
+
+        h2 { font-size: 1.5rem; font-weight: 700; }
+        .date-section-heading { font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; color: var(--text-main); }
+        
+        /* 🔍 SEARCH AND SIDEBAR CONTROLS */
+        .search-history-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; outline: none; background: var(--bg-history); color: var(--text-main); }
+        .search-history-input:focus { border-color: var(--yt-blue); }
+
+        .control-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; text-align: left; display: flex; align-items: center; gap: 10px; transition: background 0.1s; width: 100%; }
+        .control-btn:hover { background: var(--hover-bg); }
+        .control-btn.danger-btn:hover { color: var(--yt-red); border-color: var(--yt-red); }
+
+        /* 📺 CHRONOLOGICAL VIDEO LIST ROWS */
+        .history-list-group { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+        .history-video-row { display: flex; gap: 16px; padding: 8px; border-radius: 12px; position: relative; transition: background 0.15s; }
+        .history-video-row:hover { background: var(--bg-card); }
+
+        .thumb-wrapper { width: 180px; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; flex-shrink: 0; cursor: pointer; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+        .meta-wrapper { flex: 1; display: flex; flex-direction: column; gap: 4px; justify-content: center; cursor: pointer; }
+        .v-title { font-size: 0.95rem; font-weight: 600; line-height: 1.3; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+        .remove-single-item { background: transparent; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; position: absolute; right: 12px; top: 12px; padding: 4px; border-radius: 4px; }
+        .remove-single-item:hover { color: var(--yt-red); background: var(--hover-bg); }
+
+        /* ✨ EMPTY STATE INTERFACE */
+        .empty-history-prompt { text-align: center; padding: 100px 20px; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 12px; }
+        .empty-icon { font-size: 3.5rem; }
+
+        @media (max-width: 768px) {
+            .history-layout-container { flex-direction: column-reverse; gap: 24px; }
+            .history-control-sidebar { max-width: 100%; position: static; }
+            .thumb-wrapper { width: 140px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="history-layout-container">
+        
+        <!-- 🏠 LEFT COLUMN: CHRONOLOGICAL TIMELINE FEED -->
+        <div class="history-main-content">
+            <h2>Watch History 📜</h2>
+            <div id="timelineContainerShell">
+                <!-- जावास्क्रिप्ट यहाँ तारीख के अनुसार ग्रुप्स इंजेक्ट करेगा -->
+            </div>
+
+            <!-- EMPTY STATE UI -->
+            <div class="empty-history-prompt" id="emptyHistoryPromptUI">
+                <div class="empty-icon">📂</div>
+                <h4 style="color: var(--text-main); font-size: 1.1rem;">Your watch history is empty</h4>
+                <p style="font-size: 0.88rem;">Videos you watch will be tracked and displayed here chronologically.</p>
+            </div>
+        </div>
+
+        <!-- 🎛️ RIGHT COLUMN: MASTER CONTROLS SIDEBAR -->
+        <div class="history-control-sidebar">
+            <input type="text" id="historySearchInput" class="search-history-input" placeholder="🔍 Search watch history..." oninput="executeHistorySearch()">
+            
+            <button class="control-btn danger-btn" onclick="clearEntireWatchHistory()">
+                <span>🗑️</span> Clear All Watch History
+            </button>
+            
+            <button class="control-btn" id="pauseToggleBtn" onclick="toggleWatchHistoryTracking()">
+                <span id="pauseIconNode">⏸️</span> <span id="pauseTextNode">Pause Watch History</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const HISTORY_STORAGE_KEY = "focustube_watch_history_vector";
+        const PAUSE_TRACKING_KEY = "focustube_pause_history_flag";
+        
+        let localHistoryCache = [];
+
+        // ================= 🏠 TIMELINE ENGINE INITIALIZATION =================
+        function loadChronologicalHistoryFeed() {
+            localHistoryCache = JSON.parse(localStorage.getItem(HISTORY_STORAGE_KEY)) || [];
+            compileAndRenderTimeline(localHistoryCache);
+        }
+
+        // ================= 🔀 GROUP BY DATE & RENDER MATRIX =================
+        function compileAndRenderTimeline(historyArray) {
+            const shell = document.getElementById('timelineContainerShell');
+            const emptyPrompt = document.getElementById('emptyHistoryPromptUI');
+
+            if (!historyArray || historyArray.length === 0) {
+                shell.innerHTML = "";
+                emptyPrompt.style.display = "flex";
+                return;
+            }
+
+            emptyPrompt.style.display = "none";
+            shell.innerHTML = "";
+
+            // वीडियो को आज, कल और पुराने तारीखों में ग्रुप करने का मैप
+            let groupedMap = {
+                "Today": [],
+                "Yesterday": [],
+                "Older": []
+            };
+
+            const now = new Date();
+            const todayStr = now.toDateString();
+            
+            const yesterday = new Date();
+            yesterday.setDate(now.getDate() - 1);
+            const yesterdayStr = yesterday.toDateString();
+
+            historyArray.forEach(item => {
+                if(!item.timestamp) return;
+                const itemDate = new Date(item.timestamp);
+                const itemDateStr = itemDate.toDateString();
+
+                if (itemDateStr === todayStr) {
+                    groupedMap["Today"].push(item);
+                } else if (itemDateStr === yesterdayStr) {
+                    groupedMap["Yesterday"].push(item);
+                } else {
+                    groupedMap["Older"].push(item);
+                }
+            });
+
+            // प्रत्येक ग्रुप को स्क्रीन पर रेंडर करें
+            for (let category in groupedMap) {
+                if (groupedMap[category].length > 0) {
+                    const section = document.createElement('div');
+                    section.className = "history-list-group";
+                    section.innerHTML = `<h3 class="date-section-heading">${category}</h3>`;
+
+                    groupedMap[category].forEach(video => {
+                        const row = document.createElement('div');
+                        row.className = "history-video-row";
+                        row.id = `history-row-${video.uid}`;
+
+                        row.innerHTML = `
+                            <div class="thumb-wrapper" onclick="navigateToPlayer('${video.videoId}', '${video.playlistId}')">
+                                <img src="https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg" alt="Thumbnail">
+                            </div>
+                            <div class="meta-wrapper" onclick="navigateToPlayer('${video.videoId}', '${video.playlistId}')">
+                                <h4 class="v-title">${video.title}</h4>
+                                <p class="v-subtitle">Watched on FocusTube Classroom</p>
+                            </div>
+                            <button class="remove-single-item" onclick="removeSingleHistoryItem('${video.uid}')" title="Remove from History">✕</button>
+                        `;
+                        section.appendChild(row);
+                    });
+
+                    shell.appendChild(section);
+                }
+            }
+
+            // अगर सर्च करने पर कोई ग्रुप मैच न खाए
+            if (shell.children.length === 0) {
+                emptyPrompt.style.display = "flex";
+            }
+        }
+
+        function navigateToPlayer(vId, pId) {
+            window.location.href = `videoplay.html?v=${vId}&list=${pId}`;
+        }
+
+        // ================= 🔍 LIVE SEARCH OPERATION =================
+        function executeHistorySearch() {
+            const query = document.getElementById('historySearchInput').value.toLowerCase().trim();
+            if (!query) {
+                compileAndRenderTimeline(localHistoryCache);
+                return;
+            }
+
+            const filtered = localHistoryCache.filter(item => {
+                return item.title && item.title.toLowerCase().includes(query);
+            });
+            compileAndRenderTimeline(filtered);
+        }
+
+        // ================= 🗑️ ACTIONS: DELETE OPERATIONS =================
+        function removeSingleHistoryItem(uid) {
+            if (confirm("Remove this video from your watch history?")) {
+                localHistoryCache = localHistoryCache.filter(item => item.uid !== uid);
+                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(localHistoryCache));
+                compileAndRenderTimeline(localHistoryCache);
+            }
+        }
+
+        function clearEntireWatchHistory() {
+            if (confirm("Are you sure you want to completely clear your FocusTube watch history? This cannot be undone.")) {
+                localHistoryCache = [];
+                localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(localHistoryCache));
+                compileAndRenderTimeline(localHistoryCache);
+            }
+        }
+
+        // ================= ⏸️ ACTION: PAUSE TRACKING CONTROLLER =================
+        function toggleWatchHistoryTracking() {
+            let isPaused = localStorage.getItem(PAUSE_TRACKING_KEY) === "true";
+            isPaused = !isPaused;
+            localStorage.setItem(PAUSE_TRACKING_KEY, isPaused);
+            updatePauseButtonUI(isPaused);
+        }
+
+        function updatePauseButtonUI(isPaused) {
+            const icon = document.getElementById('pauseIconNode');
+            const text = document.getElementById('pauseTextNode');
+            if (isPaused) {
+                icon.innerText = "▶️";
+                text.innerText = "Resume Watch History";
+            } else {
+                icon.innerText = "⏸️";
+                text.innerText = "Pause Watch History";
+            }
+        }
+
+        function checkInitialPauseState() {
+            const isPaused = localStorage.getItem(PAUSE_TRACKING_KEY) === "true";
+            updatePauseButtonUI(isPaused);
+        }
+
+        // ================= 📡 PARENT DASHBOARD THEME SIGNAL RECEIVER =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
+
+        // Master Launch
+        window.addEventListener('DOMContentLoaded', () => {
+            loadChronologicalHistoryFeed();
+            checkInitialPauseState();
+        });
+    </script>
+</body>
+</html>
