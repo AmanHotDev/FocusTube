@@ -132,7 +132,7 @@
 
             <div class="modal-btn-group">
                 <button class="modal-btn cancel" onclick="closeAcademicModal()">Cancel</button>
-                <button class="modal-btn confirm" id="saveBtnNode" onclick="saveAcademicDetailsToCloud()">Save to Cloud</button>
+                <button class="modal-btn confirm" id="saveBtnNode" onclick="saveAcademicDetailsToCloud()">Save</button>
             </div>
         </div>
     </div>
@@ -146,7 +146,7 @@
                 <div id="studentAvatarFallbackNode" class="profile-avatar-display">A</div>
                 
                 <label for="avatarFileUploadTrigger" class="avatar-edit-overlay" title="Upload Photo to Cloud">
-                    <img src="icons/profile.png" alt="Edit">
+                    <img src="icons/path_to_profile_icon.png" alt="Edit">
                 </label>
                 <input type="file" id="avatarFileUploadTrigger" class="avatar-file-input" accept="image/*" onchange="executeCloudAvatarUpload(this)">
             </div>
@@ -173,7 +173,7 @@
         <!-- 📊 SECTION 2: LIVE CLOUD METRICS -->
         <div class="analytics-dashboard-title">
             <img src="icons/analytics.png" alt="Analytics">
-            <span>Realtime Learning Analytics (Cloud Database)</span>
+            <span>Realtime Learning Analytics</span>
         </div>
 
         <div class="metrics-grid-layout">
@@ -278,7 +278,7 @@
         // ================= ☁️ SYNC PAYLOAD FROM FIRESTORE =================
         function syncEntireStudentDashboardFromCloud() {
             const syncStatus = document.getElementById('cloudSyncStatusNode');
-            syncStatus.innerText = "⏳ Syncing cloud nodes...";
+            syncStatus.innerText = "⏳ Syncing...";
             syncStatus.style.color = "var(--text-muted)";
 
             db.collection("students_profile").doc(STUDENT_CLOUD_ID).onSnapshot(doc => {
