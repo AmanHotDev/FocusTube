@@ -68,17 +68,14 @@
 </head>
 <body>
 
-    <!-- 🏷️ TOP HORIZONTAL CATEGORY BAR -->
     <div class="tags-carousel-container" id="tagsCarouselShell">
         <button class="yt-tag-btn active" onclick="filterTagsEngine(this, 'all')">All Classes</button>
     </div>
 
-    <!-- 📺 MAIN APPLICATION DISPATCH FEED PANEL -->
     <div class="feed-container-stream" id="globalHomeFeedShell">
         <div class="pulse-placeholder">Compiling videos from your pinned playlists...</div>
     </div>
 
-    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -98,18 +95,21 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 🔑 1-COST QUOTA LIVE API KEY (सुपर-लो कॉस्ट एंडपॉइंट)
-        const YT_GATEWAY_KEY = "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ";
+        // 🔑 3-जीमेल रोटेशन बैकअप एरे (अपनी बैकअप कीज यहाँ जोड़ सकते हैं भाई)
+        const YT_KEYS_ARRAY = [
+            "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ",
+            "AIzaSyB-WbOhuN0GGc9LnoCBYScB6bkioXZuXnY"
+        ];
+        let currentKeyIndex = 0;
+
         let currentUser = null;
-        
-        // 📥 डिफ़ॉल्ट प्लेलिस्ट आईडी (जो आपने दी है - इसे बेस बना दिया है)
         let whitelistedPlaylistsArray = ["PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF"]; 
         let compiledVideosMasterList = []; 
 
         // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
         function establishFirestoreSyncNode() {
-            // तुरंत पहली बार डेटा लोड करो बिना फायरबेस के इंतज़ार के
-            fetchPlaylistItemsPipeline();
+            // बिना फायरबेस डिले के तुरंत पहली बार डेटा लोड करें
+            resetAndInitialFetchFeed();
 
             auth.onAuthStateChanged((user) => {
                 if (user) {
@@ -119,13 +119,12 @@
                         .onSnapshot((snapshot) => {
                             let tempArray = [];
                             snapshot.forEach(doc => {
-                                // माता-पिता जो भी playlistId एंटर करेंगे, वह यहाँ लाइव कैच होगी
                                 if(doc.data().playlistId) tempArray.push(doc.data().playlistId.trim());
                             });
                             
                             if(tempArray.length > 0) {
                                 whitelistedPlaylistsArray = tempArray;
-                                fetchPlaylistItemsPipeline();
+                                resetAndInitialFetchFeed();
                             }
                         }, err => {
                             console.log("Error loading playlists from firebase.");
@@ -134,22 +133,27 @@
             });
         }
 
-       // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (ALL VIDEOS FETCH LOOP) =================
-        async function fetchPlaylistItemsPipeline(searchFilterQuery = "") {
+        // ================= 📡 INITIAL FETCH PIPELINE RESET =================
+        function resetAndInitialFetchFeed() {
+            compiledVideosMasterList = [];
+            fetchPlaylistItemsPipeline();
+        }
+
+        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (ALL VIDEOS FETCH LOOP) =================
+        async function fetchPlaylistItemsPipeline() {
             const shell = document.getElementById('globalHomeFeedShell');
             shell.innerHTML = `<div class="pulse-placeholder">Extracting all videos from live classrooms...</div>`;
             
             compiledVideosMasterList = [];
-            let apiPromises = [];
             const uniquePlaylists = [...new Set(whitelistedPlaylistsArray)];
 
             for (const playlistId of uniquePlaylists) {
                 let nextPageToken = "";
                 let keepFetching = true;
 
-                // जब तक प्लेलिस्ट के सारे पन्ने (Pages) लोड नहीं हो जाते, यह लूप चलता रहेगा
                 while (keepFetching) {
-                    let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${YT_GATEWAY_KEY}`;
+                    let activeKey = YT_KEYS_ARRAY[currentKeyIndex];
+                    let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${activeKey}`;
                     
                     if (nextPageToken) {
                         apiUrl += `&pageToken=${nextPageToken}`;
@@ -157,19 +161,26 @@
 
                     try {
                         let res = await fetch(apiUrl);
+                        
+                        // अगर कोटा लिमिट एरर आए तो की (Key) रोटेट करो
+                        if (!res.ok) {
+                            if (currentKeyIndex < YT_KEYS_ARRAY.length - 1) {
+                                currentKeyIndex++;
+                                console.log("Switching API Key node due to quota restrictions.");
+                                continue;
+                            } else {
+                                throw new Error("All key modules fully exhausted.");
+                            }
+                        }
+
                         let data = await res.json();
 
                         if (data && data.items) {
                             data.items.forEach(item => {
-                                if (searchFilterQuery) {
-                                    const title = item.snippet.title.toLowerCase();
-                                    if (!title.includes(searchFilterQuery.toLowerCase())) return;
-                                }
                                 compiledVideosMasterList.push(item);
                             });
                         }
 
-                        // अगर अगला पेज उपलब्ध है, तो टोकन लेकर अगला स्लॉट लोड करो, नहीं तो लूप बंद करो
                         if (data && data.nextPageToken) {
                             nextPageToken = data.nextPageToken;
                         } else {
@@ -182,7 +193,6 @@
                 }
             }
             
-            // टैग बटन्स और ग्रिड लेआउट अपडेट करें
             generateDynamicTagsFromMasterList();
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
         }
@@ -225,14 +235,12 @@
                 const vidId = video.snippet.resourceId ? video.snippet.resourceId.videoId : "";
                 if(!vidId) return;
 
-                // 🎯 यहाँ ध्यान दें: जिस प्लेलिस्ट से वीडियो आ रहा है, उसकी आईडी निकाल रहे हैं
                 const playlistId = video.snippet.playlistId || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
                 const snip = video.snippet;
                 const channelTitle = snip.videoOwnerChannelTitle || snip.channelTitle || "FocusTube Teacher";
                 const letter = channelTitle.charAt(0).toUpperCase();
                 const thumbnailUrl = snip.thumbnails.medium ? snip.thumbnails.medium.url : `https://img.youtube.com/vi/${vidId}/0.jpg`;
 
-                // 🔥 फिक्स: अलर्ट हटाकर सीधे videoplay.html पर रीडायरेक्ट लिंक सेट कर दिया है
                 gridHtmlBuffer += `
                     <div class="yt-video-card" onclick="window.location.href='videoplay.html?v=${vidId}&list=${playlistId}'">
                         <div class="thumbnail-wrapper"><img src="${thumbnailUrl}" alt="Thumbnail"></div>
@@ -250,6 +258,7 @@
             gridHtmlBuffer += `</div>`;
             shell.innerHTML = gridHtmlBuffer;
         }
+
         // ================= 🏷️ TOP CATEGORY TAGS FILTER EXECUTION =================
         function filterTagsEngine(btn, targetKeyword) {
             document.querySelectorAll('.yt-tag-btn').forEach(b => b.classList.remove('active'));
@@ -278,8 +287,17 @@
                 }
             }
             
+            // 🔍 0-क्रेडिट लोकल फ़िल्टरिंग सर्च बार फिक्स
             if (messagePacket.type === 'search') {
-                fetchPlaylistItemsPipeline(messagePacket.value);
+                const query = messagePacket.value.toLowerCase().trim();
+                if(query === "") {
+                    buildRandomizedYoutubeLayout(compiledVideosMasterList);
+                } else {
+                    const filtered = compiledVideosMasterList.filter(video => {
+                        return video.snippet.title.toLowerCase().includes(query);
+                    });
+                    buildRandomizedYoutubeLayout(filtered);
+                }
             }
         });
 
