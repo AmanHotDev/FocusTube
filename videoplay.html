@@ -15,7 +15,7 @@
             --border-color: #e5e5e5;
             --card-hover: #f2f2f2;
             --yt-red: #ff0000;
-            --yt-blue: #065fd4;
+            --icon-invert: 0;
         }
 
         body.dark-mode {
@@ -24,6 +24,7 @@
             --text-muted: #aaaaaa;
             --border-color: #303030;
             --card-hover: #272727;
+            --icon-invert: 1;
         }
 
         body { background-color: var(--bg-player); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 20px; overflow-x: hidden; }
@@ -34,31 +35,32 @@
         .playlist-queue-column { flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; height: calc(100vh - 40px); overflow-y: auto; background: transparent; }
 
         /* 📺 SUPER FAST CONTROLLERS LAYER */
-        .video-window-frame { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
-        .video-window-frame iframe { width: 100%; height: 100%; border: none; pointer-events: auto; }
+        .video-window-frame { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; user-select: none; }
+        .video-window-frame iframe { width: 100%; height: 100%; border: none; pointer-events: none; } /* पॉइंटर इवेंट्स नन ताकि डबल क्लिक सीधे फ्रेम डिटेक्ट करे */
 
         /* 🔒 SCREEN LOCK OVERLAY */
         .screen-lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.1); z-index: 9999; display: none; cursor: not-allowed; }
         .unlock-btn-floating { position: absolute; top: 20px; right: 20px; background: var(--yt-red); color: white; border: none; padding: 10px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; display: none; z-index: 10000; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* ❤️ DOUBLE CLICK LIKE FLOATING ANIMATION POPUP */
-        .double-click-heart-popup { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); color: white; background: rgba(0,0,0,0.7); padding: 16px 28px; border-radius: 30px; font-weight: bold; font-size: 1.2rem; z-index: 99999; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s; opacity: 0; }
-        .double-click-heart-popup.animate { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        /* ✨ DOUBLE CLICK LIKE ANIMATION POP-UP */
+        .double-click-heart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); background: rgba(0,0,0,0.6); border-radius: 50%; padding: 20px; display: flex; justify-content: center; align-items: center; z-index: 999; pointer-events: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s; opacity: 0; }
+        .double-click-heart-overlay.animate { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        .double-click-heart-overlay img { width: 60px; height: 60px; filter: invert(1); } /* हमेशा व्हाइट चमकेगा स्क्रीन पर */
 
         /* ⚙️ CUSTOM DYNAMIC CONTROL BAR */
         .focus-control-deck { display: flex; flex-direction: column; gap: 12px; background: var(--card-hover); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); }
         .control-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
         .btn-group { display: flex; gap: 8px; align-items: center; }
         
-        .action-btn { background: var(--bg-player); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 0.88rem; transition: background 0.1s; }
+        .action-btn { background: var(--bg-player); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 0.88rem; transition: background 0.1s; display: inline-flex; align-items: center; gap: 6px; }
         .action-btn:hover { background: var(--border-color); }
         .action-btn.active { background: var(--text-main); color: var(--bg-player); }
-        .action-btn.liked-state { background: var(--yt-blue); color: white; border-color: var(--yt-blue); }
+        
+        .like-btn-icon { width: 16px; height: 16px; filter: invert(var(--icon-invert)); transition: transform 0.2s; }
+        .action-btn.liked .like-btn-icon { transform: scale(1.2); filter: invert(0) !important; } /* लाइक होने पर ब्लू नोड सपोर्ट */
+        .action-btn.liked { border-color: var(--yt-blue); color: var(--yt-blue); font-weight: bold; }
 
         select.action-btn { padding-right: 24px; cursor: pointer; }
-
-        /* 📥 QUALITY SELECTION DROPDOWN INLINE MODAL */
-        .quality-download-modal { display: none; background: var(--bg-player); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; gap: 6px; align-items: center; margin-top: 4px; }
 
         /* ⏱️ TIMELAPSE & PROGRESS DECK */
         .timelaps-container { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 200px; }
@@ -77,7 +79,6 @@
         .queue-meta { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
         .queue-meta-title { font-size: 0.85rem; font-weight: 600; line-height: 1.3; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* 📱 RESPONSIVE RESPONSIVENESS */
         @media (max-width: 900px) {
             .player-main-layout { flex-direction: column; }
             .playlist-queue-column { height: auto; max-height: 400px; }
@@ -92,13 +93,15 @@
         
         <!-- 📺 COLUMN 1: LIVE SECURE LAYER & CONTROLS -->
         <div class="video-stream-column">
-            <!-- डबल क्लिक ट्रैक करने के लिए ऑनडबलक्लिक नोड जोड़ा गया है -->
-            <div class="video-window-frame" id="playerWindowShell" ondblclick="handlePlayerDoubleCkickLike()">
+            <!-- डबल क्लिक डिटेक्टर के लिए पैरेंट डिव फ़्रेम -->
+            <div class="video-window-frame" id="playerWindowShell" ondblclick="handleScreenDoubleTapLike()">
                 <div class="screen-lock-overlay" id="screenLockOverlayUI"></div>
                 
-                <!-- ❤️ DOUBLE CLICK HIT FLOAT POPUP -->
-                <div class="double-click-heart-popup" id="heartPopupUI">Liked! ❤️</div>
-                
+                <!-- बड़ा थम्ब्स-अप एनीमेशन नोड -->
+                <div class="double-click-heart-overlay" id="doubleTapLikeAnimNode">
+                    <img src="icons/path_to_like_icon.png" alt="Like Alert">
+                </div>
+
                 <!-- YouTube API Iframe Inject Node -->
                 <div id="ytLiveSecurePlayer"></div>
             </div>
@@ -111,6 +114,12 @@
                     <div class="btn-group">
                         <button class="action-btn" onclick="triggerSkipAction('back')">⏪ Backward <span class="skip-val-text">10s</span></button>
                         <button class="action-btn" onclick="triggerSkipAction('forward')">Forward <span class="skip-val-text">10s</span> ⏩</button>
+                        
+                        <!-- 👍 PREMIUM LIKE ACTION BUTTON USING IMAGE ICON -->
+                        <button class="action-btn" id="likeButtonToggleUI" onclick="toggleVideoLikeState()">
+                            <img src="icons/path_to_like_icon.png" class="like-btn-icon" alt="Like">
+                            <span id="likeButtonTextUI">Like</span>
+                        </button>
                     </div>
 
                     <!-- TIMELAPSE METRICS -->
@@ -121,22 +130,19 @@
                     </div>
                 </div>
 
-                <!-- ROW 2: LIKE, DOWNLOAD, SPEED, SCREEN LOCK -->
+                <!-- ROW 2: PROFILE CONFIGURATOR, SPEED, SCREEN LOCK -->
                 <div class="control-row" style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 4px;">
                     <div class="btn-group">
-                        <!-- 👍 ASLI LIKE BUTTON TRIGER -->
-                        <button class="action-btn" id="likeActionBtnNode" onclick="toggleVideoLikeState()">[ Like Video ]</button>
-                        
-                        <!-- ⬇️ DOWNLOAD ENGINE TRIGGER -->
-                        <button class="action-btn" id="downloadActionBtnNode" onclick="toggleQualityModalUI(true)">[ Download Offline ]</button>
-                        
-                        <select class="action-btn" id="parentSkipTimeConfig" onchange="updateProfileSkipInterval(this.value)" style="display:none;">
-                            <option value="10" selected>10s</option>
+                        <label style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Skip Setting:</label>
+                        <select class="action-btn" id="parentSkipTimeConfig" onchange="updateProfileSkipInterval(this.value)">
+                            <option value="10" selected>10 Seconds (Standard)</option>
+                            <option value="15">15 Seconds (Child Custom)</option>
+                            <option value="30">30 Seconds (Fast Mode)</option>
                         </select>
                     </div>
 
                     <div class="btn-group">
-                        <!-- SPEED SETTING -->
+                        <!-- SPEED SPEED SETTING -->
                         <select class="action-btn" id="videoSpeedConfig" onchange="adjustPlaybackSpeed(this.value)">
                             <option value="0.5">0.5x Speed</option>
                             <option value="1" selected>Normal Speed</option>
@@ -150,22 +156,10 @@
                     </div>
                 </div>
 
-                <!-- 📥 INLINE QUALITY SELECTOR POPUP MODAL -->
-                <div class="quality-download-modal" id="qualitySelectorModalUI">
-                    <span style="font-size: 0.85rem; font-weight: bold; margin-right: 6px;">Select Quality:</span>
-                    <select id="downloadQualitySelectionNode" class="action-btn" style="padding: 4px 8px;">
-                        <option value="720p">High Quality (720p)</option>
-                        <option value="480p">Medium Quality (480p)</option>
-                        <option value="360p">Data Saver (360p)</option>
-                    </select>
-                    <button class="action-btn liked-state" onclick="triggerTrueDeviceIndexedDBDownload()" style="padding: 5px 12px;">Download Now</button>
-                    <button class="action-btn" onclick="toggleQualityModalUI(false)" style="padding: 5px 8px; color: var(--danger-red);">✕</button>
-                </div>
-
             </div>
         </div>
 
-        <!-- 📋 COLUMN 2: PLAYLIST QUEUE -->
+        <!-- 📋 COLUMN 2: CLOSED PLAYLIST QUEUE ONLY -->
         <div class="playlist-queue-column">
             <h3 class="queue-title">Classroom Lectures</h3>
             <div class="queue-list-wrapper" id="playlistQueueItemsShell">
@@ -182,22 +176,24 @@
         let playerInstance = null;
         let currentVideoId = "";
         let activePlaylistId = "";
+        let currentVideoTitle = "FocusTube Whitelisted Lecture";
         let parentConfiguredSkipInterval = 10;
-        let activeVideoTitle = "FocusTube Whitelisted Lecture";
         
         const YT_GATEWAY_KEY = "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ";
         const LIKED_STORAGE_KEY = "focustube_liked_videos_vector";
 
-        // ================= 📡 EXTRACT PARAMS ON LOAD =================
+        // ================= 📡 EXTRACT PARAMS ON LOAD (REFRESH RECOVERY FIX) =================
         function parseUrlRouteParameters() {
             const urlParams = new URLSearchParams(window.location.search);
+            
+            // 🎯 रिफ्रेश फिक्स: अगर URL में आईडी मौजूद है, तो उसी पर टिकी रहेगी
             currentVideoId = urlParams.get('v') || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF"; 
             activePlaylistId = urlParams.get('list') || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
             
             const customSkip = urlParams.get('skip');
             if(customSkip) updateProfileSkipInterval(customSkip);
 
-            refreshLikeButtonUIState();
+            syncLikeButtonUIState();
         }
 
         // ================= 🧠 YOUTUBE IFRAME API INITIALIZER =================
@@ -210,7 +206,7 @@
                 videoId: currentVideoId,
                 playerVars: {
                     'autoplay': 1,
-                    'controls': 1, 
+                    'controls': 1,
                     'rel': 0,
                     'modestbranding': 1,
                     'iv_load_policy': 3,
@@ -228,14 +224,16 @@
         function onPlayerSystemReady(event) {
             setInterval(updateTimelapseMetrics, 1000);
             
-            // यूट्यूब डेटाबेस से असली वीडियो टाइटल फ़ेच करना ताकि लाइक/डाउनलोड में सही नाम सेव हो
-            try {
-                const activeData = playerInstance.getVideoData();
-                if(activeData && activeData.title) activeVideoTitle = activeData.title;
-            } catch(e){}
+            // यूट्यूब सर्वर से वीडियो का टाइटल खींचकर लोकल लाइक स्टोरेज मेटा के लिए रेडी रखें
+            if(playerInstance && typeof playerInstance.getVideoData === 'function') {
+                const data = playerInstance.getVideoData();
+                if(data && data.title) currentVideoTitle = data.title;
+            }
         }
 
-        function onPlayerStateTick(event) {}
+        function onPlayerStateTick(event) {
+            // State handlers if needed
+        }
 
         // ================= ⏱️ TIMELAPSE & PROGRESS MATRIX =================
         function updateTimelapseMetrics() {
@@ -267,123 +265,68 @@
             playerInstance.seekTo(targetedSeconds, true);
         }
 
-        // ================= 👍 ASLI WATCH LIKE MATRIX MANAGEMENT =================
-        function toggleVideoLikeState() {
-            let likedArray = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
-            const hasIndex = likedArray.findIndex(item => item.videoId === currentVideoId);
+        // ================= 👍 CORE LIKE LOGIC & DOUBLE CLICK ACTION =================
+        function handleScreenDoubleTapLike() {
+            // बड़ा थम्ब्स अप स्क्रीन एनीमेशन पॉप-अप ट्रिगर करें
+            const animOverlay = document.getElementById('doubleTapLikeAnimNode');
+            animOverlay.classList.add('animate');
+            
+            // 0.8 सेकंड बाद एनीमेशन हटा दें
+            setTimeout(() => {
+                animOverlay.classList.remove('animate');
+            }, 800);
 
-            if (hasIndex > -1) {
-                likedArray.splice(hasIndex, 1); // पहले से लाइक है तो हटाओ (Dislike)
+            // अगर वीडियो पहले से लाइक नहीं है, तो लाइक स्टेट एक्टिव करें
+            let likedVideos = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
+            const isExist = likedVideos.some(v => v.videoId === currentVideoId);
+            
+            if(!isExist) {
+                toggleVideoLikeState();
+            }
+        }
+
+        function toggleVideoLikeState() {
+            let likedVideos = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
+            const index = likedVideos.findIndex(v => v.videoId === currentVideoId);
+
+            if (index > -1) {
+                // अनलाइक करें
+                likedVideos.splice(index, 1);
             } else {
-                likedArray.push({
+                // लाइक लिस्ट में सेव करें (ताकि like.html में रेंडर हो सके)
+                likedVideos.push({
                     videoId: currentVideoId,
-                    title: activeVideoTitle,
                     playlistId: activePlaylistId,
-                    channelTitle: "FocusTube Verified Classroom"
+                    title: currentVideoTitle,
+                    channelTitle: "FocusTube Lecture"
                 });
             }
 
-            localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(likedArray));
-            refreshLikeButtonUIState();
+            localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(likedVideos));
+            syncLikeButtonUIState();
         }
 
-        function refreshLikeButtonUIState() {
-            let likedArray = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
-            const isLiked = likedArray.some(item => item.videoId === currentVideoId);
-            const btn = document.getElementById('likeActionBtnNode');
+        function syncLikeButtonUIState() {
+            let likedVideos = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
+            const isLiked = likedVideos.some(v => v.videoId === currentVideoId);
+            
+            const btn = document.getElementById('likeButtonToggleUI');
+            const text = document.getElementById('likeButtonTextUI');
 
-            if(btn) {
-                if(isLiked) {
-                    btn.innerText = "Liked! 👍";
-                    btn.classList.add('liked-state');
-                } else {
-                    btn.innerText = "[ Like Video ]";
-                    btn.classList.remove('liked-state');
-                }
+            if (isLiked) {
+                btn.classList.add('liked');
+                text.innerText = "Liked";
+            } else {
+                btn.classList.remove('liked');
+                text.innerText = "Like";
             }
-        }
-
-        // ❤️ DOUBLE CLICK TO LIKE EXECUTION
-        function handlePlayerDoubleCkickLike() {
-            let likedArray = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
-            const isAlreadyLiked = likedArray.some(item => item.videoId === currentVideoId);
-
-            // अगर पहले से लाइक नहीं है, तभी लाइक ट्रिगर करो
-            if(!isAlreadyLiked) {
-                toggleVideoLikeState();
-            }
-
-            // स्क्रीन पर प्यारा सा एनीमेशन पॉपअप रेंडर करो
-            const popup = document.getElementById('heartPopupUI');
-            popup.classList.add('animate');
-            setTimeout(() => {
-                popup.classList.remove('animate');
-            }, 800);
-        }
-
-        // ================= 📥 ASLI DISK SPACE DOWNLOAD ENGINE (INDEXEDDB CONNECT) =================
-        function toggleQualityModalUI(show) {
-            document.getElementById('qualitySelectorModalUI').style.display = show ? "flex" : "none";
-        }
-
-        function triggerTrueDeviceIndexedDBDownload() {
-            const chosenQuality = document.getElementById('downloadQualitySelectionNode').value;
-            toggleQualityModalUI(false);
-
-            const dlBtn = document.getElementById('downloadActionBtnNode');
-            dlBtn.innerText = "Downloading 0%...";
-            dlBtn.disabled = true;
-
-            // 💾 IndexedDB लोकल सिस्टम से कनेक्ट करना
-            const DB_NAME = "FocusTubeLocalVault";
-            const request = indexedDB.open(DB_NAME, 1);
-
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                
-                let currentPct = 0;
-                const progressTimer = setInterval(() => {
-                    currentPct += Math.floor(Math.random() * 12) + 5;
-                    
-                    if(currentPct >= 100) {
-                        currentPct = 100;
-                        clearInterval(progressTimer);
-
-                        // बाइनरी ब्लब बफर डेटा
-                        const dummyBlob = new Blob([new ArrayBuffer(1024 * 1024 * (chosenQuality === "720p" ? 22 : 12))], { type: "video/mp4" });
-                        
-                        const transaction = db.transaction(["offline_video_blobs"], "readwrite");
-                        const store = transaction.objectStore("offline_video_blobs");
-                        
-                        store.put({
-                            videoId: currentVideoId,
-                            title: activeVideoTitle,
-                            quality: chosenQuality,
-                            blobSize: dummyBlob.size,
-                            videoBlob: dummyBlob,
-                            downloadedAt: new Date().toLocaleDateString()
-                        });
-
-                        alert(`💾 Video successfully downloaded in ${chosenQuality} quality directly inside device storage! Check download.html`);
-                        dlBtn.innerText = "Saved Offline ✓";
-                    } else {
-                        dlBtn.innerText = `Downloading ${currentPct}%...`;
-                    }
-                }, 150);
-            };
-
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains("offline_video_blobs")) {
-                    db.createObjectStore("offline_video_blobs", { keyPath: "videoId" });
-                }
-            };
         }
 
         // ================= ⏩ PROFILE SKIP CONTROLS =================
         function updateProfileSkipInterval(secondsValue) {
             parentConfiguredSkipInterval = parseInt(secondsValue);
             document.querySelectorAll('.skip-val-text').forEach(el => el.innerText = secondsValue + "s");
+            document.getElementById('parentSkipTimeConfig').value = secondsValue;
         }
 
         function triggerSkipAction(direction) {
@@ -396,7 +339,7 @@
             playerInstance.seekTo(Math.max(0, newTargetTime), true);
         }
 
-        // ================= 📈 PLAYBACK SPEED =================
+        // ================= 📈 PLAYBACK SPEED ENGINE =================
         function adjustPlaybackSpeed(speedMultiplier) {
             if (!playerInstance || typeof playerInstance.setPlaybackRate !== 'function') return;
             playerInstance.setPlaybackRate(parseFloat(speedMultiplier));
@@ -412,6 +355,7 @@
                 overlay.style.display = "block";
                 unlockBtn.style.display = "block";
                 if (frame.requestFullscreen) frame.requestFullscreen();
+                else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
             } else {
                 overlay.style.display = "none";
                 unlockBtn.style.display = "none";
@@ -423,7 +367,7 @@
             if (!document.fullscreenElement) toggleScreenLock(false);
         });
 
-        // ================= 📋 SIDEBAR PLAYLIST QUEUE =================
+        // ================= 📋 SIDEBAR PLAYLIST QUEUE DISTRACTION-FREE =================
         function fetchSidebarPlaylistQueue() {
             const sidebar = document.getElementById('playlistQueueItemsShell');
             const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${activePlaylistId}&key=${YT_GATEWAY_KEY}`;
@@ -441,6 +385,8 @@
 
                             const itemCard = document.createElement('div');
                             itemCard.className = `queue-item-card ${isActive}`;
+                            
+                            // 🎯 रिफ्रेश सेफ नेविगेशन लूप
                             itemCard.onclick = () => {
                                 window.location.href = `videoplay.html?v=${vidId}&list=${activePlaylistId}&skip=${parentConfiguredSkipInterval}`;
                             };
@@ -460,7 +406,7 @@
                 });
         }
 
-        // ================= 📡 THEME MESSENGER SIGNALS =================
+        // ================= 📡 PARENT DASHBOARD THEME MESSENGER =================
         window.addEventListener('message', function(event) {
             const messagePacket = event.data;
             if (messagePacket.type === 'theme') {
