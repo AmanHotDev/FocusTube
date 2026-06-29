@@ -29,21 +29,21 @@
             --icon-invert: 1;
         }
 
-        body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; min-height: 100vh; display: flex; justify-content: center; padding-top: 40px; }
+        body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; min-height: 100vh; display: flex; justify-content: center; padding-top: 40px; scroll-behavior: smooth; }
         
         /* 🏛️ TWO-COLUMN CLEAN LAYOUT */
         .settings-master-layout { display: flex; width: 100%; max-width: 1100px; gap: 48px; padding: 0 24px; }
         
         /* बायाँ कॉलम: वर्टिकल मेनू टैब्स */
-        .settings-left-sidebar { width: 240px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+        .settings-left-sidebar { width: 240px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; position: sticky; top: 40px; height: fit-content; }
         .sidebar-header-title { font-size: 1rem; font-weight: 700; padding: 12px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .settings-nav-item { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.92rem; font-weight: 500; color: var(--text-main); transition: background 0.1s; }
+        .settings-nav-item { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.92rem; font-weight: 500; color: var(--text-main); transition: background 0.1s; user-select: none; }
         .settings-nav-item:hover { background: var(--hover-bg); }
         .settings-nav-item.active { background: var(--hover-bg); font-weight: 700; }
         .settings-nav-item img { width: 20px; height: 20px; filter: invert(var(--icon-invert)); }
 
         /* दायाँ कॉलम: सेटिंग्स कॉन्फ़िगरेशन फ़ीड */
-        .settings-right-content { flex: 1; display: flex; flex-direction: column; gap: 40px; }
+        .settings-right-content { flex: 1; display: flex; flex-direction: column; gap: 40px; padding-bottom: 100px; }
         .section-main-heading { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; }
         
         /* यूट्यूब स्टाइल सेटिंग रोज़ */
@@ -70,7 +70,7 @@
 
         @media (max-width: 768px) {
             .settings-master-layout { flex-direction: column; gap: 24px; }
-            .settings-left-sidebar { width: 100%; display: flex; flex-direction: row; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+            .settings-left-sidebar { width: 100%; display: flex; flex-direction: row; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); position: static; }
             .sidebar-header-title { display: none; }
             .settings-nav-item { white-space: nowrap; }
         }
@@ -83,11 +83,12 @@
         <!-- 🏛️ LEFT SIDEBAR NAVIGATION MENU -->
         <div class="settings-left-sidebar">
             <h3 class="sidebar-header-title">Student Hub</h3>
-            <div class="settings-nav-item active">
+            <!-- 🎯 बटन फिक्स: onclick इवेंट्स जोड़े गए हैं -->
+            <div class="settings-nav-item active" id="menuBtnTheme" onclick="switchSettingsSection('displaySettingsSection', this)">
                 <img src="icons/theme.png" alt="Theme">
                 <span>Display & Theme</span>
             </div>
-            <div class="settings-nav-item">
+            <div class="settings-nav-item" id="menuBtnControls" onclick="switchSettingsSection('classroomControlsSection', this)">
                 <img src="icons/playback.png" alt="Playback">
                 <span>Classroom Controls</span>
             </div>
@@ -96,8 +97,8 @@
         <!-- 📜 RIGHT CONTENT: STUDENT REVISION & VISUAL CONFIG -->
         <div class="settings-right-content">
             
-            <!-- ब्लॉक 1: विजुअल डिस्प्ले (थीम) -->
-            <div>
+            <!-- ब्लॉक 1: विजुअलディスプレイ (थीम) -->
+            <div id="displaySettingsSection">
                 <h2 class="section-main-heading">Display Settings</h2>
                 <div class="settings-row-block">
                     <div class="setting-item-node">
@@ -116,7 +117,7 @@
             </div>
 
             <!-- ब्लॉक 2: क्लासरूम कंट्रोल्स (पॉज़ हिस्ट्री और पैरेंट लॉक्स) -->
-            <div>
+            <div id="classroomControlsSection">
                 <h2 class="section-main-heading">Classroom Logs & Policy</h2>
                 <div class="settings-row-block">
                     
@@ -134,7 +135,7 @@
                         </div>
                     </div>
 
-                    <!-- पैरेंट लॉक स्टेटस 1: स्किप सेटिंग -->
+                    <!-- पैरेंट锁 स्टेटस 1: स्किप सेटिंग -->
                     <div class="setting-item-node">
                         <div class="setting-meta-text">
                             <span class="setting-title">Player Skip Setting (Read-Only)</span>
@@ -145,7 +146,7 @@
                         </div>
                     </div>
 
-                    <!-- पैरेंट लॉक स्टेटस 2: स्पीड लिमिटर -->
+                    <!-- पैरेंट锁 स्टेटस 2: स्पीड लिमिटर -->
                     <div class="setting-item-node">
                         <div class="setting-meta-text">
                             <span class="setting-title">Speed Acceleration Policy (Read-Only)</span>
@@ -163,7 +164,7 @@
 
     </div>
 
-    <!-- 🧠 FIREBASE BACKEND ACCESS SDK (ONLY FOR SYNCING PARENT STATUS BAJES) -->
+    <!-- 🧠 FIREBASE BACKEND ACCESS SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -187,19 +188,34 @@
         });
 
         function initializeSettingsDashboard() {
-            // 1. थीम सिंक चेक और एक्टिवेशन फिक्स
             const currentTheme = localStorage.getItem("focustube_global_theme_mode") || "light";
             if(currentTheme === "dark") {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeToggleCheckboxNode').checked = true;
             }
 
-            // 2. वॉच हिस्ट्री पॉज़ टॉगल स्थिति सिंक
             const isHistoryPaused = localStorage.getItem("focustube_history_pause_flag") === "true";
             document.getElementById('settingHistoryPauseCheckbox').checked = isHistoryPaused;
         }
 
-        /* ================= 🎨 BULLETPROOF LIVE THEME TRANSMISSION SYSTEM ================= */
+        /* ================= 🎯 SECTION NAVIGATION ENGINE (CLICK FIX) ================= */
+        function switchSettingsSection(sectionId, clickedElement) {
+            // बाएँ मेनू के सभी आइटम्स से 'active' क्लास हटाओ
+            document.querySelectorAll('.settings-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // केवल क्लिक किए गए मेनू आइटम को 'active' करो
+            clickedElement.classList.add('active');
+
+            // दाएँ तरफ़ के टारगेट ब्लॉक पर स्मूथ स्क्रॉल करो
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        /* ================= 🎨 LIVE THEME TRANSMISSION SYSTEM ================= */
         function executeLiveThemeSwitch(isDarkOn) {
             const chosenMode = isDarkOn ? 'dark' : 'light';
             localStorage.setItem("focustube_global_theme_mode", chosenMode);
@@ -207,10 +223,8 @@
             if (isDarkOn) document.body.classList.add('dark-mode');
             else document.body.classList.remove('dark-mode');
 
-            // 🎯 फिक्स: मुख्य फ्रेम (Parent Shell) को सिग्नल भेजें ताकि साइडबार और मुख्य लेआउट लाइव इनवर्ट हो जाएं
             window.parent.postMessage({ type: 'theme', mode: chosenMode }, '*');
             
-            // पूरे प्रोजेक्ट के अन्य आईफ्रेम्स को तुरंत बदलाव डिटेक्ट कराने के लिए एक री-एंट्री सिग्नल सेंड करें
             try {
                 window.parent.frames['content_iframe_name'].postMessage({ type: 'theme', mode: chosenMode }, '*');
             } catch(e) {}
@@ -219,8 +233,6 @@
         /* ================= ⏱️ TIMELINE HISTORY MONITORING ================= */
         function toggleWatchHistoryPauseState(isPausedOn) {
             localStorage.setItem("focustube_history_pause_flag", isPausedOn);
-            // सिंक अलर्ट के लिए पेरेंट नोड में सेव करें
-            localStorage.setItem("focustube_history_pause_flag", isPausedOn);
         }
 
         /* ================= 🛡️ FETCH READ-ONLY PARENT RESTRICTIONS ================= */
@@ -228,18 +240,15 @@
             db.collection("admin_settings").doc("security_configuration_lock").get().then(doc => {
                 if(doc.exists && doc.data()) {
                     const data = doc.data();
-                    
                     if(data.default_skip) {
                         document.getElementById('policySkipLabelNode').innerText = `${data.default_skip} Seconds`;
                     }
-                    
                     const isSpeedAllowed = data.allow_max_speed !== false;
                     document.getElementById('policySpeedLabelNode').innerText = isSpeedAllowed ? "Allowed (Up to 2.0x)" : "Restricted (1.0x Locked)";
                 }
             });
         }
 
-        // सिग्नल्स रिसीवर (अगर बाहर से कोई थीम बदले तो यहाँ सिंक हो जाए)
         window.addEventListener('message', function(event) {
             const messagePacket = event.data;
             if (messagePacket.type === 'theme') {
