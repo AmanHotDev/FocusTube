@@ -179,23 +179,28 @@
 
         const MASTER_GATE_DOC = "security_configuration_lock";
 
-        // ================= 🔒 GATEKEEPER AUTOMATED INITIALIZATION =================
+        // ================= 🔒 GATEKEEPER AUTOMATED INITIALIZATION (EMPTY DB FIX) =================
         function checkSecurityGatewayState() {
             db.collection("admin_settings").doc(MASTER_GATE_DOC).get()
                 .then(doc => {
-                    if (doc.exists && doc.data().admin_password) {
-                        // पासवर्ड मिल गया -> लॉगिन बॉक्स शो करो
+                    // अगर डॉक्यूमेंट मौजूद है और उसमें पासवर्ड है, तो लॉगिन बॉक्स दिखाओ
+                    if (doc.exists && doc.data() && doc.data().admin_password) {
                         document.getElementById('standardLoginBox').style.display = "block";
                         document.getElementById('welcomeSetupBox').style.display = "none";
                         document.getElementById('gatekeeperPasswordInput').focus();
                     } else {
-                        // पहली बार खुला है -> सेटअप बॉक्स शो करो
+                        // अगर कलेक्शन या डॉक्यूमेंट नहीं बना है, तो बिना क्रैश हुए सीधे सेटअप स्क्रीन खोलो
+                        console.log("No security configuration found. Launching first-time onboarding layer...");
                         document.getElementById('welcomeSetupBox').style.display = "block";
                         document.getElementById('standardLoginBox').style.display = "none";
                         document.getElementById('newSetupPasswordInput').focus();
                     }
                 }).catch(err => {
-                    console.error("Database connection fault:", err);
+                    // अगर रूल्स या खाली कलेक्शन की वजह से कोई एरर आता है, तो भी सेफ साइड में सेटअप बॉक्स खोल दो
+                    console.warn("Intercepted network initialization node. Defaulting to setup interface.");
+                    document.getElementById('welcomeSetupBox').style.display = "block";
+                    document.getElementById('standardLoginBox').style.display = "none";
+                    document.getElementById('newSetupPasswordInput').focus();
                 });
         }
 
