@@ -39,7 +39,9 @@
 
         /* 📺 PREMIUM HIGH-GLOSS VIDEO WINDOW FRAME */
         .video-window-frame { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 16px; overflow: hidden; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid var(--border-color); }
-        .video-window-frame iframe { width: 100%; height: 100%; border: none; pointer-events: none; } 
+        
+        /* 🎯 माउस इवेंट्स को 'auto' किया ताकि यूट्यूब प्लेयर के सारे क्लिक काम करने लगें */
+        .video-window-frame iframe { width: 100%; height: 100%; border: none; pointer-events: auto; position: absolute; top: 0; left: 0; z-index: 1; } 
 
         /* 🔒 SCREEN LOCK OVERLAY */
         .screen-lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.02); z-index: 9999; display: none; cursor: not-allowed; }
@@ -94,7 +96,9 @@
 
     <div class="player-main-layout">
         
+        <!-- 📺 COLUMN 1: LIVE SECURE LAYER & CONTROLS -->
         <div class="video-stream-column">
+            <!-- डबल क्लिक डिटेक्टर के लिए पैरेंट डिव फ़्रेम (क्लिक करने पर विंडो को कीबोर्ड फोकस मिलेगा) -->
             <div class="video-window-frame" id="playerWindowShell" onclick="handleScreenSingleClickFocus()" ondblclick="handleScreenDoubleTapLike()">
                 <div class="screen-lock-overlay" id="screenLockOverlayUI"></div>
                 
@@ -102,11 +106,14 @@
                     <img src="icons/path_to_like_icon.png" alt="Like Alert">
                 </div>
 
+                <!-- YouTube API Iframe Inject Node -->
                 <div id="ytLiveSecurePlayer"></div>
             </div>
 
+            <!-- ⚙️ ADVANCED CONTROLLER PANEL -->
             <div class="focus-control-deck">
                 
+                <!-- ROW 1: SKIP CONTROLLERS & TIME LAPSE -->
                 <div class="control-row">
                     <div class="btn-group">
                         <button class="action-btn" onclick="triggerSkipAction('back')">⏪ Backward <span class="skip-val-text">10s</span></button>
@@ -118,6 +125,7 @@
                         </button>
                     </div>
 
+                    <!-- TIMELAPSE METRICS -->
                     <div class="timelaps-container">
                         <span class="time-string" id="currentTimeUI">00:00</span>
                         <input type="range" class="progress-bar-slider" id="progressSliderUI" min="0" value="0" max="100" oninput="manualTimeSeek(this.value)">
@@ -125,6 +133,7 @@
                     </div>
                 </div>
 
+                <!-- ROW 2: PROFILE CONFIGURATOR, SPEED, SCREEN LOCK -->
                 <div class="control-row" style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 4px;">
                     <div class="btn-group">
                         <label style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">Skip Metric:</label>
@@ -144,6 +153,7 @@
                             <option value="2">2.0x Max Speed</option>
                         </select>
 
+                        <!-- 🔒 ताले के इमेज आइकॉन के साथ सिक्योर फुलस्क्रीन लॉक बटन -->
                         <button class="action-btn" style="background: var(--yt-red); color: white; border: none;" onclick="toggleScreenLock(true)">
                             <img src="icons/lock.png" class="lock-btn-icon" style="filter: invert(1);" alt="Lock">
                             <span>Fullscreen Lock</span>
@@ -154,6 +164,7 @@
             </div>
         </div>
 
+        <!-- 📋 COLUMN 2: CLOSED PLAYLIST QUEUE ONLY -->
         <div class="playlist-queue-column">
             <h3 class="queue-title">Classroom Lectures</h3>
             <div class="queue-list-wrapper" id="playlistQueueItemsShell">
@@ -181,14 +192,14 @@
             let vParam = urlParams.get('v');
             let listParam = urlParams.get('list');
 
-            // 🎯 रिफ्रेश रिकवरी फिक्स: यूआरएल में न मिलने पर sessionStorage की तिजोरी से आईडी निकालो
+            // 🎯 रिफ्रेश रिकवरी फिक्स: यूआरएल खाली होने पर sessionStorage की तिजोरी से आईडी निकालो
             if (!vParam) vParam = sessionStorage.getItem("focustube_last_v");
             if (!listParam) listParam = sessionStorage.getItem("focustube_last_list");
 
             currentVideoId = vParam || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF"; 
             activePlaylistId = listParam || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
 
-            // भविष्य के रिफ्रेश के लिए तिजोरी में सेव कर दो
+            // भविष्य के रिफ्रेश के लिए तिजोरी में लॉक कर दो
             sessionStorage.setItem("focustube_last_v", currentVideoId);
             sessionStorage.setItem("focustube_last_list", activePlaylistId);
             
@@ -225,9 +236,35 @@
 
         function onPlayerSystemReady(event) {
             setInterval(updateTimelapseMetrics, 1000);
+            
             if(playerInstance && typeof playerInstance.getVideoData === 'function') {
                 const data = playerInstance.getVideoData();
                 if(data && data.title) currentVideoTitle = data.title;
+            }
+
+            // ======= 🚀 वॉच हिस्ट्री सेविंग कोड नोड (रीयल-टाइम सिंक) =======
+            const isPaused = localStorage.getItem("focustube_history_pause_flag") === "true";
+            if (!isPaused && currentVideoId) {
+                let currentHistory = JSON.parse(localStorage.getItem("focustube_watch_history_vector")) || [];
+                
+                // डुप्लिकेट एंट्री रोकने के लिए चेक करें
+                const isAlreadySaved = currentHistory.some(entry => entry.videoId === currentVideoId && 
+                    new Date(entry.watchedAt).getDate() === new Date().getDate());
+
+                if (!isAlreadySaved) {
+                    const historyObject = {
+                        timestampId: "hist_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+                        videoId: currentVideoId,
+                        playlistId: activePlaylistId,
+                        title: currentVideoTitle || "FocusTube Whitelisted Lecture",
+                        channelTitle: "Classroom Node",
+                        watchedAt: new Date().toISOString()
+                    };
+                    
+                    currentHistory.unshift(historyObject); 
+                    localStorage.setItem("focustube_watch_history_vector", JSON.stringify(currentHistory));
+                    console.log("✅ Lecture successfully recorded to history logs.");
+                }
             }
         }
 
@@ -268,7 +305,7 @@
         }
 
         function handleScreenSingleClickFocus() {
-            // प्लेयर पर क्लिक करने पर कीबोर्ड फोकस लॉक करने के लिए
+            // प्लेयर पर क्लिक करने पर कीबोर्ड फोकस लॉक करने के लिए ताकि कीबोर्ड काम करे
             window.focus();
         }
 
@@ -328,21 +365,6 @@
             }
             localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(likedVideos));
             syncLikeButtonUIState();
-        }
-
-        function syncLikeButtonUIState() {
-            let likedVideos = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
-            const isLiked = likedVideos.some(v => v.videoId === currentVideoId);
-            const btn = document.getElementById('likeButtonToggleUI');
-            const text = document.getElementById('likeButtonTextUI');
-
-            if (isLiked) {
-                btn.classList.add('liked');
-                text.innerText = "Liked";
-            } else {
-                btn.classList.remove('liked');
-                text.innerText = "Like";
-            }
         }
 
         // ================= ⏩ PROFILE SKIP INTERVAL =================
@@ -406,7 +428,6 @@
                             const itemCard = document.createElement('div');
                             itemCard.className = `queue-item-card ${isActive}`;
                             itemCard.onclick = () => {
-                                // नया वीडियो लोड करने से पहले तिजोरी नोड अपडेट कर दो
                                 sessionStorage.setItem("focustube_last_v", vidId);
                                 window.location.href = `videoplay.html?v=${vidId}&list=${activePlaylistId}&skip=${parentConfiguredSkipInterval}`;
                             };
@@ -424,6 +445,21 @@
                 .catch(err => {
                     sidebar.innerHTML = `<div class="pulse-placeholder">⚠️ Unable to load classroom queue.</div>`;
                 });
+        }
+
+        function syncLikeButtonUIState() {
+            let likedVideos = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
+            const isLiked = likedVideos.some(v => v.videoId === currentVideoId);
+            const btn = document.getElementById('likeButtonToggleUI');
+            const text = document.getElementById('likeButtonTextUI');
+
+            if (isLiked) {
+                btn.classList.add('liked');
+                text.innerText = "Liked";
+            } else {
+                btn.classList.remove('liked');
+                text.innerText = "Like";
+            }
         }
 
         window.addEventListener('message', function(event) {
