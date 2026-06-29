@@ -155,10 +155,10 @@
                         const relativeTimeText = d.timestamp ? calculateTimeAgoMetric(d.timestamp.toDate()) : "Just now";
 
                         card.innerHTML = `
-                            <div class="bell-icon-wrapper">🔔</div>
+                            <div class="bell-icon-wrapper">🕭</div>
                             <div class="notify-meta-details">
                                 <p class="notify-message-text">New Courseware Unlocked: Parent approved <strong>"${d.title}"</strong> for your whitelisted ${d.subject || 'General'} schedule.</p>
-                                <span class="notify-timestamp">⏱️ ${relativeTimeText}</span>
+                                <span class="notify-timestamp">⏱ ${relativeTimeText}</span>
                             </div>
                             <button class="action-redirect-btn" onclick="executeWatchNavigation('${playlistId}')">Watch Now</button>
                             <button class="dismiss-card-trigger" onclick="dismissSingleAlertNode(event, '${playlistId}')" title="Dismiss Alert">✕</button>
