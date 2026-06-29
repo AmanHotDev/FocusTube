@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FocusTube - Settings ⚙️</title>
+    <title>FocusTube - Student Settings ⚙️</title>
     <style>
         /* ================= 🎨 ORIGINAL YOUTUBE SETTINGS DESIGN SYSTEM ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
@@ -17,7 +17,6 @@
             --yt-blue: #065fd4;
             --hover-bg: #f2f2f2;
             --icon-invert: 0;
-            --modal-overlay: rgba(0, 0, 0, 0.5);
         }
 
         body.dark-mode {
@@ -27,13 +26,12 @@
             --text-muted: #aaaaaa;
             --border-color: #303030;
             --hover-bg: #272727;
-            --modal-overlay: rgba(0, 0, 0, 0.8);
             --icon-invert: 1;
         }
 
         body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; min-height: 100vh; display: flex; justify-content: center; padding-top: 40px; }
         
-        /* 🏛️ YOUTUBE MASTER TWO-COLUMN SETTINGS GRID */
+        /* 🏛️ TWO-COLUMN CLEAN LAYOUT */
         .settings-master-layout { display: flex; width: 100%; max-width: 1100px; gap: 48px; padding: 0 24px; }
         
         /* बायाँ कॉलम: वर्टिकल मेनू टैब्स */
@@ -59,8 +57,6 @@
         
         /* फ़ॉर्म कंट्रोल्स */
         .control-action-shell { flex-shrink: 0; display: flex; align-items: center; }
-        select, input[type="text"], input[type="password"] { padding: 8px 14px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-master); color: var(--text-main); font-size: 0.9rem; outline: none; min-width: 160px; }
-        select:focus { border-color: var(--yt-blue); }
         
         /* टॉगल बटन सीएसएस */
         .switch-toggle-box { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -70,20 +66,7 @@
         input:checked + .slider-round-node { background-color: var(--yt-blue); }
         input:checked + .slider-round-node:before { transform: translateX(20px); }
 
-        .action-link-trigger { color: var(--yt-blue); font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; }
-        .action-link-trigger:hover { text-decoration: underline; }
-        .action-link-trigger.danger { color: #cc0000; }
-
-        /* 🚨 PREMIUM CUSTOM SECURITY DIALOG MODAL */
-        .modal-overlay-gateway { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 99999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); }
-        .modal-alert-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border-color); }
-        .modal-alert-card h3 { font-size: 1.2rem; margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .modal-alert-card h3 img { width: 18px; height: 18px; filter: invert(var(--icon-invert)); }
-        .modal-alert-card p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
-        .modal-btn-group { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
-        .modal-btn { padding: 8px 16px; border-radius: 6px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: none; }
-        .modal-btn.cancel { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
-        .modal-btn.confirm { background: var(--yt-blue); color: white; }
+        .secure-badge-view { background: var(--hover-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
 
         @media (max-width: 768px) {
             .settings-master-layout { flex-direction: column; gap: 24px; }
@@ -95,60 +78,32 @@
 </head>
 <body>
 
-    <!-- 🔒 SUPER SECURE PARENT PASS DIALOG MODAL -->
-    <div class="modal-overlay-gateway" id="parentPassModalUI">
-        <div class="modal-alert-card">
-            <h3><img src="icons/lock.png" alt="Lock"> Parent Verification</h3>
-            <p>This setting is locked by gatekeeper. Please enter your master admin password to unlock modifications.</p>
-            <input type="password" id="modalVerifyPasswordInput" placeholder="Enter master password..." style="width: 100%;">
-            <div class="modal-btn-group">
-                <button class="modal-btn cancel" onclick="closeParentAuthModal()">Cancel</button>
-                <button class="modal-btn confirm" onclick="verifyParentPassAction()">Unlock</button>
-            </div>
-        </div>
-    </div>
-
     <div class="settings-master-layout">
         
         <!-- 🏛️ LEFT SIDEBAR NAVIGATION MENU -->
         <div class="settings-left-sidebar">
-            <h3 class="sidebar-header-title">Settings</h3>
+            <h3 class="sidebar-header-title">Student Hub</h3>
             <div class="settings-nav-item active">
-                <img src="icons/account.png" alt="Account">
-                <span>Account Hub</span>
+                <img src="icons/theme.png" alt="Theme">
+                <span>Display & Theme</span>
             </div>
             <div class="settings-nav-item">
                 <img src="icons/playback.png" alt="Playback">
-                <span>Playback & Speed</span>
-            </div>
-            <div class="settings-nav-item">
-                <img src="icons/theme.png" alt="Theme">
-                <span>Theme Display</span>
+                <span>Classroom Controls</span>
             </div>
         </div>
 
-        <!-- 📜 RIGHT CONTENT: INTERACTIVE CONFIG FEED -->
+        <!-- 📜 RIGHT CONTENT: STUDENT REVISION & VISUAL CONFIG -->
         <div class="settings-right-content">
             
+            <!-- ब्लॉक 1: विजुअल डिस्प्ले (थीम) -->
             <div>
-                <h2 class="section-main-heading">Account Hub</h2>
+                <h2 class="section-main-heading">Display Settings</h2>
                 <div class="settings-row-block">
-                    <!-- सेटिंग रो 1: छात्र का प्रोफाइल लॉक -->
-                    <div class="setting-item-node">
-                        <div class="setting-meta-text">
-                            <span class="setting-title">Student Profile Identity</span>
-                            <span class="setting-desc">View active classroom node assigned to student profile. This field syncs with secure clouds.</span>
-                        </div>
-                        <div class="control-action-shell" style="font-weight: 700; color: var(--yt-blue);">
-                            Aditya Raj Node
-                        </div>
-                    </div>
-
-                    <!-- सेटिंग रो 2: डार्क मोड थीम -->
                     <div class="setting-item-node">
                         <div class="setting-meta-text">
                             <span class="setting-title">Dark Theme Mode</span>
-                            <span class="setting-desc">Toggle between Light and Dark interface display grids across all child mirroring tabs.</span>
+                            <span class="setting-desc">Turn on dark mode to protect your eyes during long study hours and night lectures.</span>
                         </div>
                         <div class="control-action-shell">
                             <label class="switch-toggle-box">
@@ -160,43 +115,16 @@
                 </div>
             </div>
 
+            <!-- ब्लॉक 2: क्लासरूम कंट्रोल्स (पॉज़ हिस्ट्री और पैरेंट लॉक्स) -->
             <div>
-                <h2 class="section-main-heading">Playback & Restrictions</h2>
+                <h2 class="section-main-heading">Classroom Logs & Policy</h2>
                 <div class="settings-row-block">
-                    <!-- सेटिंग रो 3: डिफ़ॉल्ट प्लेयर स्किप सेटिंग (Locked) -->
+                    
+                    <!-- हिस्ट्री ट्रैकर पॉज़ ऑन टॉगल -->
                     <div class="setting-item-node">
                         <div class="setting-meta-text">
-                            <span class="setting-title">Default Player Skip Config</span>
-                            <span class="setting-desc">Configures forward/backward jump interval timing on secure player timelines. (Paternal Lock Active)</span>
-                        </div>
-                        <div class="control-action-shell">
-                            <select id="settingSkipDropdown" onchange="requestParentalAuthorization('skip', this.value)">
-                                <option value="10">10 Seconds (Standard)</option>
-                                <option value="15">15 Seconds (Custom Child)</option>
-                                <option value="30">30 Seconds (Fast Mode)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- सेटिंग रो 4: स्पीड एक्सीलेरेशन थ्रेशोल्ड (Locked) -->
-                    <div class="setting-item-node">
-                        <div class="setting-meta-text">
-                            <span class="setting-title">Acceleration Threshold Limit</span>
-                            <span class="setting-desc">Restricts or allows media acceleration capabilities up to 2.0x Max Speed rates on lectures.</span>
-                        </div>
-                        <div class="control-action-shell">
-                            <label class="switch-toggle-box">
-                                <input type="checkbox" id="settingSpeedCheckbox" onchange="requestParentalAuthorization('speed', this.checked)">
-                                <span class="slider-round-node"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- सेटिंग रो 5: वॉच हिस्ट्री ट्रैकिंग गार्ड -->
-                    <div class="setting-item-node">
-                        <div class="setting-meta-text">
-                            <span class="setting-title">Pause Chronological Watch History</span>
-                            <span class="setting-desc">Temporarily pause saving lecture activity logs to the student revision timeline hub.</span>
+                            <span class="setting-title">Pause Study Watch History</span>
+                            <span class="setting-desc">Temporarily pause recording your watched lectures to your personal revision logs page.</span>
                         </div>
                         <div class="control-action-shell">
                             <label class="switch-toggle-box">
@@ -206,16 +134,28 @@
                         </div>
                     </div>
 
-                    <!-- सेटिंग रो 6: डेटाबेस वाइप रीसेट -->
+                    <!-- पैरेंट लॉक स्टेटस 1: स्किप सेटिंग -->
                     <div class="setting-item-node">
                         <div class="setting-meta-text">
-                            <span class="setting-title">Wipe App Local Cache Storage</span>
-                            <span class="setting-desc">Completely purges offline temporary downloads, cache streams, and session indices.</span>
+                            <span class="setting-title">Player Skip Setting (Read-Only)</span>
+                            <span class="setting-desc">Your forward/backward timeline skip interval. Locked by your parents from admin hub.</span>
                         </div>
                         <div class="control-action-shell">
-                            <span class="action-link-trigger danger" onclick="executeLocalCacheWipePurge()">Reset Local Workspace</span>
+                            <div class="secure-badge-view" id="policySkipLabelNode">10 Seconds</div>
                         </div>
                     </div>
+
+                    <!-- पैरेंट लॉक स्टेटस 2: स्पीड लिमिटर -->
+                    <div class="setting-item-node">
+                        <div class="setting-meta-text">
+                            <span class="setting-title">Speed Acceleration Policy (Read-Only)</span>
+                            <span class="setting-desc">Parent guardian limit for maximum allowable playback acceleration rates up to 2.0x.</span>
+                        </div>
+                        <div class="control-action-shell">
+                            <div class="secure-badge-view" id="policySpeedLabelNode">Allowed</div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -223,7 +163,7 @@
 
     </div>
 
-    <!-- 🧠 FIREBASE BACKEND ACCESS SDK -->
+    <!-- 🧠 FIREBASE BACKEND ACCESS SDK (ONLY FOR SYNCING PARENT STATUS BAJES) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -240,48 +180,26 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        const CONFIG_DOC_PATH = "security_configuration_lock";
-        
-        let targetLockType = "";
-        let targetPendingValue = null;
-        let previousValidSkip = "10";
-        let previousValidSpeed = true;
-
         // ================= 🏠 SYSTEM INITIALIZER =================
         window.addEventListener('DOMContentLoaded', () => {
             initializeSettingsDashboard();
+            fetchParentGatekeeperRestrictions();
         });
 
         function initializeSettingsDashboard() {
-            // 1. डार्क थीम मोड सिंक चेक करें
+            // 1. थीम सिंक चेक और एक्टिवेशन फिक्स
             const currentTheme = localStorage.getItem("focustube_global_theme_mode") || "light";
             if(currentTheme === "dark") {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeToggleCheckboxNode').checked = true;
             }
 
-            // 2. वॉच हिस्ट्री पॉज़ टॉगल सिंक करें
+            // 2. वॉच हिस्ट्री पॉज़ टॉगल स्थिति सिंक
             const isHistoryPaused = localStorage.getItem("focustube_history_pause_flag") === "true";
             document.getElementById('settingHistoryPauseCheckbox').checked = isHistoryPaused;
-
-            // 3. क्लाउड फायरबेस से पैरेंट रूल्स लोड करें
-            db.collection("admin_settings").doc(CONFIG_DOC_PATH).get().then(doc => {
-                if(doc.exists && doc.data()) {
-                    const data = doc.data();
-                    
-                    if(data.default_skip) {
-                        document.getElementById('settingSkipDropdown').value = data.default_skip;
-                        previousValidSkip = data.default_skip;
-                    }
-                    
-                    const speedLimit = data.allow_max_speed !== false;
-                    document.getElementById('settingSpeedCheckbox').checked = speedLimit;
-                    previousValidSpeed = speedLimit;
-                }
-            });
         }
 
-        /* ================= 🎨 LIVE THEME TRANSMISSION SYSTEM ================= */
+        /* ================= 🎨 BULLETPROOF LIVE THEME TRANSMISSION SYSTEM ================= */
         function executeLiveThemeSwitch(isDarkOn) {
             const chosenMode = isDarkOn ? 'dark' : 'light';
             localStorage.setItem("focustube_global_theme_mode", chosenMode);
@@ -289,68 +207,51 @@
             if (isDarkOn) document.body.classList.add('dark-mode');
             else document.body.classList.remove('dark-mode');
 
-            // 📡 पैरेंट डैशबोर्ड/साइडबार फ़्रेम को लाइव थ्रू सिग्नल (postMessage) भेजें
+            // 🎯 फिक्स: मुख्य फ्रेम (Parent Shell) को सिग्नल भेजें ताकि साइडबार और मुख्य लेआउट लाइव इनवर्ट हो जाएं
             window.parent.postMessage({ type: 'theme', mode: chosenMode }, '*');
-        }
-
-        /* ================= 🔒 SUPER SECURE PARENT PASS VERIFICATION ================= */
-        function requestParentalAuthorization(type, newValue) {
-            targetLockType = type;
-            targetPendingValue = newValue;
             
-            document.getElementById('modalVerifyPasswordInput').value = "";
-            document.getElementById('parentPassModalUI').style.display = "flex";
-            document.getElementById('modalVerifyPasswordInput').focus();
+            // पूरे प्रोजेक्ट के अन्य आईफ्रेम्स को तुरंत बदलाव डिटेक्ट कराने के लिए एक री-एंट्री सिग्नल सेंड करें
+            try {
+                window.parent.frames['content_iframe_name'].postMessage({ type: 'theme', mode: chosenMode }, '*');
+            } catch(e) {}
         }
 
-        function closeParentAuthModal() {
-            document.getElementById('parentPassModalUI').style.display = "none";
-            
-            // अगर पासवर्ड कैंसिल कर दिया, तो यूआई को वापस पुरानी सही वैल्यू पर री-लॉक करो
-            document.getElementById('settingSkipDropdown').value = previousValidSkip;
-            document.getElementById('settingSpeedCheckbox').checked = previousValidSpeed;
+        /* ================= ⏱️ TIMELINE HISTORY MONITORING ================= */
+        function toggleWatchHistoryPauseState(isPausedOn) {
+            localStorage.setItem("focustube_history_pause_flag", isPausedOn);
+            // सिंक अलर्ट के लिए पेरेंट नोड में सेव करें
+            localStorage.setItem("focustube_history_pause_flag", isPausedOn);
         }
 
-        function verifyParentPassAction() {
-            const enteredPass = document.getElementById('modalVerifyPasswordInput').value.trim();
-
-            db.collection("admin_settings").doc(CONFIG_DOC_PATH).get().then(doc => {
-                if(doc.exists && doc.data().admin_password === enteredPass) {
+        /* ================= 🛡️ FETCH READ-ONLY PARENT RESTRICTIONS ================= */
+        function fetchParentGatekeeperRestrictions() {
+            db.collection("admin_settings").doc("security_configuration_lock").get().then(doc => {
+                if(doc.exists && doc.data()) {
+                    const data = doc.data();
                     
-                    // 🔓 पासवर्ड सही: क्लाउड फ़ायरबेस में वैल्यू कमिट करें
-                    if(targetLockType === "skip") {
-                        db.collection("admin_settings").doc(CONFIG_DOC_PATH).update({ default_skip: targetPendingValue });
-                        previousValidSkip = targetPendingValue;
-                    } 
-                    else if(targetLockType === "speed") {
-                        db.collection("admin_settings").doc(CONFIG_DOC_PATH).update({ allow_max_speed: targetPendingValue });
-                        previousValidSpeed = targetPendingValue;
+                    if(data.default_skip) {
+                        document.getElementById('policySkipLabelNode').innerText = `${data.default_skip} Seconds`;
                     }
-
-                    document.getElementById('parentPassModalUI').style.display = "none";
-                    console.log(`✅ Authorization approved. Node field modified: ${targetLockType}`);
-                } else {
-                    alert("❌ Invalid Admin Password! Modification blocked.");
-                    closeParentAuthModal();
+                    
+                    const isSpeedAllowed = data.allow_max_speed !== false;
+                    document.getElementById('policySpeedLabelNode').innerText = isSpeedAllowed ? "Allowed (Up to 2.0x)" : "Restricted (1.0x Locked)";
                 }
             });
         }
 
-        /* ================= ⏱️ TIMELINE HISTORY CONTROL ================= */
-        function toggleWatchHistoryPauseState(isPausedOn) {
-            localStorage.setItem("focustube_history_pause_flag", isPausedOn);
-            console.log(`Watch history monitoring flag: ${isPausedOn}`);
-        }
-
-        /* ================= 🗑️ WORKSPACE CLEANER ================= */
-        function executeLocalCacheWipePurge() {
-            if(confirm("Are you sure you want to completely clear local app data workspace metrics? (Offline downloads and session keys will be purged)")) {
-                localStorage.removeItem("focustube_watch_history_vector");
-                localStorage.removeItem("focustube_liked_videos_vector");
-                alert("Workspace cleared successfully!");
-                window.location.reload();
+        // सिग्नल्स रिसीवर (अगर बाहर से कोई थीम बदले तो यहाँ सिंक हो जाए)
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    document.getElementById('themeToggleCheckboxNode').checked = true;
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    document.getElementById('themeToggleCheckboxNode').checked = false;
+                }
             }
-        }
+        });
     </script>
 </body>
 </html>
