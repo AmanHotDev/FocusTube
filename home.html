@@ -95,10 +95,12 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 🔑 3-जीमेल रोटेशन बैकअप एरे (अपनी बैकअप कीज यहाँ जोड़ सकते हैं भाई)
+        // 🔑 🔥 अमन भाई का 4x4 सुपर-पावर बैकअप API KEYS पूल
         const YT_KEYS_ARRAY = [
-            "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ",
-            "AIzaSyB-WbOhuN0GGc9LnoCBYScB6bkioXZuXnY"
+            "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ", // पहली Key (जीमेल 1)
+            "AIzaSyCBjjJGtUQIfKb8xfADxukJSqeWpI4mFqo", // दूसरी Key (जीमेल 2)
+            "AIzaSyClGb2Hgc9jIBIiHEbJWjOXkCRQB8zHOdw", // तीसरी Key (जीमेल 3)
+            "AIzaSyCIt6Ffw30No8gS7zZcDrtuVAXNkAZEq1s"  // चौथी Key (जीमेल 4)
         ];
         let currentKeyIndex = 0;
 
@@ -139,7 +141,7 @@
             fetchPlaylistItemsPipeline();
         }
 
-        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (ALL VIDEOS FETCH LOOP) =================
+        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (SAFE MULTI-KEY LOOP) =================
         async function fetchPlaylistItemsPipeline() {
             const shell = document.getElementById('globalHomeFeedShell');
             shell.innerHTML = `<div class="pulse-placeholder">Extracting all videos from live classrooms...</div>`;
@@ -162,14 +164,14 @@
                     try {
                         let res = await fetch(apiUrl);
                         
-                        // अगर कोटा लिमिट एरर आए तो की (Key) रोटेट करो
+                        // 🔄 अगर कोटा लिमिट या कोई अन्य एरर आए तो तुरंत अगली चाबी पर स्विच करो
                         if (!res.ok) {
                             if (currentKeyIndex < YT_KEYS_ARRAY.length - 1) {
                                 currentKeyIndex++;
-                                console.log("Switching API Key node due to quota restrictions.");
-                                continue;
+                                console.log("⚠️ Quota Limit Exceeded. Switching to API Key Node: " + currentKeyIndex);
+                                continue; // लूप को नई चाबी के साथ री-स्टार्ट करो
                             } else {
-                                throw new Error("All key modules fully exhausted.");
+                                throw new Error("All backup key engines are fully exhausted.");
                             }
                         }
 
@@ -187,7 +189,7 @@
                             keepFetching = false;
                         }
                     } catch (err) {
-                        console.error("🚨 Playlist parsing loop intercepted safety.");
+                        console.error("🚨 Playlist parser loop encountered a structural bypass.");
                         keepFetching = false;
                     }
                 }
@@ -220,7 +222,7 @@
             });
         }
 
-        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE (CLICK TO PLAY FIXED) =================
+        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE (DIRECT REDIRECT FIXED) =================
         function buildRandomizedYoutubeLayout(items) {
             const shell = document.getElementById('globalHomeFeedShell');
             if(!items || items.length === 0) {
@@ -241,6 +243,7 @@
                 const letter = channelTitle.charAt(0).toUpperCase();
                 const thumbnailUrl = snip.thumbnails.medium ? snip.thumbnails.medium.url : `https://img.youtube.com/vi/${vidId}/0.jpg`;
 
+                // पुराना अलर्ट पॉप-अप हटाकर सीधे प्लेयर पेज का डायरेक्ट रूटिंग लिंक लगा दिया है
                 gridHtmlBuffer += `
                     <div class="yt-video-card" onclick="window.location.href='videoplay.html?v=${vidId}&list=${playlistId}'">
                         <div class="thumbnail-wrapper"><img src="${thumbnailUrl}" alt="Thumbnail"></div>
@@ -287,7 +290,7 @@
                 }
             }
             
-            // 🔍 0-क्रेडिट लोकल फ़िल्टरिंग सर्च बार फिक्स
+            // 🔍 0-क्रेडिट लोकल फ़िल्टरिंग सर्च बार
             if (messagePacket.type === 'search') {
                 const query = messagePacket.value.toLowerCase().trim();
                 if(query === "") {
