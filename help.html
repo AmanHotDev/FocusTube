@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Help & Feedback 📜</title>
+    <style>
+        /* ================= 🎨 MODERN YT HELP & FEEDBACK DESIGN SYSTEM ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-master: #f9f9f9;
+            --bg-card: #ffffff;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-blue: #065fd4;
+            --panel-bg: #f2f2f2;
+            --success-green: #2ba640;
+            --icon-invert: 0;
+            --modal-overlay: rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode {
+            --bg-master: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --panel-bg: #272727;
+            --icon-invert: 1;
+            --modal-overlay: rgba(0, 0, 0, 0.8);
+        }
+
+        body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 30px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .help-master-layout { display: flex; width: 100%; max-width: 1150px; gap: 40px; margin: 0 auto; align-items: flex-start; }
+
+        /* 📑 LEFT COLUMN: HELP CENTER FAQ ACCORDION */
+        .help-left-feed { flex: 1.4; display: flex; flex-direction: column; gap: 20px; }
+        .page-heading { font-size: 1.6rem; font-weight: 700; color: var(--text-main); }
+        
+        /* 🔍 HELP SEARCH BAR */
+        .help-search-box { display: flex; align-items: center; border: 1px solid var(--border-color); background: var(--bg-card); padding: 10px 16px; border-radius: 24px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .help-search-box input { background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.95rem; flex: 1; }
+        .help-search-box img { width: 16px; height: 16px; filter: invert(var(--icon-invert)); }
+
+        /* FAQ ACCORDION ROWS */
+        .faq-accordion-stack { display: flex; flex-direction: column; gap: 12px; }
+        .faq-row-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+        .faq-trigger-header { width: 100%; text-align: left; background: transparent; border: none; padding: 18px 20px; font-size: 0.98rem; font-weight: 600; color: var(--text-main); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-trigger-header:hover { background: var(--panel-bg); }
+        .faq-arrow-icon { font-size: 0.8rem; transition: transform 0.2s; color: var(--text-muted); }
+        .faq-row-item.open .faq-arrow-icon { transform: rotate(180deg); }
+        
+        .faq-content-body { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out, padding 0.2s ease-out; color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+        .faq-row-item.open .faq-content-body { padding: 4px 20px 20px 20px; max-height: 200px; }
+
+        /* 💬 RIGHT COLUMN: CLOUD CONNECTED FEEDBACK BOX */
+        .feedback-right-panel { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 16px; position: sticky; top: 30px; }
+        .panel-title { font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+        
+        input[type="text"], select, textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.92rem; outline: none; background: var(--bg-master); color: var(--text-main); }
+        textarea { resize: none; height: 120px; font-family: inherit; line-height: 1.4; }
+        input:focus, select:focus, textarea:focus { border-color: var(--yt-blue); background: var(--bg-card); }
+
+        .submit-feedback-btn { background: var(--yt-blue); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.92rem; transition: background 0.1s; margin-top: 6px; }
+        .submit-feedback-btn:hover { opacity: 0.9; }
+        .submit-feedback-btn:disabled { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+
+        /* 🚨 PREMIUM YT STYLE CUSTOM SUCCESS MODAL */
+        .modal-overlay-gateway { position: fixed; inset: 0; background: var(--modal-overlay); z-index: 99999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px); }
+        .modal-alert-card { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid var(--border-color); text-align: center; }
+        .modal-alert-card h3 { font-size: 1.25rem; margin-bottom: 8px; font-weight: 700; color: var(--success-green); }
+        .modal-alert-card p { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.4; }
+        .modal-btn { background: var(--yt-blue); color: white; border: none; padding: 10px 24px; border-radius: 6px; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+
+        @media (max-width: 850px) {
+            .help-master-layout { flex-direction: column; gap: 32px; }
+            .feedback-right-panel { width: 100%; position: static; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🚨 PREMIUM CUSTOM YOUTUBE STYLE SUCCESS MODAL -->
+    <div class="modal-overlay-gateway" id="successFeedbackModalUI">
+        <div class="modal-alert-card">
+            <h3>Message Transmitted ✅</h3>
+            <p>Your custom study feedback report has been securely synchronized with the admin's cloud database network.</p>
+            <button class="modal-btn" onclick="closeSuccessModal()">OK</button>
+        </div>
+    </div>
+
+    <div class="help-master-layout">
+        
+        <!-- 📑 LEFT SIDE: FAQs EXPLORER -->
+        <div class="help-left-feed">
+            <div>
+                <h2 class="page-heading">Help Center</h2>
+                <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 2px;">Search common troubleshooting solutions or submit custom feedback nodes.</p>
+            </div>
+
+            <!-- सर्च बार -->
+            <div class="help-search-box">
+                <input type="text" id="faqSearchInput" placeholder="Describe your issue or search questions..." oninput="executeFaqLocalSearch()">
+                <img src="icons/path_to_search_icon.png" alt="Search">
+            </div>
+
+            <!-- एकॉर्डियन FAQ स्टैक -->
+            <div class="faq-accordion-stack" id="faqAccordionStackUI">
+                
+                <div class="faq-row-item">
+                    <button class="faq-trigger-header" onclick="toggleFaqRow(this)">
+                        <span>How do I save a video to my Liked List?</span>
+                        <span class="faq-arrow-icon">▼</span>
+                    </button>
+                    <div class="faq-content-body">
+                        To add a video lecture to your liked catalog, simply tap the "Like" button located directly underneath the secure player, or double-click anywhere on the live video stream interface.
+                    </div>
+                </div>
+
+                <div class="faq-row-item">
+                    <button class="faq-trigger-header" onclick="toggleFaqRow(this)">
+                        <span>Why are some videos missing from my home feed?</span>
+                        <span class="faq-arrow-icon">▼</span>
+                    </button>
+                    <div class="faq-content-body">
+                        FocusTube is a locked secure environment. Only those video classroom lectures that have been whitelisted by your parents inside the Master Control Panel will display on your customized feed matrix.
+                    </div>
+                </div>
+
+                <div class="faq-row-item">
+                    <button class="faq-trigger-header" onclick="toggleFaqRow(this)">
+                        <span>My laptop keyboard shortcuts aren't functioning on the player.</span>
+                        <span class="faq-arrow-icon">▼</span>
+                    </button>
+                    <div class="faq-content-body">
+                        Please ensure you click once directly on the player window frame to establish keyboard focus parameters. Once focused, you can utilize Spacebar/K for Pause, M for Mute, and F for Fullscreen locks.
+                    </div>
+                </div>
+
+                <div class="faq-row-item">
+                    <button class="faq-trigger-header" onclick="toggleFaqRow(this)">
+                        <span>Does my progress remove if I switch devices?</span>
+                        <span class="faq-arrow-icon">▼</span>
+                    </button>
+                    <div class="faq-content-body">
+                        Your core student information, customized school profiles, likes, and watch history logs are entirely connected to the real-time Firebase cloud database network, preventing any form of cross-device data loss.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 💬 RIGHT SIDE: CLOUD CONNECTED FEEDBACK VAULT -->
+        <div class="feedback-right-panel">
+            <h3 class="panel-title">Send Feedback to Admin</h3>
+            
+            <div class="form-group">
+                <label>Feedback Category Group</label>
+                <select id="feedbackCategoryNode">
+                    <option value="Subject / Course Request">Request New Subject / Course</option>
+                    <option value="App Bug Report">Report a Technical Bug</option>
+                    <option value="General Suggestion">General Improvement Idea</option>
+                    <option value="Other Query">Other Academic Query</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Detailed Message Matrix</label>
+                <textarea id="feedbackMessageNode" placeholder="Describe what you want the admin to improve or add... (Minimum 10 characters)"></textarea>
+            </div>
+
+            <button class="submit-feedback-btn" id="submitFeedbackBtnNode" onclick="transmitFeedbackToCloudDatabase()">Submit Feedback</button>
+        </div>
+
+    </div>
+
+    <!-- 🧠 FIREBASE MASTER ACCESS CORES -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const ACADEMIC_STORAGE_KEY = "focustube_student_academic_payload";
+
+        // ================= 🏠 INITIALIZER =================
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = localStorage.getItem("focustube_global_theme_mode") || "light";
+            if(currentTheme === "dark") document.body.classList.add('dark-mode');
+        });
+
+        // ================= 🗛 ACCORDION UI LOGIC =================
+        function toggleFaqRow(headerButton) {
+            const parentRow = headerButton.parentElement;
+            const isOpen = parentRow.classList.contains('open');
+            
+            // बाकी खुली रोज़ को बंद करें
+            document.querySelectorAll('.faq-row-item').forEach(row => row.classList.remove('open'));
+            
+            if(!isOpen) {
+                parentRow.classList.add('open');
+            }
+        }
+
+        // ================= 🔍 FAQ LOCAL SEARCH FILTER =================
+        function executeFaqLocalSearch() {
+            const query = document.getElementById('faqSearchInput').value.toLowerCase().trim();
+            const faqItems = document.querySelectorAll('.faq-row-item');
+
+            faqItems.forEach(item => {
+                const headerText = item.querySelector('.faq-trigger-header span').innerText.toLowerCase();
+                const bodyText = item.querySelector('.faq-content-body').innerText.toLowerCase();
+
+                if(headerText.includes(query) || bodyText.includes(query)) {
+                    item.style.display = "block";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        // ================= ☁️ TRANSMIT MESSAGES TO FIREBASE CLOUD =================
+        function transmitFeedbackToCloudDatabase() {
+            const category = document.getElementById('feedbackCategoryNode').value;
+            const message = document.getElementById('feedbackMessageNode').value.trim();
+
+            if (message.length < 10) {
+                alert("⚠️ Please describe your feedback in greater detail (Minimum 10 characters required).");
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitFeedbackBtnNode');
+            submitBtn.innerText = "Transmitting...";
+            submitBtn.disabled = true;
+
+            // लोकल प्रोफाइल डेटाबेस से बच्चे की इन्फो उठाएं (ताकि मैसेज में उसका कॉलेज/क्लास भी दिखे)
+            const studentPayload = JSON.parse(localStorage.getItem(ACADEMIC_STORAGE_KEY)) || { college: "Samastipur College", classLevel: "BA History" };
+
+            // 🎯 फ़ायरबेस के 'student_feedbacks' कलेक्शन में असली मैसेज इन्जेक्ट करें
+            db.collection("student_feedbacks").add({
+                studentName: "Aditya Raj",
+                college: studentPayload.college,
+                classLevel: studentPayload.classLevel,
+                category: category,
+                message: message,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                // फॉर्म रीसेट और सक्सेस मॉडल ओपन
+                document.getElementById('feedbackMessageNode').value = "";
+                submitBtn.innerText = "Submit Feedback";
+                submitBtn.disabled = false;
+                
+                document.getElementById('successFeedbackModalUI').style.display = "flex";
+            })
+            .catch(err => {
+                alert("Matrix cloud link disruption. Unable to transmit messages.");
+                submitBtn.innerText = "Submit Feedback";
+                submitBtn.disabled = false;
+            });
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successFeedbackModalUI').style.display = "none";
+        }
+
+        // Dashboard Theme Receiver
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+            }
+        });
+    </script>
+</body>
+</html>
