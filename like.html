@@ -38,8 +38,12 @@
         
         /* बायाँ कॉलम: मास्टर प्लेलिस्ट डिटेल्स कार्ड */
         .liked-left-sidebar { width: 360px; background: var(--sidebar-gradient); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; height: calc(100vh - 48px); overflow-y: auto; border: 1px solid var(--border-color); }
-        .master-cover-blur { width: 100%; aspect-ratio: 16/9; background: #272727; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.15); font-weight: bold; font-size: 1.2rem; }
+        .master-cover-blur { width: 100%; aspect-ratio: 16/9; background: #272727; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
         .master-cover-blur img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+        
+        /* जादुई इनवर्टर जो इमोजी की जगह लगे आइकॉन को डार्क मोड में चमकाएगा */
+        .master-cover-blur img.fallback-like-icon { width: 48px; height: 48px; object-fit: contain; filter: invert(var(--icon-invert)); }
+        
         .playlist-title { font-size: 1.6rem; font-weight: 800; margin-top: 8px; }
         .playlist-meta-info { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; display: flex; flex-direction: column; gap: 4px; }
         
@@ -86,8 +90,7 @@
         <!-- 🏛️ LEFT SIDEBAR: PLAYLIST STATIC CARD DETAILS -->
         <div class="liked-left-sidebar">
             <div class="master-cover-blur" id="playlistCoverShell">
-                <!-- पहले वीडियो का थंबनेल यहाँ दिखेगा -->
-                <span id="fallbackIconShell">👍</span>
+                <!-- थंबनेल या लाइक आइकॉन यहाँ जावास्क्रिप्ट से इंजेक्ट होगा -->
             </div>
             <h2 class="playlist-title">Liked videos</h2>
             <div class="playlist-meta-info">
@@ -112,7 +115,7 @@
 
             <!-- एम्प्टी स्टेट प्रॉम्ट -->
             <div class="empty-liked-deck" id="emptyLikedPromptUI" style="display: none;">
-                No liked videos found. Double tap 👍 on player to save videos here!
+                No liked videos found. Double tap on player to save videos here!
             </div>
 
         </div>
@@ -125,9 +128,7 @@
 
         // ================= 🏠 SYSTEM INITIALIZATION =================
         function initializeLikedEngine() {
-            // लोकल स्टोरेज से लाइक्ड वीडियो की लिस्ट उठाएं
             localLikedArray = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
-            
             renderLikedVideosGrid(localLikedArray);
         }
 
@@ -138,13 +139,13 @@
             const countNode = document.getElementById('videoCountMetricsNode');
             const coverShell = document.getElementById('playlistCoverShell');
 
-            // कुल वीडियो काउंट अपडेट करें
             countNode.innerText = `${localLikedArray.length} video${localLikedArray.length === 1 ? '' : 's'}`;
 
             if (!dataList || dataList.length === 0) {
                 container.innerHTML = "";
                 emptyPrompt.style.display = "block";
-                coverShell.innerHTML = "<span>👍</span>";
+                // 🎯 जब कोई वीडियो लाइक न हो, तो इमोजी की जगह आपका लाइक इमेज आइकॉन दिखेगा
+                coverShell.innerHTML = `<img src="icons/path_to_like_icon.png" class="fallback-like-icon" alt="No Likes">`;
                 return;
             }
             emptyPrompt.style.display = "none";
@@ -191,7 +192,7 @@
 
         // ================= 🗑️ REMOVE FROM LIKED NODE =================
         function removeVideoFromLikedFeed(event, videoId) {
-            event.stopPropagation(); // वीडियो रो क्लिक ट्रिगर होने से रोकें
+            event.stopPropagation();
             if(confirm("Remove this video from your liked list?")) {
                 localLikedArray = localLikedArray.filter(v => v.videoId !== videoId);
                 localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(localLikedArray));
@@ -211,7 +212,6 @@
             }
         });
 
-        // Launch Core Engine
         window.addEventListener('DOMContentLoaded', initializeLikedEngine);
     </script>
 </body>
