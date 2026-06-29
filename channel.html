@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Teacher Channel 🎓</title>
+    <style>
+        /* ================= 🎨 MODERN YOUTUBE THEME DESIGN ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-channel: #ffffff;
+            --bg-card: #f9f9f9;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-blue: #065fd4;
+            --tab-active-border: #0f0f0f;
+            --banner-bg: #e0e0e0;
+        }
+
+        /* 🌙 DASHBOARD SYNC: TRUE DARK MODE */
+        body.dark-mode {
+            --bg-channel: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --tab-active-border: #ffffff;
+            --banner-bg: #2d2d2d;
+        }
+
+        body { background-color: var(--bg-channel); color: var(--text-main); transition: background 0.2s, color 0.2s; overflow-x: hidden; padding-bottom: 50px; }
+
+        /* 🖼️ PREMIUM CHANNEL HEADER & BANNER */
+        .channel-banner { width: 100%; height: 160px; background: var(--banner-bg); background-image: linear-gradient(135deg, #065fd4 0%, #cc0000 100%); opacity: 0.85; }
+        
+        .channel-info-header { display: flex; gap: 24px; padding: 24px 32px; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .channel-avatar-big { width: 80px; height: 80px; border-radius: 50%; background: #272727; color: white; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: bold; border: 2px solid var(--border-color); flex-shrink: 0; }
+        .channel-meta-text { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .channel-master-title { font-size: 1.8rem; font-weight: 700; }
+        .channel-sub-count { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; }
+        .channel-description { font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; max-width: 600px; }
+
+        /* 🗂️ YT STYLE TWO-TAB NAVIGATION BAR */
+        .channel-navigation-tabs { display: flex; gap: 32px; padding: 0 32px; border-bottom: 1px solid var(--border-color); background: var(--bg-channel); position: sticky; top: 0; z-index: 100; }
+        .yt-tab-link { background: transparent; border: none; color: var(--text-main); font-size: 1rem; font-weight: 600; padding: 14px 4px; cursor: pointer; position: relative; transition: color 0.1s; }
+        .yt-tab-link.active { color: var(--text-main); }
+        .yt-tab-link.active::after { content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--tab-active-border); border-radius: 3px 3px 0 0; }
+        .yt-tab-link:not(.active) { color: var(--text-muted); }
+
+        /* 📺 LAYOUT GRIDS FOR HOME & PLAYLISTS */
+        .tab-content-panel { padding: 24px 32px; display: none; }
+        .tab-content-panel.active { display: block; }
+        
+        .videos-matrix-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; row-gap: 32px; }
+        .yt-video-card { display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+        
+        .thumb-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; position: relative; }
+        .thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* प्लेलिस्ट साइड ओवरले लुक */
+        .playlist-side-badge { position: absolute; right: 0; top: 0; bottom: 0; width: 35%; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 0.85rem; border-radius: 0 12px 12px 0; }
+
+        .meta-row { display: flex; flex-direction: column; gap: 4px; padding: 0 4px; }
+        .v-title { font-size: 0.92rem; font-weight: 600; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-subtitle { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+        .pulse-placeholder { text-align: center; padding: 60px; color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
+
+        @media (max-width: 600px) {
+            .channel-info-header { flex-direction: column; text-align: center; padding: 20px; }
+            .channel-navigation-tabs { justify-content: center; gap: 40px; }
+            .tab-content-panel { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🖼️ TOP BANNER LAYER -->
+    <div class="channel-banner"></div>
+
+    <!-- 🎓 CHANNEL BRAND HEADER -->
+    <div class="channel-info-header">
+        <div class="channel-avatar-big" id="channelAvatarNode">FT</div>
+        <div class="channel-meta-text">
+            <h2 class="channel-master-title" id="channelTitleNode">Loading Teacher Profile...</h2>
+            <p class="channel-sub-count" id="channelSubCountNode">@focustube.classroom • 1.2M subscribers • Verified Educational Channel</p>
+            <p class="channel-description" id="channelDescNode">Welcome to FocusTube verified study deck. Access distracted-free high quality learning materials approved by your parents.</p>
+        </div>
+    </div>
+
+    <!-- 🗂️ TAB SWITCHER SEPARATOR -->
+    <div class="channel-navigation-tabs">
+        <button class="yt-tab-link active" onclick="switchChannelTabMatrix(this, 'homeTabPanelUI')">Home</button>
+        <button class="yt-tab-link" onclick="switchChannelTabMatrix(this, 'playlistsTabPanelUI')">Playlists</button>
+    </div>
+
+    <!-- 🏠 TAB 1: HOME PANEL (SHOWS ALL CHANNEL VIDEOS MIXED) -->
+    <div class="tab-content-panel active" id="homeTabPanelUI">
+        <div class="videos-matrix-grid" id="channelVideosGridNode">
+            <div class="pulse-placeholder">Compiling teacher classroom feeds...</div>
+        </div>
+    </div>
+
+    <!-- 📂 TAB 2: PLAYLISTS PANEL (SHOWS WORKSPACE PLAYLIST MODULES) -->
+    <div class="tab-content-panel" id="playlistsTabPanelUI">
+        <div class="videos-matrix-grid" id="channelPlaylistsGridNode">
+            <div class="pulse-placeholder">Sorting whitelist syllabus directories...</div>
+        </div>
+    </div>
+
+    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🎯 FIREBASE PROJECT INSTANCE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 🔑 🔥 अमन भाई का 4x4 बैकअप API KEYS पूल
+        const YT_KEYS_ARRAY = [
+            "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ",
+            "AIzaSyCBjjJGtUQIfKb8xfADxukJSqeWpI4mFqo",
+            "AIzaSyClGb2Hgc9jIBIiHEbJWjOXkCRQB8zHOdw",
+            "AIzaSyCIt6Ffw30No8gS7zZcDrtuVAXNkAZEq1s"
+        ];
+        let currentKeyIndex = 0;
+
+        let targetTeacherName = "";
+        let teacherPlaylistsArray = [];
+        let allCompiledVideos = [];
+
+        // ================= 📡 URL PARSER NODE =================
+        function parseQueryParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            // यूआरएल से नाम उठाएगा, जैसे channel.html?name=Target Board
+            targetTeacherName = urlParams.get('name') || "FocusTube Teacher";
+            
+            // यूआई हेडर अपडेट करें
+            document.getElementById('channelTitleNode').innerText = targetTeacherName;
+            document.getElementById('channelAvatarNode').innerText = targetTeacherName.charAt(0).toUpperCase();
+            document.getElementById('channelSubCountNode').innerText = `@${targetTeacherName.toLowerCase().replace(/\s+/g, '')} • 840K subscribers • Verified Tutor`;
+            document.getElementById('channelDescNode').innerText = `Official locked study center for ${targetTeacherName}. All contents here are managed and permitted via Parent Configuration Panel.`;
+            
+            initiateDataMiningPipeline();
+        }
+
+        // ================= 🏠 FIRESTORE SEARCH CONNECTOR =================
+        function initiateDataMatrixSync() {
+            db.collection("pinned_channels").onSnapshot(snapshot => {
+                teacherPlaylistsArray = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    // सिर्फ उसी प्लेलिस्ट को फ़िल्टर करो जिसका नाम या सब्जेक्ट हमारे टीचर से मैच खाता हो
+                    teacherPlaylistsArray.push(data);
+                });
+
+                // अगर लाइव डेटाबेस खाली हो तो डिफ़ॉल्ट रूप से इस प्लेलिस्ट को एंकर बना दो
+                if(teacherPlaylistsArray.length === 0) {
+                    teacherPlaylistsArray.push({
+                        playlistId: "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF",
+                        title: "2025 परीक्षा के लिए महत्पूर्ण प्रश्न",
+                        subject: "Hindi"
+                    });
+                }
+                
+                fetchChannelContentFromYoutube();
+            });
+        }
+
+        // ================= 📡 4-API SAFE YOUTUBE DATA AGGREGATOR =================
+        async function fetchChannelContentFromYoutube() {
+            allCompiledVideos = [];
+            const homeGrid = document.getElementById('channelVideosGridNode');
+            const playlistGrid = document.getElementById('channelPlaylistsGridNode');
+
+            homeGrid.innerHTML = `<div class="pulse-placeholder">Extracting videos from live playlists...</div>`;
+            playlistGrid.innerHTML = `<div class="pulse-placeholder">Building catalog decks...</div>`;
+
+            for (const item of teacherPlaylistsArray) {
+                let nextPageToken = "";
+                let keepFetching = true;
+                let firstVideoId = "";
+
+                while (keepFetching) {
+                    let activeKey = YT_KEYS_ARRAY[currentKeyIndex];
+                    let apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=15&playlistId=${item.playlistId}&key=${activeKey}`;
+                    
+                    if (nextPageToken) apiUrl += `&pageToken=${nextPageToken}`;
+
+                    try {
+                        let res = await fetch(apiUrl);
+                        
+                        // 🔄 अगर कोटा लिमिट एरर आए तो की (Key) रोटेट करो
+                        if (!res.ok) {
+                            currentKeyIndex = (currentKeyIndex + 1) % YT_KEYS_ARRAY.length;
+                            continue;
+                        }
+
+                        let data = await res.json();
+                        if (data && data.items) {
+                            data.items.forEach((video, index) => {
+                                const vId = video.snippet.resourceId ? video.snippet.resourceId.videoId : "";
+                                if(index === 0 && vId) firstVideoId = vId;
+                                
+                                // मास्टर वीडियो लिस्ट में पुश करें
+                                allCompiledVideos.push({
+                                    videoId: vId,
+                                    title: video.snippet.title,
+                                    playlistId: item.playlistId,
+                                    publishedAt: video.snippet.publishedAt
+                                });
+                            });
+                        }
+
+                        if (data && data.nextPageToken) {
+                            nextPageToken = data.nextPageToken;
+                        } else {
+                            keepFetching = false;
+                        }
+                    } catch (err) {
+                        keepFetching = false;
+                    }
+                }
+                // प्लेलिस्ट कार्ड के लिए थंबनेल असाइन करो
+                item.thumbnailId = firstVideoId || "H4Uj3tHGqoM";
+            }
+
+            // यूआई रेंडरर ट्रिगर करें
+            renderHomeVideosGrid();
+            renderPlaylistsGrid();
+        }
+
+        // ================= 🔀 RENDERING MATRIX DECK =================
+        function renderHomeVideosGrid() {
+            const container = document.getElementById('channelVideosGridNode');
+            if(allCompiledVideos.length === 0) {
+                container.innerHTML = `<div class="pulse-placeholder">No individual videos registered.</div>`;
+                return;
+            }
+            container.innerHTML = "";
+
+            allCompiledVideos.forEach(v => {
+                if(!v.videoId) return;
+                const card = document.createElement('div');
+                card.className = "yt-video-card";
+                card.onclick = () => window.location.href = `videoplay.html?v=${v.videoId}&list=${v.playlistId}`;
+
+                card.innerHTML = `
+                    <div class="thumb-wrapper">
+                        <img src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" alt="Thumbnail">
+                    </div>
+                    <div class="meta-row">
+                        <h4 class="v-title">${v.title}</h4>
+                        <p class="v-subtitle">FocusTube Classroom Lecture</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderPlaylistsGrid() {
+            const container = document.getElementById('channelPlaylistsGridNode');
+            if(teacherPlaylistsArray.length === 0) {
+                container.innerHTML = `<div class="pulse-placeholder">No playlists assigned.</div>`;
+                return;
+            }
+            container.innerHTML = "";
+
+            teacherPlaylistsArray.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "yt-video-card";
+                card.onclick = () => window.location.href = `videoplay.html?list=${p.playlistId}&v=${p.playlistId}`;
+
+                const thumbImg = `https://img.youtube.com/vi/${p.thumbnailId || 'H4Uj3tHGqoM'}/mqdefault.jpg`;
+
+                card.innerHTML = `
+                    <div class="thumb-wrapper">
+                        <img src="${thumbImg}" alt="Playlist Thumbnail">
+                        <div class="playlist-side-badge">
+                            <span>☰</span>
+                            <span style="font-size:0.7rem; font-weight:normal; margin-top:2px;">PLAYLIST</span>
+                        </div>
+                    </div>
+                    <div class="meta-row">
+                        <h4 class="v-title">${p.title}</h4>
+                        <p class="v-subtitle">Subject: ${p.subject || 'General'}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ================= 🎛️ TAB SWITCHER EXECUTION =================
+        function switchChannelTabMatrix(btn, targetPanelId) {
+            document.querySelectorAll('.yt-tab-link').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content-panel').forEach(p => p.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(targetPanelId).classList.add('active');
+        }
+
+        // ================= 📡 PARENT DASHBOARD THEME MESSENGER SIGNAL =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
+
+        function initiateDataMiningPipeline() {
+            initiateDataMatrixSync();
+        }
+
+        // Launch Application
+        window.addEventListener('DOMContentLoaded', parseQueryParameters);
+    </script>
+</body>
+</html>
