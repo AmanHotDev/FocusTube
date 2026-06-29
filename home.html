@@ -95,12 +95,11 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 🔑 🔥 अमन भाई का 4x4 सुपर-पावर बैकअप API KEYS पूल
         const YT_KEYS_ARRAY = [
-            "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ", // पहली Key (जीमेल 1)
-            "AIzaSyCBjjJGtUQIfKb8xfADxukJSqeWpI4mFqo", // दूसरी Key (जीमेल 2)
-            "AIzaSyClGb2Hgc9jIBIiHEbJWjOXkCRQB8zHOdw", // तीसरी Key (जीमेल 3)
-            "AIzaSyCIt6Ffw30No8gS7zZcDrtuVAXNkAZEq1s"  // चौथी Key (जीमेल 4)
+            "AIzaSyD-OjMXfyPMl5QOYj86FwdapQCQeNDrtiQ", 
+            "AIzaSyCBjjJGtUQIfKb8xfADxukJSqeWpI4mFqo", 
+            "AIzaSyClGb2Hgc9jIBIiHEbJWjOXkCRQB8zHOdw", 
+            "AIzaSyCIt6Ffw30No8gS7zZcDrtuVAXNkAZEq1s"  
         ];
         let currentKeyIndex = 0;
 
@@ -110,7 +109,6 @@
 
         // ================= 🏠 FIRESTORE REALTIME SYNC ENGINE =================
         function establishFirestoreSyncNode() {
-            // बिना फायरबेस डिले के तुरंत पहली बार डेटा लोड करें
             resetAndInitialFetchFeed();
 
             auth.onAuthStateChanged((user) => {
@@ -135,13 +133,12 @@
             });
         }
 
-        // ================= 📡 INITIAL FETCH PIPELINE RESET =================
         function resetAndInitialFetchFeed() {
             compiledVideosMasterList = [];
             fetchPlaylistItemsPipeline();
         }
 
-        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE (SAFE MULTI-KEY LOOP) =================
+        // ================= 📡 PLAYLIST ITEMS PARSER ENGINE =================
         async function fetchPlaylistItemsPipeline() {
             const shell = document.getElementById('globalHomeFeedShell');
             shell.innerHTML = `<div class="pulse-placeholder">Extracting all videos from live classrooms...</div>`;
@@ -164,12 +161,10 @@
                     try {
                         let res = await fetch(apiUrl);
                         
-                        // 🔄 अगर कोटा लिमिट या कोई अन्य एरर आए तो तुरंत अगली चाबी पर स्विच करो
                         if (!res.ok) {
                             if (currentKeyIndex < YT_KEYS_ARRAY.length - 1) {
                                 currentKeyIndex++;
-                                console.log("⚠️ Quota Limit Exceeded. Switching to API Key Node: " + currentKeyIndex);
-                                continue; // लूप को नई चाबी के साथ री-स्टार्ट करो
+                                continue; 
                             } else {
                                 throw new Error("All backup key engines are fully exhausted.");
                             }
@@ -189,14 +184,24 @@
                             keepFetching = false;
                         }
                     } catch (err) {
-                        console.error("🚨 Playlist parser loop encountered a structural bypass.");
                         keepFetching = false;
                     }
                 }
             }
             
+            // 🎯 जादू: रेंडर करने से पहले पूरी लिस्ट को पत्तों की तरह फेंट (Mix) दो!
+            shuffleArrayMatrix(compiledVideosMasterList);
+            
             generateDynamicTagsFromMasterList();
             buildRandomizedYoutubeLayout(compiledVideosMasterList);
+        }
+
+        // ================= 🔀 FISHER-YATES SHUFFLE ALGORITHM NODES (THE MIXER) =================
+        function shuffleArrayMatrix(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // आपस में स्वैप करें
+            }
         }
 
         // ================= 🏷️ GENERATE DYNAMIC TAGS FROM CONTENT =================
@@ -222,7 +227,7 @@
             });
         }
 
-        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE (DIRECT REDIRECT FIXED) =================
+        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE =================
         function buildRandomizedYoutubeLayout(items) {
             const shell = document.getElementById('globalHomeFeedShell');
             if(!items || items.length === 0) {
@@ -243,7 +248,6 @@
                 const letter = channelTitle.charAt(0).toUpperCase();
                 const thumbnailUrl = snip.thumbnails.medium ? snip.thumbnails.medium.url : `https://img.youtube.com/vi/${vidId}/0.jpg`;
 
-                // पुराना अलर्ट पॉप-अप हटाकर सीधे प्लेयर पेज का डायरेक्ट रूटिंग लिंक लगा दिया है
                 gridHtmlBuffer += `
                     <div class="yt-video-card" onclick="window.location.href='videoplay.html?v=${vidId}&list=${playlistId}'">
                         <div class="thumbnail-wrapper"><img src="${thumbnailUrl}" alt="Thumbnail"></div>
@@ -290,7 +294,6 @@
                 }
             }
             
-            // 🔍 0-क्रेडिट लोकल फ़िल्टरिंग सर्च बार
             if (messagePacket.type === 'search') {
                 const query = messagePacket.value.toLowerCase().trim();
                 if(query === "") {
