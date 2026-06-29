@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Liked Videos 👍</title>
+    <style>
+        /* ================= 🎨 MODERN YOUTUBE LIKED VIDEOS DESIGN SYSTEM ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-master: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-blue: #065fd4;
+            --hover-bg: #f2f2f2;
+            --sidebar-gradient: linear-gradient(180deg, #f9f9f9 0%, #f1f1f1 100%);
+            --icon-invert: 0;
+        }
+
+        body.dark-mode {
+            --bg-master: #0f0f0f;
+            --bg-card: #0f0f0f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --hover-bg: #272727;
+            --sidebar-gradient: linear-gradient(180deg, #1f1f1f 0%, #141414 100%);
+            --icon-invert: 1;
+        }
+
+        body { background-color: var(--bg-master); color: var(--text-main); transition: background 0.2s, color 0.2s; padding: 24px 40px; min-height: 100vh; }
+        
+        /* 🏛️ MASTER TWO-COLUMN LAYOUT (YT LIKED VIDEOS ORIGINAL) */
+        .liked-main-layout { display: flex; gap: 40px; max-width: 1280px; margin: 0 auto; }
+        
+        /* बायाँ कॉलम: मास्टर प्लेलिस्ट डिटेल्स कार्ड */
+        .liked-left-sidebar { width: 360px; background: var(--sidebar-gradient); border-radius: 24px; padding: 24px; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 24px; height: calc(100vh - 48px); overflow-y: auto; border: 1px solid var(--border-color); }
+        .master-cover-blur { width: 100%; aspect-ratio: 16/9; background: #272727; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.15); font-weight: bold; font-size: 1.2rem; }
+        .master-cover-blur img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+        .playlist-title { font-size: 1.6rem; font-weight: 800; margin-top: 8px; }
+        .playlist-meta-info { font-size: 0.88rem; color: var(--text-muted); font-weight: 500; display: flex; flex-direction: column; gap: 4px; }
+        
+        /* दायाँ कॉलम: वीडियोज़ की स्क्रॉलेबल लिस्ट */
+        .liked-right-feed { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+        
+        /* 🔍 SEARCH WITHIN LIKED VIDEOS */
+        .liked-search-box { display: flex; align-items: center; border: 1px solid var(--border-color); background: var(--bg-card); padding: 8px 16px; border-radius: 20px; margin-bottom: 12px; }
+        .liked-search-box input { background: transparent; border: none; outline: none; color: var(--text-main); font-size: 0.9rem; flex: 1; }
+        .liked-search-box img { width: 16px; height: 16px; filter: invert(var(--icon-invert)); }
+
+        /* 📺 ROW-STYLE VIDEO CARD (SAME AS YT PLAYLIST FEED) */
+        .video-rows-stack { display: flex; flex-direction: column; }
+        .liked-video-row { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 12px; cursor: pointer; position: relative; border-bottom: 1px solid var(--border-color); }
+        .liked-video-row:hover { background: var(--hover-bg); }
+        
+        .row-index { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; width: 24px; text-align: center; }
+        .row-thumb { width: 140px; aspect-ratio: 16/9; background: #000; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .row-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .row-meta { flex: 1; display: flex; flex-direction: column; gap: 4px; padding-right: 40px; }
+        .v-title { font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-channel { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+        /* डिसलाइक / रिमूव बटन */
+        .remove-liked-btn { position: absolute; right: 16px; background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: background 0.1s; }
+        .remove-liked-btn:hover { background: var(--border-color); }
+        .remove-liked-btn img { width: 16px; height: 16px; filter: invert(var(--icon-invert)); }
+
+        /* ✨ EMPTY STATE UI */
+        .empty-liked-deck { text-align: center; padding: 120px 20px; color: var(--text-muted); font-size: 0.95rem; }
+
+        @media (max-width: 850px) {
+            .liked-main-layout { flex-direction: column; gap: 24px; }
+            .liked-left-sidebar { width: 100%; height: auto; position: static; border-radius: 16px; }
+            .master-cover-blur { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="liked-main-layout">
+        
+        <!-- 🏛️ LEFT SIDEBAR: PLAYLIST STATIC CARD DETAILS -->
+        <div class="liked-left-sidebar">
+            <div class="master-cover-blur" id="playlistCoverShell">
+                <!-- पहले वीडियो का थंबनेल यहाँ दिखेगा -->
+                <span id="fallbackIconShell">👍</span>
+            </div>
+            <h2 class="playlist-title">Liked videos</h2>
+            <div class="playlist-meta-info">
+                <span id="videoCountMetricsNode">0 videos</span>
+                <span>Updated today</span>
+            </div>
+        </div>
+
+        <!-- 📜 RIGHT FEED: INTERACTIVE VIDEOS STACK -->
+        <div class="liked-right-feed">
+            
+            <!-- सर्च बार -->
+            <div class="liked-search-box">
+                <input type="text" id="likedSearchInputNode" placeholder="Search inside liked videos" oninput="executeLikedSearch()">
+                <img src="icons/search.png" alt="Search">
+            </div>
+
+            <!-- वीडियो लिस्टिंग कंटेनर -->
+            <div class="video-rows-stack" id="likedVideosStackUI">
+                <!-- डायनेमिक रो कार्ड्स यहाँ बनेंगे -->
+            </div>
+
+            <!-- एम्प्टी स्टेट प्रॉम्ट -->
+            <div class="empty-liked-deck" id="emptyLikedPromptUI" style="display: none;">
+                No liked videos found. Double tap 👍 on player to save videos here!
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const LIKED_STORAGE_KEY = "focustube_liked_videos_vector";
+        let localLikedArray = [];
+
+        // ================= 🏠 SYSTEM INITIALIZATION =================
+        function initializeLikedEngine() {
+            // लोकल स्टोरेज से लाइक्ड वीडियो की लिस्ट उठाएं
+            localLikedArray = JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY)) || [];
+            
+            renderLikedVideosGrid(localLikedArray);
+        }
+
+        // ================= 🔀 RENDERING ENGINE LAYOUT =================
+        function renderLikedVideosGrid(dataList) {
+            const container = document.getElementById('likedVideosStackUI');
+            const emptyPrompt = document.getElementById('emptyLikedPromptUI');
+            const countNode = document.getElementById('videoCountMetricsNode');
+            const coverShell = document.getElementById('playlistCoverShell');
+
+            // कुल वीडियो काउंट अपडेट करें
+            countNode.innerText = `${localLikedArray.length} video${localLikedArray.length === 1 ? '' : 's'}`;
+
+            if (!dataList || dataList.length === 0) {
+                container.innerHTML = "";
+                emptyPrompt.style.display = "block";
+                coverShell.innerHTML = "<span>👍</span>";
+                return;
+            }
+            emptyPrompt.style.display = "none";
+            container.innerHTML = "";
+
+            // प्लेलिस्ट कवर पर सबसे पहले वीडियो का थंबनेल सेट करें
+            if(localLikedArray.length > 0) {
+                coverShell.innerHTML = `<img src="https://img.youtube.com/vi/${localLikedArray[0].videoId}/mqdefault.jpg" alt="Cover">`;
+            }
+
+            dataList.forEach((v, index) => {
+                const row = document.createElement('div');
+                row.className = "liked-video-row";
+                row.onclick = () => window.location.href = `videoplay.html?v=${v.videoId}&list=${v.playlistId || ''}`;
+
+                row.innerHTML = `
+                    <div class="row-index">${index + 1}</div>
+                    <div class="row-thumb">
+                        <img src="https://img.youtube.com/vi/${v.videoId}/mqdefault.jpg" alt="Thumbnail">
+                    </div>
+                    <div class="row-meta">
+                        <h4 class="v-title">${v.title}</h4>
+                        <p class="v-channel">${v.channelTitle || 'FocusTube Classroom'}</p>
+                    </div>
+                    <button class="remove-liked-btn" onclick="removeVideoFromLikedFeed(event, '${v.videoId}')" title="Remove from Liked">
+                        <img src="icons/delete.png" alt="Remove">
+                    </button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // ================= 🔍 LIVE SEARCH OPERATION =================
+        function executeLikedSearch() {
+            const query = document.getElementById('likedSearchInputNode').value.trim().toLowerCase();
+            if (!query) {
+                renderLikedVideosGrid(localLikedArray);
+                return;
+            }
+
+            const filtered = localLikedArray.filter(v => v.title.toLowerCase().includes(query));
+            renderLikedVideosGrid(filtered);
+        }
+
+        // ================= 🗑️ REMOVE FROM LIKED NODE =================
+        function removeVideoFromLikedFeed(event, videoId) {
+            event.stopPropagation(); // वीडियो रो क्लिक ट्रिगर होने से रोकें
+            if(confirm("Remove this video from your liked list?")) {
+                localLikedArray = localLikedArray.filter(v => v.videoId !== videoId);
+                localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(localLikedArray));
+                renderLikedVideosGrid(localLikedArray);
+            }
+        }
+
+        // ================= 📡 PARENT DASHBOARD THEME SIGNAL RECEIVER =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
+
+        // Launch Core Engine
+        window.addEventListener('DOMContentLoaded', initializeLikedEngine);
+    </script>
+</body>
+</html>
