@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusTube - Notification Hub 🔔</title>
+    <style>
+        /* ================= 🎨 MODERN YOUTUBE DESIGN SYSTEM ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', 'Segoe UI', sans-serif; }
+        
+        :root {
+            --bg-notify: #ffffff;
+            --bg-card: #f9f9f9;
+            --text-main: #0f0f0f;
+            --text-muted: #606060;
+            --border-color: #e5e5e5;
+            --yt-blue: #065fd4;
+            --unread-dot: #065fd4;
+            --hover-card: #f1f1f1;
+        }
+
+        /* 🌙 TRUE DARK MODE SYNC VARIABLES */
+        body.dark-mode {
+            --bg-notify: #0f0f0f;
+            --bg-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #303030;
+            --unread-dot: #3ea6ff;
+            --hover-card: #272727;
+        }
+
+        body { background-color: var(--bg-notify); color: var(--text-main); padding: 24px; transition: background 0.2s, color 0.2s; min-height: 100vh; }
+        .notification-master-container { width: 100%; max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+        /* 🎛️ TOP HEADER ACTION DECK */
+        .notify-header-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; }
+        .notify-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        
+        .clean-feed-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.88rem; transition: background 0.1s; }
+        .clean-feed-btn:hover { background: var(--bg-card); }
+
+        /* 🔔 NOTIFICATION ALERT CARDS */
+        .notification-feed-stack { display: flex; flex-direction: column; gap: 12px; }
+        
+        .notify-alert-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; position: relative; transition: background 0.15s; }
+        .notify-alert-card:hover { background: var(--hover-card); }
+        
+        /* अनरीड नोटिफिकेशन के लिए नीला डॉट */
+        .notify-alert-card.unread::before { content: ""; width: 8px; height: 8px; background: var(--unread-dot); border-radius: 50%; position: absolute; left: 6px; top: calc(50% - 4px); }
+
+        .bell-icon-wrapper { width: 44px; height: 44px; border-radius: 50%; background: rgba(6, 95, 212, 0.1); color: var(--yt-blue); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        body.dark-mode .bell-icon-wrapper { background: rgba(62, 166, 255, 0.1); color: var(--unread-dot); }
+
+        .notify-meta-details { flex: 1; display: flex; flex-direction: column; gap: 4px; padding-right: 20px; }
+        .notify-message-text { font-size: 0.95rem; font-weight: 500; line-height: 1.4; }
+        .notify-message-text strong { font-weight: 700; color: var(--yt-blue); }
+        body.dark-mode .notify-message-text strong { color: var(--unread-dot); }
+        .notify-timestamp { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+
+        /* वॉच नाउ एक्शन बटन */
+        .action-redirect-btn { background: var(--yt-blue); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; white-space: nowrap; transition: opacity 0.1s; }
+        .action-redirect-btn:hover { opacity: 0.9; }
+        body.dark-mode .action-redirect-btn { background: var(--unread-dot); color: #000; }
+
+        /* व्यक्तिगत कार्ड साफ़ करने का क्रॉस आइकन */
+        .dismiss-card-trigger { background: transparent; border: none; color: var(--text-muted); font-size: 1.1rem; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        .dismiss-card-trigger:hover { background: rgba(0,0,0,0.05); color: #cc0000; }
+        body.dark-mode .dismiss-card-trigger:hover { background: rgba(255,255,255,0.05); }
+
+        /* ✨ EMPTY STATE UI INTERFACE */
+        .empty-notifications-deck { text-align: center; padding: 80px 20px; color: var(--text-muted); display: none; flex-direction: column; align-items: center; gap: 12px; }
+        .empty-graphics-icon { font-size: 3.5rem; filter: grayscale(0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="notification-master-container">
+        
+        <!-- 🎛️ TOP CONTROLS BAR -->
+        <div class="notify-header-flex">
+            <h2 class="notify-title">Notifications 🔔</h2>
+            <button class="clean-feed-btn" onclick="dismissAllAlertsMatrix()">Clear All Notifications</button>
+        </div>
+
+        <!-- 🔔 LIVE ALERTS STACK CONTAINER -->
+        <div class="notification-feed-stack" id="notificationFeedStackShell">
+            <!-- Firestore Realtime Data Rows Generate Here -->
+        </div>
+
+        <!-- ✨ EMPTY STATE DISPLAY DECK -->
+        <div class="empty-notifications-deck" id="emptyNotificationsPromptUI">
+            <div class="empty-graphics-icon">✨</div>
+            <h4 style="color: var(--text-main); font-size: 1.1rem;">Your desk is completely clean!</h4>
+            <p style="font-size: 0.88rem;">No new courses or parent alerts assigned at this time.</p>
+        </div>
+
+    </div>
+
+    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🎯 FIREBASE PROJECT INSTANCE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUvLFPdm2BmfwfTTYJPM2Cb02OOHPtH9M",
+            authDomain: "focustube-72084.firebaseapp.com",
+            projectId: "focustube-72084",
+            storageBucket: "focustube-72084.firebasestorage.app",
+            messagingSenderId: "988104840416",
+            appId: "1:988104840416:web:d18dcb90b0c71da53b6c85"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // लोकल स्टोरेज कुंजी ताकि बच्चा पढ़े हुए अलर्ट्स का स्टेट सेव रख सके
+        const READ_NOTIFICATIONS_KEY = "focustube_read_alerts_vector";
+
+        // ================= 🏠 REALTIME FIRESTORE MONITORING PIPELINE =================
+        function establishLiveNotificationSync() {
+            db.collection("pinned_channels").orderBy("timestamp", "desc")
+                .onSnapshot(snapshot => {
+                    const feedShell = document.getElementById('notificationFeedStackShell');
+                    const emptyPrompt = document.getElementById('emptyNotificationsPromptUI');
+                    
+                    // लोकल स्टोरेज से पढ़ी गई सूचनाओं की लिस्ट लाओ
+                    let readAlertsArray = JSON.parse(localStorage.getItem(READ_NOTIFICATIONS_KEY)) || [];
+
+                    if (snapshot.empty) {
+                        feedShell.innerHTML = "";
+                        feedShell.style.display = "none";
+                        emptyPrompt.style.display = "flex";
+                        return;
+                    }
+
+                    feedShell.innerHTML = "";
+                    feedShell.style.display = "flex";
+                    emptyPrompt.style.display = "none";
+
+                    snapshot.forEach(doc => {
+                        const d = doc.data();
+                        const playlistId = d.playlistId;
+                        
+                        // अगर बच्चा अलर्ट डिलीट कर चुका है तो स्क्रीन पर मत दिखाओ
+                        if (isAlertLocallyDismissed(playlistId)) return;
+
+                        const isUnread = !readAlertsArray.includes(playlistId);
+                        const card = document.createElement('div');
+                        card.className = `notify-alert-card ${isUnread ? 'unread' : ''}`;
+                        card.id = `notify-node-${playlistId}`;
+
+                        // सापेक्ष समय गणना (Time Ago Logic)
+                        const relativeTimeText = d.timestamp ? calculateTimeAgoMetric(d.timestamp.toDate()) : "Just now";
+
+                        card.innerHTML = `
+                            <div class="bell-icon-wrapper">🔔</div>
+                            <div class="notify-meta-details">
+                                <p class="notify-message-text">New Courseware Unlocked: Parent approved <strong>"${d.title}"</strong> for your whitelisted ${d.subject || 'General'} schedule.</p>
+                                <span class="notify-timestamp">⏱️ ${relativeTimeText}</span>
+                            </div>
+                            <button class="action-redirect-btn" onclick="executeWatchNavigation('${playlistId}')">Watch Now</button>
+                            <button class="dismiss-card-trigger" onclick="dismissSingleAlertNode(event, '${playlistId}')" title="Dismiss Alert">✕</button>
+                        `;
+
+                        feedShell.appendChild(card);
+                    });
+
+                    // अगर सारे अलर्ट्स इंडिविजुअली डिलीट हो चुके हों तो एम्प्टी स्टेट दिखाओ
+                    if(feedShell.children.length === 0) {
+                        feedShell.style.display = "none";
+                        emptyPrompt.style.display = "flex";
+                    }
+                }, err => {
+                    console.error("Notification pipeline sync failure:", err);
+                });
+        }
+
+        // ================= 🕒 DYNAMIC RELATIVE TIME METRIC CALCULATOR =================
+        function calculateTimeAgoMetric(dateInstance) {
+            const secondsDifference = Math.floor((new Date() - dateInstance) / 1000);
+            
+            let timeInterval = Math.floor(secondsDifference / 31536000);
+            if (timeInterval >= 1) return timeInterval + " years ago";
+            
+            timeInterval = Math.floor(secondsDifference / 2592000);
+            if (timeInterval >= 1) return timeInterval + " months ago";
+            
+            timeInterval = Math.floor(secondsDifference / 86400);
+            if (timeInterval >= 1) return timeInterval + " days ago";
+            
+            timeInterval = Math.floor(secondsDifference / 3600);
+            if (timeInterval >= 1) return timeInterval + " hours ago";
+            
+            timeInterval = Math.floor(secondsDifference / 60);
+            if (timeInterval >= 1) return timeInterval + " mins ago";
+            
+            return "Just now";
+        }
+
+        // ================= 🎯 ACTION: READ & REDIRECT =================
+        function executeWatchNavigation(playlistId) {
+            // नोटिफिकेशन को 'Read' मार्क करें ताकि नीला डॉट हट जाए
+            let readAlertsArray = JSON.parse(localStorage.getItem(READ_NOTIFICATIONS_KEY)) || [];
+            if (!readAlertsArray.includes(playlistId)) {
+                readAlertsArray.push(playlistId);
+                localStorage.setItem(READ_NOTIFICATIONS_KEY, JSON.stringify(readAlertsArray));
+            }
+
+            // सीधे प्लेयर पेज पर कूदें
+            window.location.href = `videoplay.html?list=${playlistId}&v=${playlistId}`;
+        }
+
+        // ================= 🗑️ ACTIONS: LOCAL ALERTS DISMISSAL MANAGEMENT =================
+        const LOCAL_DISMISS_KEY = "focustube_dismissed_alerts_vector";
+
+        function dismissSingleAlertNode(event, playlistId) {
+            event.stopPropagation(); // पैरेंट डिव क्लिक ट्रिगर होने से रोकें
+            if(confirm("Dismiss this notification alert from feed?")) {
+                let dismissedArray = JSON.parse(localStorage.getItem(LOCAL_DISMISS_KEY)) || [];
+                dismissedArray.push(playlistId);
+                localStorage.setItem(LOCAL_DISMISS_KEY, JSON.stringify(dismissedArray));
+                
+                const cardNode = document.getElementById(`notify-node-${playlistId}`);
+                if (cardNode) cardNode.remove();
+                window.location.reload(); // यूआई स्टेट ग्रिड री-पैक करने के लिए
+            }
+        }
+
+        function dismissAllAlertsMatrix() {
+            if(confirm("Are you sure you want to clear your entire notification desk feed?")) {
+                let readAlertsArray = JSON.parse(localStorage.getItem(READ_NOTIFICATIONS_KEY)) || [];
+                let dismissedArray = JSON.parse(localStorage.getItem(LOCAL_DISMISS_KEY)) || [];
+
+                document.querySelectorAll('.notify-alert-card').forEach(card => {
+                    const id = card.id.replace('notify-node-', '');
+                    if(!dismissedArray.includes(id)) dismissedArray.push(id);
+                    if(!readAlertsArray.includes(id)) readAlertsArray.push(id);
+                });
+
+                localStorage.setItem(LOCAL_DISMISS_KEY, JSON.stringify(dismissedArray));
+                localStorage.setItem(READ_NOTIFICATIONS_KEY, JSON.stringify(readAlertsArray));
+                window.location.reload();
+            }
+        }
+
+        function isAlertLocallyDismissed(playlistId) {
+            let dismissedArray = JSON.parse(localStorage.getItem(LOCAL_DISMISS_KEY)) || [];
+            return dismissedArray.includes(playlistId);
+        }
+
+        // ================= 📡 PARENT DASHBOARD THEME SIGNAL RECEIVER =================
+        window.addEventListener('message', function(event) {
+            const messagePacket = event.data;
+            if (messagePacket.type === 'theme') {
+                if (messagePacket.mode === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+        });
+
+        // Initialize Core Node on Load
+        window.addEventListener('DOMContentLoaded', establishLiveNotificationSync);
+    </script>
+</body>
+</html>
