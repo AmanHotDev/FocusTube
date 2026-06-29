@@ -27,14 +27,14 @@
 
         /* 🔒 SUPER SECURE LOCKING GATEWAY */
         .auth-overlay-gateway { position: fixed; inset: 0; background: rgba(15, 15, 15, 0.98); z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .auth-card { background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; }
+        .auth-card { background: var(--bg-card); width: 100%; max-width: 420px; border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; color: var(--text-main); }
         .auth-card h3 { font-size: 1.4rem; margin-bottom: 12px; }
         
         /* 🎛️ FORMS & INPUTS INTERFACES */
         .panel-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .form-grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
         .input-group { display: flex; flex-direction: column; gap: 6px; }
-        .input-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        .input-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-align: left; }
         
         input, select { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; outline: none; background: #fff; color: var(--text-main); transition: border 0.1s; }
         input:focus, select:focus { border-color: var(--yt-blue); }
@@ -48,7 +48,7 @@
         .table-wrapper { width: 100%; overflow-x: auto; margin-top: 16px; border: 1px solid var(--border-color); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem; }
         th { background: #f1f1f1; padding: 12px; font-weight: 600; color: var(--text-muted); }
-        td { padding: 12px; border-top: 1px solid var(--border-color); }
+        td { padding: 12px; border-top: 1px solid var(--border-color); color: var(--text-main); }
         .action-icon-btn { background: transparent; border: none; color: var(--yt-red); font-weight: bold; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
         .action-icon-btn:hover { background: #ffe6e6; }
 
@@ -61,12 +61,12 @@
 </head>
 <body>
 
-    <!-- 🔒 SCREEN 1: SUPER SECURE GATEWAY OVERLAY -->
     <div class="auth-overlay-gateway" id="adminAuthOverlayUI">
+        
         <div class="auth-card" id="welcomeSetupBox" style="display: none;">
             <h3 style="color: var(--yt-blue);">✨ Welcome to FocusTube!</h3>
             <p class="subtitle">Set your master security password to restrict child access to configuration settings.</p>
-            <div class="input-group" style="text-align: left; margin-bottom: 16px;">
+            <div class="input-group" style="margin-bottom: 16px;">
                 <label>Create Admin Password</label>
                 <input type="password" id="newSetupPasswordInput" placeholder="Minimum 6 characters...">
             </div>
@@ -77,26 +77,23 @@
         <div class="auth-card" id="standardLoginBox" style="display: none;">
             <h3>🛡️ Parent Authentication Required</h3>
             <p class="subtitle">Please enter your secret dashboard credentials to modify classroom feeds.</p>
-            <div class="input-group" style="text-align: left; margin-bottom: 16px;">
+            <div class="input-group" style="margin-bottom: 16px;">
                 <label>Master Security Password</label>
                 <input type="password" id="gatekeeperPasswordInput" placeholder="Enter password..." onkeypress="if(event.key === 'Enter') verifyParentGatewayCredentials()">
             </div>
             <button class="master-action-btn" style="width:100%;" onclick="verifyParentGatewayCredentials()">Unlock Control Panel</button>
-            
-            <!-- 🔗 छोटे भाग में लिखा हुआ इनलाइन रीसेट ऑप्शन -->
             <span class="inline-reset-trigger" onclick="triggerInlinePasswordReset()">Forgot or want to Reset Password? Click here</span>
             <div class="status-toast" id="loginToastUI"></div>
         </div>
+
     </div>
 
-    <!-- 🏛️ SCREEN 2: MAIN CONFIGURATION PANEL (UNLOCKED) -->
     <div class="admin-master-container">
         <div>
             <h2>FocusTube Master Control Panel</h2>
             <p class="subtitle">Deploy custom educational playlists directly to your child's 4-API mirroring feed node.</p>
         </div>
 
-        <!-- SECTION A: INJECT LIVE COURSEWARE -->
         <div class="panel-card">
             <h3 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📡 Inject New Playlist Module</h3>
             <div class="form-grid-layout">
@@ -123,7 +120,6 @@
             </div>
         </div>
 
-        <!-- SECTION B: PROFILE CUSTOMIZATION MATRIX -->
         <div class="panel-card">
             <h3 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">⚙️ Custom Child Restrictions</h3>
             <div style="display: flex; gap: 24px; flex-wrap: wrap;">
@@ -144,7 +140,6 @@
             </div>
         </div>
 
-        <!-- SECTION C: ACTIVE CONTENT DISPLAY REGISTRY -->
         <div class="panel-card">
             <h3 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">📋 Active Classroom Registries</h3>
             <div class="table-wrapper">
@@ -158,14 +153,12 @@
                         </tr>
                     </thead>
                     <tbody id="activeRegistriesTableNode">
-                        <!-- Live Firestore Rows Inject Here -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- 🧠 FIREBASE ARCHITECTURE PACKETS -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -191,15 +184,19 @@
             db.collection("admin_settings").doc(MASTER_GATE_DOC).get()
                 .then(doc => {
                     if (doc.exists && doc.data().admin_password) {
-                        // अगर पासवर्ड पहले से बना हुआ है, तो लॉगिन स्क्रीन दिखाओ
+                        // पासवर्ड मिल गया -> लॉगिन बॉक्स शो करो
                         document.getElementById('standardLoginBox').style.display = "block";
+                        document.getElementById('welcomeSetupBox').style.display = "none";
                         document.getElementById('gatekeeperPasswordInput').focus();
                     } else {
-                        // अगर पहली बार पेज खुला है, तो डायरेक्ट पासवर्ड सेटअप बॉक्स दिखाओ
+                        // पहली बार खुला है -> सेटअप बॉक्स शो करो
                         document.getElementById('welcomeSetupBox').style.display = "block";
+                        document.getElementById('standardLoginBox').style.display = "none";
                         document.getElementById('newSetupPasswordInput').focus();
                     }
-                }).catch(err => console.error("Database connection fault."));
+                }).catch(err => {
+                    console.error("Database connection fault:", err);
+                });
         }
 
         // ================= 🔑 FIRST TIME USER SETUP LOGIC =================
@@ -217,13 +214,12 @@
                 default_skip: "10",
                 allow_max_speed: true
             }).then(() => {
-                showToastFeedback(toast, "🎉 Setup Complete! Redirecting...", "green");
+                showToastFeedback(toast, "🎉 Setup Complete! Unlocking...", "green");
                 setTimeout(() => {
-                    document.getElementById('adminAuthOverlayUI').style.removeProperty('display');
-                    document.getElementById('adminAuthOverlayUI').style.height = '0px';
-                    document.getElementById('adminAuthOverlayUI').style.overflow = 'hidden';
-                    document.getElementById('adminAuthOverlayUI').innerHTML = ''; 
+                    document.getElementById('adminAuthOverlayUI').style.display = "none";
                 }, 1500);
+            }).catch(err => {
+                showToastFeedback(toast, "❌ Storage sync error.", "red");
             });
         }
 
@@ -236,13 +232,14 @@
                 if (doc.exists && doc.data().admin_password === inputPass) {
                     showToastFeedback(toast, "🔓 Authentication Granted!", "green");
                     setTimeout(() => {
-                        // ओवरले स्क्रीन को पूरी तरह हटा दें ताकि पैरेंट कस्टमाइज कर सकें
                         document.getElementById('adminAuthOverlayUI').style.display = "none";
                         loadProfileRestrictionsPayload(doc.data());
                     }, 1000);
                 } else {
                     showToastFeedback(toast, "❌ Incorrect Master Password! Access Denied.", "red");
                 }
+            }).catch(err => {
+                showToastFeedback(toast, "❌ Connection Timeout.", "red");
             });
         }
 
@@ -294,7 +291,6 @@
                 return;
             }
 
-            // फायरबेस में डॉक्यूमेंट आईडी खुद प्लेलिस्ट आईडी बन जाएगी ताकि डुप्लीकेट न बने
             db.collection("pinned_channels").doc(pId).set({
                 playlistId: pId,
                 title: pTitle,
@@ -315,7 +311,7 @@
                     tbody.innerHTML = "";
 
                     if(snapshot.empty) {
-                        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No courses currently active on the home feed.</td></tr>`;
+                        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding: 20px;">No courses currently active on the home feed.</td></tr>`;
                         return;
                     }
 
@@ -333,6 +329,8 @@
                         `;
                         tbody.appendChild(row);
                     });
+                }, err => {
+                    console.log("实时监听遇到了权限或未初始化的问题:", err);
                 });
         }
 
