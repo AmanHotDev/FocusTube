@@ -210,12 +210,11 @@
             });
         }
 
-        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE =================
+        // ================= 🔀 LAYOUT MATRIX RENDERING ENGINE (CLICK TO PLAY FIXED) =================
         function buildRandomizedYoutubeLayout(items) {
             const shell = document.getElementById('globalHomeFeedShell');
-            
             if(!items || items.length === 0) {
-                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos found inside this playlist.</div>`;
+                shell.innerHTML = `<div class="pulse-placeholder">⚠️ No classroom videos found inside your playlists.</div>`;
                 return;
             }
             
@@ -223,17 +222,19 @@
             let gridHtmlBuffer = `<div class="long-videos-grid">`;
 
             items.forEach(video => {
-                // प्लेलिस्ट के डेटा पैकेट से असली वीडियो आईडी निकालना
                 const vidId = video.snippet.resourceId ? video.snippet.resourceId.videoId : "";
-                if(!vidId) return; // अगर आईडी मिसिंग हो तो स्किप करें
+                if(!vidId) return;
 
+                // 🎯 यहाँ ध्यान दें: जिस प्लेलिस्ट से वीडियो आ रहा है, उसकी आईडी निकाल रहे हैं
+                const playlistId = video.snippet.playlistId || "PLe8_-h7emkLLkWqQBBKk6b8aLesC6UxMF";
                 const snip = video.snippet;
                 const channelTitle = snip.videoOwnerChannelTitle || snip.channelTitle || "FocusTube Teacher";
                 const letter = channelTitle.charAt(0).toUpperCase();
-                const thumbnailUrl = snip.thumbnails.medium ? snip.thumbnails.medium.url : "https://img.youtube.com/vi/" + vidId + "/0.jpg";
+                const thumbnailUrl = snip.thumbnails.medium ? snip.thumbnails.medium.url : `https://img.youtube.com/vi/${vidId}/0.jpg`;
 
+                // 🔥 फिक्स: अलर्ट हटाकर सीधे videoplay.html पर रीडायरेक्ट लिंक सेट कर दिया है
                 gridHtmlBuffer += `
-                    <div class="yt-video-card" onclick="alert('Launching secure player mode! ID: ${vidId}')">
+                    <div class="yt-video-card" onclick="window.location.href='videoplay.html?v=${vidId}&list=${playlistId}'">
                         <div class="thumbnail-wrapper"><img src="${thumbnailUrl}" alt="Thumbnail"></div>
                         <div class="video-meta-row">
                             <div class="channel-avatar-mock">${letter}</div>
@@ -249,7 +250,6 @@
             gridHtmlBuffer += `</div>`;
             shell.innerHTML = gridHtmlBuffer;
         }
-
         // ================= 🏷️ TOP CATEGORY TAGS FILTER EXECUTION =================
         function filterTagsEngine(btn, targetKeyword) {
             document.querySelectorAll('.yt-tag-btn').forEach(b => b.classList.remove('active'));
