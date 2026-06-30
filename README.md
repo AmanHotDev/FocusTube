@@ -3,7 +3,7 @@
 ## Live Deployment
 
 Click the link below to launch the web application directly in your viewport layer:
-[https://amancollocations.github.io/FocusTube](https://www.google.com/search?q=https://amancollocations.github.io/FocusTube)
+[https://amanhotdev.github.io/FocusTube]
 
 ## Project Vision
 
